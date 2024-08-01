@@ -2,11 +2,12 @@ import express from "express";
 import dotenv from 'dotenv';
 import mongooseConnectionPromise from './db.js';
 
-import Team from './models/team.js'
-
-import login_router from './routes/login.js'
+import TeamController from './controllers/team_controller.js';
+import Team from './models/team.js';
 
 const app = express();
+
+app.use(express.json()); // Middleware to parse JSON bodies
 
 dotenv.config({ path: './.env' })
 
@@ -25,21 +26,14 @@ mongooseConnectionPromise.then(() => {
     console.error('Error connecting to MongoDB:', err);
 });
 
-// app.get('/', (req, res, next) => {
-//     res.send('Server is up and running');
-    
-// });
-
-app.use('/login', login_router);
-
 app.get('/', async (req, res, next) => {
     try {
       const newTeam = new Team({
-        number: 1,
+        number: 2,
         name: 'Team A',
+        password: '1'
       });
   
-      // Save the team to the database
       await newTeam.save();
   
       res.send('Server is up and running. Team saved to database.');
@@ -48,3 +42,11 @@ app.get('/', async (req, res, next) => {
       res.status(500).send('Error saving team');
     }
 });
+
+// app.get('/', (req, res, next) => {
+//     res.send('Server is up and running');
+// });
+
+app.post("/login", TeamController.login);
+app.post("/add_team", TeamController.add_team);
+app.get("/team/:number", TeamController.get_team);
