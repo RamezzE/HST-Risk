@@ -5,23 +5,21 @@ import { images } from '../../constants';
 import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
 import { Link, router } from 'expo-router';
-import { signIn, getCurrentUser } from '../../api'; // Import the API functions
+import { login, getCurrentUser } from '../../api'; // Import the API functions
 
-const validateSignIn = (email, password) => {
+const validateSignIn = (teamNo, password) => {
   var result = {
     success: false,
     errorMsg: ''
   };
 
-  if (!email || !password) {
+  if (!teamNo || !password) {
     result.errorMsg = 'Please fill in all the fields';
     return result;
   }
 
-  var emailRegex = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/;
-
-  if (!emailRegex.test(email)) {
-    result.errorMsg = 'Please write a valid email';
+  if (isNaN(teamNo)) {
+    result.errorMsg = 'Team number must be a number';
     return result;
   }
 
@@ -31,14 +29,14 @@ const validateSignIn = (email, password) => {
 
 const SignIn = () => {
   const [form, setForm] = useState({
-    email: '',
+    teamNo: '',
     password: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async () => {
-    var result = validateSignIn(form.email, form.password);
+    var result = validateSignIn(form.teamNo, form.password);
 
     if (!result.success) {
       Alert.alert('Error', result.errorMsg);
@@ -48,16 +46,25 @@ const SignIn = () => {
     setIsSubmitting(true);
 
     try {
-      const loginResult = await signIn(form.email, form.password);
-      const user = await getCurrentUser(loginResult.token);
+      const loginResult = await login(form.teamNo, form.password);
+
+      if (!loginResult.success) {
+        Alert.alert('Error', loginResult.errorMsg);
+        return;
+      }
+
+      Alert.alert("Success", "Login Successful");
+      router.push('/dashboard');
+
+      // const user = await getCurrentUser(loginResult.token);
 
       // Assuming you have setUser and setIsLoggedIn functions from context
       // setUser(user);
       // setIsLoggedIn(true);
 
-      router.replace('/home');
     } catch (error) {
-      Alert.alert('Error', error.message);
+      Alert.alert('Error', "Error logging in");
+      console.log(error)
     } finally {
       setIsSubmitting(false);
     }
@@ -78,11 +85,11 @@ const SignIn = () => {
           </Text>
 
           <FormField 
-            title='Email'
-            value={form.email}
-            handleChangeText={(e) => setForm({ ...form, email: e })}
+            title='Team Number'
+            value={form.teamNo}
+            handleChangeText={(e) => setForm({ ...form, teamNo: e })}
             otherStyles='mt-7'
-            keyboardType='email-address'
+            keyboardType='teamNo-address'
           />
 
           <FormField 

@@ -1,40 +1,94 @@
 import Team from "../models/team.js";
 import { MongoClient } from "mongodb";
-import mongoose from "mongoose";
 
 const client = new MongoClient(process.env.MONGO_URI, {});
 
 class TeamController {
   static async login(req, res) {
-    const { number, password } = req.body;
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { teamNo, password } = req.body;
+
     try {
-      const team = await Team.findOne({ number });
+      const team = await Team.findOne({ number: teamNo });
 
       if (!team) {
-        console.log(`Team ${number} not found`);
-        return res.status(404).send("Team not found");
+        console.log(`Team ${teamNo} not found`);
+        result.errorMsg = `Team ${teamNo} not found`;
+        return res.json(result);
+      }
+
+      console.log("Team found:", team);
+
+      const isPasswordValid = team.password === password;
+
+      if (!isPasswordValid) {
+        console.log("Invalid password");
+        result.errorMsg = "Invalid password";
+        return res.json(result);
       }
 
       console.log("Login Successful");
-      res.send("Login successful");
+      result.success = true;
+      return res.json(result);
     } catch (error) {
       console.log("Error during login:", error);
-      res.status(500).send("Error during login");
+      result.errorMsg = "Error logging in";
+      return res.json(result);
     }
   }
 
   static async add_team(req, res) {
-    const { number, name, password } = req.body;
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+    
+    const { teamNo, teamName, password } = req.body;
 
-    // Create a new team instance
+    const team = await Team.findOne({ number: teamNo });
+
+    if (team) {
+      result.errorMsg = `Team ${teamNo} already exists`;
+      return res.json(result);
+    }
+
     const newTeam = new Team({
-      number,
-      name,
-      password,
+      number: teamNo,
+      name: teamName,
+      password: password,
     });
 
-    // Save the team to the database
-    await newTeam.save();
+    try {
+      await newTeam.save();
+      result.success = true;
+      return res.json(result);
+    } catch (error) {
+      console.error("Error adding team:", error);
+      result.errorMsg = "Error adding team";
+      return res.json(result);
+    }
+  }
+
+  // Get team function
+  static async get_team(req, res) {
+    const { number } = req.params;
+
+    try {
+      const team = await Team.findOne({ number });
+
+      if (!team) {
+        return res.status(404).send("Team not found");
+      }
+
+      res.json(team);
+    } catch (error) {
+      console.error("Error fetching team:", error);
+      res.status(500).send("Error fetching team");
+    }
   }
 }
 
