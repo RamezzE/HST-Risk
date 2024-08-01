@@ -4,6 +4,7 @@ import { add_team } from "../../api";
 import { useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
 const validateAddTeam = (teamNo, teamName, password) => {
   var result = {
@@ -45,7 +46,11 @@ const AddTeam = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await add_team(form.teamNo, form.teamName, form.password);
+      const response = await add_team(
+        form.teamNo,
+        form.teamName,
+        form.password
+      );
 
       if (!response.success) {
         Alert.alert("Error", response.errorMsg);
@@ -61,9 +66,7 @@ const AddTeam = () => {
         password: "",
       });
 
-      // Navigate to teams page or any other page
-      // Assuming you have a navigation system in place, e.g., React Navigation
-      // router.push("/teams"); // Uncomment this if you are using Expo Router
+      router.push("/teams"); // Uncomment this if you are using Expo Router
     } catch (error) {
       Alert.alert("Error", "Error adding team");
       console.log(error);
@@ -75,7 +78,10 @@ const AddTeam = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
-        <View className="w-full justify-center min-h-[87.5vh] px-4 my-6">
+        <View className="w-full justify-center min-h-[75vh] px-4 my-6">
+            <Text className="text-4xl text-white font-bold text-center">
+                Add Team
+            </Text>
           <FormField
             title="Team Number"
             value={form.teamNo}
@@ -95,15 +101,22 @@ const AddTeam = () => {
             value={form.password}
             handleChangeText={(e) => setForm({ ...form, password: e })}
             otherStyles="mt-7"
-            secureTextEntry={true} // Ensure secure text entry for password
           />
 
-          <CustomButton
-            title="Add Team"
-            handlePress={submit}
-            containerStyles="mt-7"
-            isLoading={isSubmitting}
-          />
+          <View className="w-full flex flex-row items-center justify-evenly">
+            <CustomButton
+              title="Cancel"
+              handlePress={() => router.push("/teams")}
+              containerStyles="w-[45%] mt-7"
+              isLoading={isSubmitting}
+            />
+            <CustomButton
+              title="Add Team"
+              handlePress={submit}
+              containerStyles="w-[45%] mt-7"
+              isLoading={isSubmitting}
+            />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

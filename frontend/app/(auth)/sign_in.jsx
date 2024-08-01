@@ -47,13 +47,12 @@ const SignIn = () => {
 
     try {
       const loginResult = await login(form.teamNo, form.password);
-
+      
       if (!loginResult.success) {
         Alert.alert('Error', loginResult.errorMsg);
         return;
       }
 
-      Alert.alert("Success", "Login Successful");
       router.push('/dashboard');
 
       // const user = await getCurrentUser(loginResult.token);
@@ -73,15 +72,15 @@ const SignIn = () => {
   return (
     <SafeAreaView className='bg-primary h-full'>
       <ScrollView>
-        <View className='w-full justify-center min-h-[87.5vh] px-4 my-6'>
-          <Image 
+        <View className='w-full justify-center min-h-[75vh] px-4 my-6'>
+          {/* <Image 
             source={images.logo}
             resizeMode='contain'
             className='w-[115px] h-[35px]'
-          />
+          /> */}
 
           <Text className='text-2xl text-white text-semibold mt-10 font-psemibold'>
-            Log in to Aora
+            Log in to Domination
           </Text>
 
           <FormField 
@@ -89,7 +88,6 @@ const SignIn = () => {
             value={form.teamNo}
             handleChangeText={(e) => setForm({ ...form, teamNo: e })}
             otherStyles='mt-7'
-            keyboardType='teamNo-address'
           />
 
           <FormField 
@@ -106,12 +104,6 @@ const SignIn = () => {
             isLoading={isSubmitting}
           />
 
-          <View className='justify-center pt-5 flex-row gap-2'>
-            <Text className='text-lg text-gray-100 font-pregular'>
-              Don't have an account?
-            </Text>
-            <Link href='/sign_up' className='text-lg font-psemibold text-secondary'>Sign Up</Link>
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
