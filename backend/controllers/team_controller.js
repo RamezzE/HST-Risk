@@ -73,6 +73,17 @@ class TeamController {
     }
   }
 
+  static async get_all_teams(req, res) {
+
+    try {
+      const teams = await Team.find();
+      console.log(teams)
+      return res.json(teams);
+    } catch (error) {
+      return res.json({})    
+    }
+  }
+
   // Get team function
   static async get_team(req, res) {
     const { number } = req.params;
