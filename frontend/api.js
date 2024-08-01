@@ -31,6 +31,17 @@ export const add_team = async (teamNo, teamName, password) => {
   }
 };
 
+export const get_all_teams = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/all_teams`);
+    console.log(response.data)
+    return response.data;
+
+  } catch (error) {
+    return { errorMsg: error.response?.data || "Error fetching teams" };
+  }
+};
+
 // export const getCurrentUser = async (token) => {
 //   try {
 //     const response = await axios.get(`${API_BASE_URL}/current-user`, {

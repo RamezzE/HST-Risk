@@ -26,27 +26,11 @@ mongooseConnectionPromise.then(() => {
     console.error('Error connecting to MongoDB:', err);
 });
 
-app.get('/', async (req, res, next) => {
-    try {
-      const newTeam = new Team({
-        number: 2,
-        name: 'Team A',
-        password: '1'
-      });
-  
-      await newTeam.save();
-  
-      res.send('Server is up and running. Team saved to database.');
-    } catch (error) {
-      console.error('Error saving team:', error);
-      res.status(500).send('Error saving team');
-    }
+app.get('/', (req, res, next) => {
+    res.send('Server is up and running');
 });
-
-// app.get('/', (req, res, next) => {
-//     res.send('Server is up and running');
-// });
 
 app.post("/login", TeamController.login);
 app.post("/add_team", TeamController.add_team);
 app.get("/team/:number", TeamController.get_team);
+app.get("/all_teams", TeamController.get_all_teams);
