@@ -3,7 +3,7 @@ import { View, Text, FlatList } from "react-native";
 import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { get_all_teams } from "../../api";
+import { get_all_teams } from "../../api/team_functions";
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);

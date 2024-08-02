@@ -1,10 +1,11 @@
 import { View, Text, ScrollView, Alert } from "react-native";
 import FormField from "../../components/FormField";
-import { add_team } from "../../api";
 import { useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+
+import { add_team } from "../../api/admin_functions";
 
 const validateAddTeam = (teamNo, teamName, password) => {
   var result = {

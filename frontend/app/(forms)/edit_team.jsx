@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, Alert } from "react-native";
 import FormField from "../../components/FormField";
-import { update_team, get_team } from "../../api";
 import CustomButton from "../../components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 
-const validateEditTeam = (teamNo, teamName, password) => {
+import { update_team } from "../../api/admin_functions";
+import { get_team } from "../../api/team_functions";
+
+const validateEditTeam = (teamName, password) => {
   var result = {
     success: false,
     errorMsg: "",
   };
 
-  if (!teamNo || !teamName) {
+  if (!teamName || !password) {
     result.errorMsg = "Please fill in all the fields";
-    return result;
-  }
-
-  if (isNaN(teamNo)) {
-    result.errorMsg = "Team number must be a number";
     return result;
   }
 
@@ -62,7 +59,7 @@ const EditTeam = () => {
   }, [teamNo]);
 
   const submit = async () => {
-    var result = validateEditTeam(form.teamNo, form.teamName, form.password);
+    var result = validateEditTeam(form.teamName, form.password);
 
     if (!result.success) {
       Alert.alert("Error", result.errorMsg);
@@ -73,7 +70,7 @@ const EditTeam = () => {
 
     try {
       const response = await update_team(
-        form.teamNo,
+        local.teamNo,
         form.teamName,
         form.password
       );
@@ -87,7 +84,7 @@ const EditTeam = () => {
 
       router.push("/teams");
     } catch (error) {
-      Alert.alert("Error", "Error updating team");
+      Alert.alert("Error", "Error updating team xx");
       console.log(error);
     } finally {
       setIsSubmitting(false);
