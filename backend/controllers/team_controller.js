@@ -86,19 +86,60 @@ class TeamController {
 
   // Get team function
   static async get_team(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
     const { number } = req.params;
 
     try {
       const team = await Team.findOne({ number });
 
       if (!team) {
-        return res.status(404).send("Team not found");
+        result.errorMsg = `Team ${number} not found`;
+        return res.json(result);
       }
 
-      res.json(team);
+      result.success = true;
+      result.team = team;
+      return res.json(result);
+
     } catch (error) {
       console.error("Error fetching team:", error);
-      res.status(500).send("Error fetching team");
+      result.errorMsg = "Error fetching team";
+      return res.json(result);
+    }
+  }
+
+  static async update_team(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { number } = req.params;
+    const { teamName, password } = req.body;
+
+    try {
+      const team = await Team.findOne({ number });
+
+      if (!team) {
+        result.errorMsg = `Team ${number} not found`;
+        return res.json(result);
+      }
+
+      team.name = teamName;
+      team.password = password;
+
+      await team.save();
+
+      result.success = true;
+      return res.json(result);
+
+    } catch (error) {
+      result.errorMsg = "Error updating team";
+      return res.json(result);
     }
   }
 }

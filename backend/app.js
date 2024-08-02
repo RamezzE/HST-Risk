@@ -32,5 +32,8 @@ app.get('/', (req, res, next) => {
 
 app.post("/login", TeamController.login);
 app.post("/add_team", TeamController.add_team);
+
 app.get("/team/:number", TeamController.get_team);
 app.get("/all_teams", TeamController.get_all_teams);
+
+app.put("/team/:number", TeamController.update_team);

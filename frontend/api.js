@@ -42,6 +42,30 @@ export const get_all_teams = async () => {
   }
 };
 
+export const get_team = async (teamNo) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/team/${teamNo}`);
+    return response.data;
+
+  } catch (error) {
+    return { errorMsg: error.response?.data || "Error fetching team" };
+  }
+};
+
+export const update_team = async (teamNo, teamName, password) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/team/${teamNo}`, {
+        teamName,
+        password,
+        });
+    
+        return response.data;
+    
+    } catch (error) {
+        return { errorMsg: error.response?.data || "Error updating team" };
+    }
+    }
+
 // export const getCurrentUser = async (token) => {
 //   try {
 //     const response = await axios.get(`${API_BASE_URL}/current-user`, {
