@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, ScrollView } from "react-native";
+import { View, Text, FlatList } from "react-native";
 import CustomButton from "../../components/CustomButton";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { get_all_teams } from "../../api";
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -15,7 +16,6 @@ const Teams = () => {
 
       try {
         const result = await get_all_teams();
-        console.log("API Response:", result); // Log the API response
 
         if (result.success === false) {
           setError(result.errorMsg);
@@ -32,28 +32,21 @@ const Teams = () => {
     fetchTeams();
   }, []);
 
-  useEffect(() => {
-    console.log("Teams State:", teams); // Log the teams state
-  }, [teams]);
-
   const renderItem = ({ item }) => (
     <View className="bg-gray-400 p-4 mb-4 rounded-[8px]">
       <Text className="text-white text-xl font-semibold">{item.name}</Text>
-      <Text style={{ color: "white", fontSize: 14 }}>
-        Team Number: {item.number}
-      </Text>
-      <View className = "flex flex-row justify-between align-center">
+      <Text className="text-white text-sm">Team Number: {item.number}</Text>
+      <View className="flex flex-row justify-between align-center">
         <CustomButton
           title="View Team"
-          // handlePress={() => router.push(`/team/${item.number}`)}
-          containerStyles={"w-1/3 mt-2"}
-          textStyles={"text-sm"}
+          containerStyles="w-1/3 mt-2"
+          textStyles="text-sm"
         />
         <CustomButton
           title="Edit Team"
-          // handlePress={() => router.push(`/team/${item.number}`)}
-          containerStyles={"w-1/3 mt-2"}
-          textStyles={"text-sm"}
+          handlePress={() => router.push(`/edit_team?teamNo=${item.number}`)}
+          containerStyles="w-1/3 mt-2"
+          textStyles="text-sm"
         />
       </View>
     </View>
@@ -86,8 +79,6 @@ const Teams = () => {
             }
           />
         )}
-
-       
       </View>
     </SafeAreaView>
   );

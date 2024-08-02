@@ -12,6 +12,12 @@ const FormsLayout = () => {
             headerShown : false
           }}
         />
+        <Stack.Screen 
+          name = 'edit_team'
+          options = {{
+            headerShown : false
+          }}
+        />
       </Stack>
        <StatusBar 
         backgroundColor='#161622'
