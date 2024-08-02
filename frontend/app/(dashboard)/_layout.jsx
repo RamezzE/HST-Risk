@@ -1,5 +1,6 @@
 import { View, Text, Image } from "react-native";
 import { Tabs, Redirect } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 import { icons } from "../../constants";
 
@@ -67,7 +68,23 @@ const TabsLayout = () => {
             ),
           }}
         />
+        <Tabs.Screen
+          name="territories"
+          options={{
+            title: "Territories",
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.home}
+                color={color}
+                name="Territories"
+                focused={focused}
+              />
+            ),
+          }}
+        />
       </Tabs>
+      <StatusBar backgroundColor="#161622" style="light" />
     </>
   );
 };
