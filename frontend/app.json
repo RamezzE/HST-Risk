@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "ACPC Events",
-    "slug": "acpc_events",
+    "name": "HST Domination",
+    "slug": "hst-domination",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "acpc_events",
+    "scheme": "hst-domination",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
