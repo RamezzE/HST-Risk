@@ -12,6 +12,9 @@ router.use(function (req, res, next) {
 
 router.post("/login", AdminController.login);
 router.post("/add_team", AdminController.add_team);
+
 router.put("/team/:number", AdminController.update_team);
+
+router.delete("/team/:number", AdminController.delete_team);
 
 export default router;
