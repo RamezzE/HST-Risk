@@ -5,7 +5,7 @@ import { images } from '../../constants';
 import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
 import { Link, router } from 'expo-router';
-import { login, getCurrentUser } from '../../api'; // Import the API functions
+// import { admin_login } from '../../api/admin_functions';
 
 const validateSignIn = (teamNo, password) => {
   var result = {
@@ -47,7 +47,7 @@ const SignIn = () => {
 
     try {
       const loginResult = await login(form.teamNo, form.password);
-      
+
       if (!loginResult.success) {
         Alert.alert('Error', loginResult.errorMsg);
         return;

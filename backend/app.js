@@ -3,7 +3,9 @@ import dotenv from 'dotenv';
 import mongooseConnectionPromise from './db.js';
 
 import TeamController from './controllers/team_controller.js';
-import Team from './models/team.js';
+import AdminController from "./controllers/admin_controller.js";
+import Admin from "./models/admin.js";
+import admin_router from "./routes/admin.js";
 
 const app = express();
 
@@ -28,12 +30,22 @@ mongooseConnectionPromise.then(() => {
 
 app.get('/', (req, res, next) => {
     res.send('Server is up and running');
+
+    // create an admin user
+    const newAdmin = new Admin({
+        name: 'admin',
+        password: 'admin'
+    });
+    newAdmin.save().then(() => {
+        console.log('Admin user created');
+    }).catch((err) => {
+        console.error('Error creating admin user:', err);
+    });
+
 });
 
-app.post("/login", TeamController.login);
-app.post("/add_team", TeamController.add_team);
+app.use("/admin", admin_router);
 
 app.get("/team/:number", TeamController.get_team);
 app.get("/all_teams", TeamController.get_all_teams);
 
-app.put("/team/:number", TeamController.update_team);
