@@ -46,24 +46,25 @@ export default function App() {
             with Aora
           </Text> */}
 
-          <Text className="text-lg font-pregular mt-7 text-white text-left w-full">
+          <Text className="text-lg mt-7 text-white text-left w-full">
             Login as:
           </Text>
 
           <View className="w-full flex flex-row justify-evenly items-center">
             <CustomButton
               title="Guest"
-              // handlePress={() => router.push("/sign_in")}
+              handlePress={() => router.push("/home")}
               containerStyles="p-5 mt-5"
             />
             <CustomButton
               title="Team"
-              // handlePress={() => router.push("/sign_in")}
+              handlePress={() => router.push("/team_sign_in")}
               containerStyles="p-5 mt-5"
             />
             <CustomButton
               title="Admin"
-              handlePress={() => router.push("/sign_in")}
+              // handlePress={() => router.push("/admin_sign_in")}
+              handlePress={() => router.push("/teams")}
               containerStyles="p-5 mt-5"
             />
           </View>

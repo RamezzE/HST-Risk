@@ -33,25 +33,19 @@ const Teams = () => {
   }, []);
 
   const renderItem = ({ item }) => (
-    <View className="p-4 mb-4 rounded-[8px] flex flex-row items-center justify-between">
-      <View className="flex flex-col">
+    <View className="p-4 mb-4 rounded-[8px] flex flex-row justify-between items-center">
+      <View className="flex flex-col ">
         <Text className="text-white text-xl font-semibold">{item.name}</Text>
-        <Text className="text-white text-sm">Team Number: {item.number}</Text>
+        <Text className="text-white text-sm">Owner: Team {item.number}</Text>
       </View>
+        
+      <CustomButton
+        title="Edit"
+        handlePress={() => router.push(`/edit_territory?teamNo=${item.number}`)}
+        containerStyles="w-1/3 mt-2"
+        textStyles="text-sm"
+      />
 
-      <View className="flex flex-col justify-between align-center w-1/3">
-        <CustomButton
-          title="View"
-          containerStyles="mt-2"
-          textStyles="text-sm"
-        />
-        <CustomButton
-          title="Edit"
-          handlePress={() => router.push(`/edit_team?teamNo=${item.number}`)}
-          containerStyles="mt-2"
-          textStyles="text-sm"
-        />
-      </View>
     </View>
   );
 
@@ -59,12 +53,12 @@ const Teams = () => {
     <SafeAreaView className="bg-primary h-full">
       <View className="w-full justify-center min-h-[75vh] px-4 my-6 pb-16">
         <Text className="text-white text-3xl text-center text-semibold mb-5">
-          Teams
+          Territories
         </Text>
 
         <CustomButton
-          title="Add Team"
-          handlePress={() => router.push("/add_team")}
+          title="Add Territory"
+          handlePress={() => router.push("/add_territory")}
           containerStyles="p-1 w-1/2 my-5"
         />
 
@@ -72,12 +66,12 @@ const Teams = () => {
           <Text style={{ color: "white", textAlign: "center" }}>{error}</Text>
         ) : (
           <FlatList
-            data={teams}
+            // data={teams}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderItem}
             ListEmptyComponent={
               <Text className="text-3xl text-white text-center">
-                No teams found
+                No Terrorities Found
               </Text>
             }
           />
