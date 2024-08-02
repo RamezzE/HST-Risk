@@ -82,7 +82,35 @@ class AdminController {
       return res.json(result);
     } catch (error) {
       result.errorMsg = "Server: Error updating team";
-      console.log(error)
+      console.log(error);
+      return res.json(result);
+    }
+  }
+
+  static async delete_team(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { number } = req.params;
+
+    try {
+      const team = await Team.findOne({ number });
+
+      if (!team) {
+        result.errorMsg = `Server: Team ${number} not found`;
+        return res.json(result);
+      }
+
+      const response = await Team.deleteOne({ number });
+
+      result.success = true;
+      return res.json(result);
+
+    } catch (error) {
+      result.errorMsg = "Server: Error deleting team";
+      console.log(error);
       return res.json(result);
     }
   }

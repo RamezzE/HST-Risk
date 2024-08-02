@@ -41,3 +41,13 @@ export const update_team = async (teamNo, teamName, password) => {
     return { errorMsg: error.response?.data || "API: Error updating team" };
   }
 };
+
+export const delete_team = async (teamNo) => {
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/admin/team/${teamNo}`);
+
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "API: Error deleting team" };
+  }
+}

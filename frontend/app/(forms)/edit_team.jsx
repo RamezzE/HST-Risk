@@ -5,7 +5,7 @@ import CustomButton from "../../components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 
-import { update_team } from "../../api/admin_functions";
+import { update_team, delete_team } from "../../api/admin_functions";
 import { get_team } from "../../api/team_functions";
 
 const validateEditTeam = (teamName, password) => {
@@ -91,6 +91,44 @@ const EditTeam = () => {
     }
   };
 
+  const deleteTeam = async () => {
+    Alert.alert(
+      "Delete Team",
+      `Are you sure you want to delete team ${teamNo}?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            setIsSubmitting(true);
+
+            try {
+              const response = await delete_team(teamNo);
+
+              if (!response.success) {
+                Alert.alert("Error", response.errorMsg);
+                return;
+              }
+
+              Alert.alert("Success", "Team deleted successfully");
+
+              router.push("/teams");
+              
+            } catch (error) {
+              Alert.alert("Error", "Error deleting team");
+              console.log(error);
+            } finally {
+              setIsSubmitting(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
@@ -133,6 +171,13 @@ const EditTeam = () => {
               isLoading={isSubmitting}
             />
           </View>
+          <CustomButton
+            title="Delete Team"
+            handlePress={deleteTeam}
+            containerStyles="mt-7 bg-red-800"
+            textStyles={"text-white"}
+            isLoading={isSubmitting}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
