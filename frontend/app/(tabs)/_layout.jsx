@@ -55,6 +55,21 @@ const TabsLayout = () => {
           }}
         />
         <Tabs.Screen
+          name="attack"
+          options={{
+            title: "Attack",
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.home}
+                color={color}
+                name="Attack"
+                focused={focused}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="news"
           options={{
             title: "News",
