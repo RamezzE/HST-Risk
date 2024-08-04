@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://192.168.1.101:8000";
+import { serverIP } from "./config";
 
 export const login = async (teamNo, password) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/login`, {
+    const response = await axios.post(`${serverIP}/login`, {
       teamNo,
       password,
     });
@@ -17,7 +17,7 @@ export const login = async (teamNo, password) => {
 
 export const get_all_teams = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/all_teams`);
+    const response = await axios.get(`${serverIP}/all_teams`);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -27,7 +27,7 @@ export const get_all_teams = async () => {
 
 export const get_team = async (teamNo) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/team/${teamNo}`);
+    const response = await axios.get(`${serverIP}/team/${teamNo}`);
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "Error fetching team" };

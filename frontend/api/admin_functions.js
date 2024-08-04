@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://192.168.1.101:8000";
+import { serverIP } from "./config";
 
 export const admin_login = async (name, password) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/admin/login`, {
+    const response = await axios.post(`${serverIP}/admin/login`, {
       name,
       password,
     });
@@ -17,7 +17,7 @@ export const admin_login = async (name, password) => {
 
 export const add_team = async (teamNo, teamName, password) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/admin/add_team`, {
+    const response = await axios.post(`${serverIP}/admin/add_team`, {
       teamNo,
       teamName,
       password,
@@ -31,7 +31,7 @@ export const add_team = async (teamNo, teamName, password) => {
 
 export const update_team = async (teamNo, teamName, password) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/admin/team/${teamNo}`, {
+    const response = await axios.put(`${serverIP}/admin/team/${teamNo}`, {
       teamName,
       password,
     });
@@ -44,7 +44,7 @@ export const update_team = async (teamNo, teamName, password) => {
 
 export const delete_team = async (teamNo) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/admin/team/${teamNo}`);
+    const response = await axios.delete(`${serverIP}/admin/team/${teamNo}`);
 
     return response.data;
   } catch (error) {
