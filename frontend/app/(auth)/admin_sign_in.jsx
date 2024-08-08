@@ -57,7 +57,7 @@ const SignIn = () => {
       // setIsLoggedIn(true);
 
     } catch (error) {
-      Alert.alert('Error', "Error logging in");
+      Alert.alert('Error', "Error logging i2n");
       console.log(error)
     } finally {
       setIsSubmitting(false);

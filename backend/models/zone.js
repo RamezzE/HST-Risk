@@ -20,7 +20,14 @@ const zoneSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  points: [pointSchema]
+  team_no: {
+    type: Number,
+    required: true,
+  },
+  points: [pointSchema],
+  adjacent_zones: [{
+    type: String
+  }]
 }, {
   timestamps: true
 });
