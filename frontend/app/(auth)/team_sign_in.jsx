@@ -5,7 +5,7 @@ import { images } from '../../constants';
 import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
 import { Link, router } from 'expo-router';
-// import { admin_login } from '../../api/admin_functions';
+import { login } from '../../api/team_functions';
 
 const validateSignIn = (teamNo, password) => {
   var result = {
@@ -52,8 +52,8 @@ const SignIn = () => {
         Alert.alert('Error', loginResult.errorMsg);
         return;
       }
-
-      router.push('/dashboard');
+      
+      router.push('/home');
 
       // const user = await getCurrentUser(loginResult.token);
 

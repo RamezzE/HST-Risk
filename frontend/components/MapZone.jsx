@@ -22,9 +22,11 @@ const MapZone = ({ points, color, label }) => {
     <>
       <Polygon
         coordinates={points}
-        strokeColor={color}
-        fillColor={`${color}50`}
-        strokeWidth={2}
+        strokeColor={`#000000`}
+        // strokeColor={``}
+        // fillColor={`${color}50`}
+        fillColor={`${color}75`}
+        strokeWidth={4}
       />
 
       <Marker coordinate={polygonCenter}>

@@ -1,10 +1,11 @@
 import axios from "axios";
 
-import { serverIP } from "./config";
+import config from './config';
+
 
 export const admin_login = async (name, password) => {
   try {
-    const response = await axios.post(`${serverIP}/admin/login`, {
+    const response = await axios.post(`${config.serverIP}/admin/login`, {
       name,
       password,
     });
@@ -17,7 +18,7 @@ export const admin_login = async (name, password) => {
 
 export const add_team = async (teamNo, teamName, password) => {
   try {
-    const response = await axios.post(`${serverIP}/admin/add_team`, {
+    const response = await axios.post(`${config.serverIP}/admin/add_team`, {
       teamNo,
       teamName,
       password,
@@ -31,7 +32,7 @@ export const add_team = async (teamNo, teamName, password) => {
 
 export const update_team = async (teamNo, teamName, password) => {
   try {
-    const response = await axios.put(`${serverIP}/admin/team/${teamNo}`, {
+    const response = await axios.put(`${config.serverIP}/admin/team/${teamNo}`, {
       teamName,
       password,
     });
@@ -44,7 +45,7 @@ export const update_team = async (teamNo, teamName, password) => {
 
 export const delete_team = async (teamNo) => {
   try {
-    const response = await axios.delete(`${serverIP}/admin/team/${teamNo}`);
+    const response = await axios.delete(`${config.serverIP}/admin/team/${teamNo}`);
 
     return response.data;
   } catch (error) {
