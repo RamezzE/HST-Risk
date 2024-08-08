@@ -35,8 +35,6 @@ class TeamController {
 
       // req.session.team_no = teamNo;
 
-      console.log("Team No: ", req.session.team_no)
-
       result.success = true;
       return res.json(result);
     } catch (error) {

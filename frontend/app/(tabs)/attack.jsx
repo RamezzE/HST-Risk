@@ -3,16 +3,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
 
-import { useState } from "react";
 import MapView from "react-native-maps";
-
-import { useEffect } from "react";
+import { Link, router } from 'expo-router';
 
 import { get_zones_by_team } from "../../api/zone_functions";
 import { attack } from "../../api/team_functions";
 
+import { useEffect, useState, useContext } from "react";
+
+import { GlobalContext } from "../../context/GlobalProvider";
+
 const Attack = () => {
-  const [form, setForm] = useState({ teamNo: "", your_zone: "" });
+  const { name, teamNo } = useContext(GlobalContext);
+
+  const [form, setForm] = useState({ teamNo: teamNo, your_zone: "" });
   const [myZones, setMyZones] = useState([]);
   const [otherZones, setOtherZones] = useState([]);
   const [error, setError] = useState(null);
@@ -22,21 +26,20 @@ const Attack = () => {
       setError(null);
 
       try {
-        const result1 = await get_zones_by_team(1);
+        const result1 = await get_zones_by_team(parseInt(teamNo));
         const result2 = await get_zones_by_team(2);
 
         if (result1.errorMsg) {
           setError(result1.errorMsg);
         } else if (result2.errorMsg) {
           setError(result2.errorMsg);
-        } else if (Array.isArray(result1) && Array.isArray(result2)) {
-          setMyZones(result1);
-          setOtherZones(result2);
+        } else if (Array.isArray(result1) || Array.isArray(result2)) {
+          if (Array.isArray(result1)) 
+            setMyZones(result1);
 
-          // Log points for team 1 zones
-          myZones.forEach((zone) => {
-            console.log(`${zone.label} Points:`, zone.points[0].latitude);
-          });
+          if (Array.isArray(result2)) 
+            setOtherZones(result2);
+          
         } else {
           setError("Unexpected response format");
         }
@@ -65,17 +68,23 @@ const Attack = () => {
   };
 
   const attack_func = async (zone_1, team_1, zone_2, team_2) => {
-
     var result = validateAttack(form.your_zone, form.other_zone);
 
     if (!result.success) {
-      Alert.alert('Error', result.errorMsg);
+      Alert.alert("Error", result.errorMsg);
       return;
     }
-
+ 
     try {
+
       const response = await attack(zone_1, team_1, zone_2, team_2);
-      Alert.alert("Attack", response.errorMsg);
+      if (response.errorMsg == "") {
+        Alert.alert("Attack", `Attack successful from ${zone_1} on ${zone_2}`);
+        router.push('/warzone');
+      }
+      else {
+        Alert.alert("Attack", response.errorMsg);
+      }
     } catch (error) {
       return {
         errorMsg: error.response?.data || "API: Error making attack request",
@@ -89,7 +98,7 @@ const Attack = () => {
         <View className="w-full min-h-[80vh] px-4 my-6 flex flex-col justify-between">
           <View className="flex flex-col ">
             <Text className="text-white text-center text-xl p-5">
-              Welcome, Team 1
+              Welcome, {name} -- Team {teamNo}
             </Text>
 
             <DropDownField
@@ -147,7 +156,7 @@ const Attack = () => {
           <CustomButton
             title={`Attack ${form.other_zone}`}
             handlePress={() =>
-              attack_func(form.your_zone, 1, form.other_zone, 2)
+              attack_func(form.your_zone, parseInt(teamNo), form.other_zone, 2)
             }
             containerStyles="mt-7"
           />

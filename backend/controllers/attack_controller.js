@@ -80,6 +80,34 @@ class AttackController {
             await client.close();
         }
     }
+
+    static async get_attacks_on_zone(req, res) {
+
+        const result = {
+            success: false,
+            attack: "",
+            errorMsg: "",
+        };
+
+        const { zone } = req.params;
+
+        try {
+            const response = await Attack.findOne({
+                defending_zone: zone,
+            });
+            result.attack = response;
+
+            result.success = true;
+
+            return res.json(result);
+        } catch (error) {
+            console.error("Server: Error getting attacks by zone:", error);
+            result.success = false;
+            result.errorMsg = "Server: Error getting attacks by zone";
+            return res.json(result);
+        }
+
+    }
 }
 
 export default AttackController;

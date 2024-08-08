@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const DashboardHome = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
-      <Text>DashboardHome</Text>
+      <Text className="text-white">Dashboard Home</Text>
     </SafeAreaView>
   )
 }

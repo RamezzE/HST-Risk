@@ -51,7 +51,7 @@ const Home = () => {
             latitudeDelta: 100,
             longitudeDelta: 180,
           }}
-          mapType="satellite"
+          // mapType="satellite"
           // scrollEnabled={false}
           // zoomEnabled={false}
           rotateEnabled={false}

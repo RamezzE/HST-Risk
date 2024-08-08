@@ -7,6 +7,10 @@ import CustomButton from '../../components/CustomButton';
 import { Link, router } from 'expo-router';
 import { admin_login } from '../../api/admin_functions';
 
+import { GlobalContext } from '../../context/GlobalProvider';
+
+import { useContext } from 'react';
+
 const validateSignIn = (name, password) => {
   var result = {
     success: false,
@@ -30,6 +34,9 @@ const SignIn = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { setName } = useContext(GlobalContext);
+
+
   const submit = async () => {
     var result = validateSignIn(form.name, form.password);
 
@@ -48,7 +55,8 @@ const SignIn = () => {
         return;
       }
 
-      router.push('/teams');
+      setName(form.name);
+      router.push('/admin_home');
 
       // const user = await getCurrentUser(loginResult.token);
 
