@@ -45,7 +45,7 @@ export const get_team = async (teamNo) => {
 
 export const attack = async (zone_1, team_1, zone_2, team_2) => {
   try {
-    const response = await axios.post(`${config.serverIP}/attack`, {
+    const response = await axios.post(`${config.serverIP}/attacks/attack`, {
       zone_1,
       team_1,
       zone_2,

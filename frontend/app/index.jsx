@@ -51,20 +51,23 @@ export default function App() {
           </Text>
 
           <View className="w-full flex flex-row justify-evenly items-center">
+            
             <CustomButton
               title="Guest"
               handlePress={() => router.push("/home")}
               containerStyles="p-5 mt-5"
             />
+
             <CustomButton
               title="Team"
               handlePress={() => router.push("/team_sign_in")}
               containerStyles="p-5 mt-5"
             />
+
             <CustomButton
               title="Admin"
-              // handlePress={() => router.push("/admin_sign_in")}
-              handlePress={() => router.push("/teams")}
+              handlePress={() => router.push("/admin_sign_in")}
+              // handlePress={() => router.push("/teams")}
               containerStyles="p-5 mt-5"
             />
           </View>

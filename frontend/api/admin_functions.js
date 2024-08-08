@@ -16,6 +16,16 @@ export const admin_login = async (name, password) => {
   }
 };
 
+export const get_attacks_on_zone = async (zone) => {
+  try {
+    const response = await axios.get(`${config.serverIP}/attacks/get_attacks/${zone}`);
+
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "API: Error getting attacks on zone" };
+  }
+}
+
 export const add_team = async (teamNo, teamName, password) => {
   try {
     const response = await axios.post(`${config.serverIP}/admin/add_team`, {

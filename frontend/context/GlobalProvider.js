@@ -1,25 +1,16 @@
-// import { createContext, useContext, useState, useEffect } from 'react';
+// GlobalContext.js
+import React, { createContext, useState } from 'react';
 
-// const GlobalContext = createContext();
+export const GlobalContext = createContext();
 
-// export const useGlobalContext = () => useContext(GlobalContext);
+export const GlobalProvider = ({ children }) => {
+  const [name, setName] = useState('');
+  const [teamNo, setTeamNo] = useState('');
+//   const [globalVariable3, setGlobalVariable3] = useState('defaultValue3');
 
-// const GlobalProvider = ({children}) => {
-
-//     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-//     const[]
-
-
-//     return (
-//         <GlobalContext.Provider 
-//             value={{
-
-//             }}
-//         >
-//             {children}
-//         </GlobalContext.Provider>
-//     )
-// }
-
-// export default GlobalProvider;
+  return (
+    <GlobalContext.Provider value={{ name, teamNo, setName, setTeamNo }}>
+      {children}
+    </GlobalContext.Provider>
+  );
+};

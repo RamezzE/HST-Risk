@@ -7,6 +7,10 @@ import CustomButton from '../../components/CustomButton';
 import { Link, router } from 'expo-router';
 import { login } from '../../api/team_functions';
 
+import { useContext } from 'react';
+
+import { GlobalContext } from '../../context/GlobalProvider';
+
 const validateSignIn = (teamNo, password) => {
   var result = {
     success: false,
@@ -33,6 +37,8 @@ const SignIn = () => {
     password: ''
   });
 
+  const { setName, setTeamNo } = useContext(GlobalContext);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async () => {
@@ -52,6 +58,9 @@ const SignIn = () => {
         Alert.alert('Error', loginResult.errorMsg);
         return;
       }
+
+      setName(loginResult.name);
+      setTeamNo(form.teamNo);
       
       router.push('/home');
 

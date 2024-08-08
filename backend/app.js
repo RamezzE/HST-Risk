@@ -5,13 +5,14 @@ import dotenv from "dotenv";
 import mongooseConnectionPromise from "./db.js";
 
 import TeamController from "./controllers/team_controller.js";
-import AttackController from "./controllers/attack_controller.js";
 
 import admin_router from "./routes/admin.js";
 import zone_router from "./routes/zone.js";
 import team_router from "./routes/team.js";
+import attack_router from "./routes/attack.js";
 
 import Zone from "./models/zone.js";
+import Admin from "./models/admin.js";
 
 const app = express();
 
@@ -45,54 +46,88 @@ mongooseConnectionPromise
 app.get("/", (req, res, next) => {
   res.send("Server is up and running");
 
+ 
+  
   const pts = [
-    { latitude: -4.85606018722551, longitude: 11.87022968697101 },
-    { latitude: -3.3841921516029365, longitude: 10.627191126598888 },
-    { latitude: -3.001106865644673, longitude: 10.292883886696027 },
-    { latitude: -1.3587498795628754, longitude: 16.747659890553496 },
-    { latitude: 4.0132168068751195, longitude: 18.530326090801836 },
-    { latitude: 4.299996393042105, longitude: 22.84336905502744 },
-    { latitude: 4.68220011621426, longitude: 27.731484414483123 },
-    { latitude: 3.4542185820690765, longitude: 32.01519374583605 },
-    { latitude: 0.1116679083567425, longitude: 34.001076617354876 },
-    { latitude: -4.3587815908493, longitude: 39.12548819306352 },
-    { latitude: 5.727802176539433, longitude: 48.65734687427881 },
-    { latitude: 11.71923932637453, longitude: 50.67883114368935 },
-    { latitude: 10.511877828397884, longitude: 44.35070647423024 },
-    { latitude: 15.39254902163103, longitude: 39.69250297737176 },
-    { latitude: 22.04723323222197, longitude: 36.352659401823885 },
-    { latitude: 20.31972649750868, longitude: 24.807954815418174 },
     { latitude: 16.05104675898324, longitude: 16.341821661949158 },
-    { latitude: 10.25240845043157, longitude: 10.697733500790408 },
-    { latitude: 3.4015223816101186, longitude: 9.85864769301634 },
-    { latitude: 1.1408574950932684, longitude: 9.305788795229992 },
-    { latitude: -0.38169165242649095, longitude: 9.243640741535984 },
-    { latitude: -0.6302739868516516, longitude: 8.66877124486643 },
-    { latitude: -1.9534387420808224, longitude: 9.304913520540412 },
+    { latitude: 31.891760855372407, longitude: 15.49693495821058 },
+    { latitude: 32.39010286226811, longitude: 15.205680400884063 },
+    { latitude: 33.05211429923357, longitude: 13.234284229169287 },
+    { latitude: 32.8616489255095, longitude: 12.582543701785672 },
+    { latitude: 33.31724900517517, longitude: 11.153138584934693 },
+    { latitude: 33.87374159102214, longitude: 10.982231451398164 },
+    { latitude: 33.705878513509305, longitude: 10.469510050788573 },
+    { latitude: 34.10562325721567, longitude: 10.018936698737722 },
+    { latitude: 35.141219002331006, longitude: 11.137601572795008 },
+    { latitude: 36.351732536227, longitude: 10.79578730572195 },
+    { latitude: 36.90037168647951, longitude: 11.137601572795008 },
+    { latitude: 37.018516898905176, longitude: 11.13297453144303 },
+    { latitude: 37.35706767098503, longitude: 9.525499423174534 },
+    { latitude: 36.6942541033817, longitude: 0.8703206351287422 },
+    { latitude: 35.12954026229675, longitude: -2.173035840814271 },
+    { latitude: 35.704495657617166, longitude: -5.282510337008217 },
+    { latitude: 32.83307342164833, longitude: -9.332666418598276 },
+    { latitude: 30.752762459433466, longitude: -9.953800552543596 },
+    { latitude: 30.258093260000233, longitude: -9.662824576081992 },
+    { latitude: 28.115125113774845, longitude: -13.0188194755583 },
+    { latitude: 21.576809698391678, longitude: -17.17375721835958 },
+    { latitude: 17.904721198896354, longitude: -16.517561461057124 },
+    { latitude: 14.926861373114578, longitude: -17.53389536355368 },
+    { latitude: 12.430827329895047, longitude: -16.814817830701408 },
+    { latitude: 9.046742026631359, longitude: -13.490096589966376 },
+    { latitude: 7.654377358854606, longitude: -13.106281840302023 },
+    { latitude: 6.829419905703505, longitude: -11.5710228416446 },
+    { latitude: 4.245129710706169, longitude: -7.713541478219482 },
+    { latitude: 5.011930082767388, longitude: -4.031992622118569 },
+    { latitude: 4.422680256592398, longitude: -1.814785393024083 },
+    { latitude: 6.318331249527331, longitude: 2.9747583888347724 },
+    { latitude: 6.09351596174411, longitude: 4.843622256900305 },
+    { latitude: 4.266370765877477, longitude: 5.93126868446359 },
+    { latitude: 4.392237623731884, longitude: 8.65065650615065 },
+    { latitude: 3.3289974213254068, longitude: 9.845994929152084 },
+    { latitude: 10.25240845043157, longitude: 10.697733500790408 }
   ];
+  
 
   const newZone3 = new Zone({
-    color: "#0000FF",
-    label: "East Africa",
-    team_no: 1,
+    color: "#229AF2",
+    label: "North Africa",
+    team_no: 2,
     points: pts,
   });
 
-  newZone3
-    .save()
-    .then(() => {
-      console.log("Zone created");
-    })
-    .catch((err) => {
-      console.error("Error creating zone:", err);
-    });
+  // newZone3
+  //   .save()
+  //   .then(() => {
+  //     console.log("Zone created");
+  //   })
+  //   .catch((err) => {
+  //     console.error("Error creating zone:", err);
+  //   });
+
+
+  // create admin user 
+
+  const newAdmin = new Admin({
+    name: "Ramez",
+    password: "1",
+    zone: "North Africa",
+  });
+
+  // newAdmin.save().then(() => {
+  //   console.log("Admin created");
+  // }
+  // ).catch((err) => {
+  //   console.error("Error creating admin:", err);
+  // });
+
 });
 
 app.use("/admin", admin_router);
 app.use("/teams", team_router);
 app.use("/zones", zone_router);
+app.use("/attacks", attack_router);
 
 app.get("/team/:number", TeamController.get_team);
 app.get("/all_teams", TeamController.get_all_teams);
 
-app.post("/attack", AttackController.attack);
