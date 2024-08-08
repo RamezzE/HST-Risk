@@ -40,8 +40,7 @@ const Home = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-primary">
-      <Text className="text-center text-white text-xl p-2">Home</Text>
-      <Text className="text-center text-white text-xl p-2">Home</Text>
+      <Text className="text-center text-white text-2xl p-4">World Map</Text>
       <View className="flex-1 px-5">
         <MapView
           className="flex-1"
@@ -51,7 +50,8 @@ const Home = () => {
             latitudeDelta: 100,
             longitudeDelta: 180,
           }}
-          // mapType="satellite"
+          mapType="satellite"
+          // mapType="terrain"
           // scrollEnabled={false}
           // zoomEnabled={false}
           rotateEnabled={false}

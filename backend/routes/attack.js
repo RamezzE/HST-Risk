@@ -15,5 +15,6 @@ router.get('/', AttackController.get_attacks);
 router.get('/get_attacks/:zone', AttackController.get_attacks_on_zone);
 
 router.post('/attack', AttackController.attack);
+router.post('/attack_check', AttackController.attack_check);
 
 export default router;

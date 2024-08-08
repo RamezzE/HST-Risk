@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+import Icon from 'react-native-vector-icons/MaterialIcons'; // or any other icon set you prefer
 
 const DropdownField = ({
   title,
@@ -32,6 +33,9 @@ const DropdownField = ({
           value={value}
           style={pickerSelectStyles}
           placeholder={{ label: placeholder, value: null }}
+          // Icon={() => {
+          //   return <Icon name="arrow-drop-down" size={24} color="white" />;
+          // }}
           {...props}
         />
 

@@ -4,6 +4,9 @@ import { StatusBar } from "expo-status-bar";
 
 import { icons } from "../../constants";
 
+import { useContext } from "react";
+import { GlobalContext } from "../../context/GlobalProvider";
+
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
     <View className="items-center justify-center gap-2">
@@ -24,6 +27,8 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 const TabsLayout = () => {
+  const { teamNo } = useContext(GlobalContext);
+
   return (
     <>
       <Tabs
@@ -42,13 +47,13 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="home"
           options={{
-            title: "Home",
+            title: "Map",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.home}
                 color={color}
-                name="Home"
+                name="Map"
                 focused={focused}
               />
             ),
