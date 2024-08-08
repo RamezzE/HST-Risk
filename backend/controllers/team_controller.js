@@ -7,6 +7,7 @@ class TeamController {
   static async login(req, res) {
     const result = {
       success: false,
+      name: "",
       errorMsg: "",
     };
 
@@ -21,8 +22,6 @@ class TeamController {
         return res.json(result);
       }
 
-      console.log("Team found:", team);
-
       const isPasswordValid = team.password === password;
 
       if (!isPasswordValid) {
@@ -33,9 +32,8 @@ class TeamController {
 
       console.log("Login Successful");
 
-      // req.session.team_no = teamNo;
-
       result.success = true;
+      result.name = team.name;
       return res.json(result);
     } catch (error) {
       console.log("Server: Error during login:", error);

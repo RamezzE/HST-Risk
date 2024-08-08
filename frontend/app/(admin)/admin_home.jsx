@@ -11,7 +11,6 @@ import { GlobalContext } from "../../context/GlobalProvider";
 const AdminHome = () => {
 
     const { name } = useContext(GlobalContext);
-
     const [zoneAttack, setZoneAttack] = useState("");
 
     useEffect(() => {

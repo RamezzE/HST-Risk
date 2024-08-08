@@ -53,7 +53,7 @@ const SignIn = () => {
 
     try {
       const loginResult = await login(form.teamNo, form.password);
-
+      console.log(loginResult);
       if (!loginResult.success) {
         Alert.alert('Error', loginResult.errorMsg);
         return;

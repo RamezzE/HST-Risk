@@ -5,7 +5,19 @@ import { router } from "expo-router";
 import CustomButton from "../components/CustomButton";
 // import { images } from '../constants'
 
+import { useContext } from "react";
+import { GlobalContext } from "../context/GlobalProvider";
+
 export default function App() {
+
+  const guestLogin = () => {
+    setTeamNo("");
+    setName("Guest");
+    router.push("/home");
+  };
+
+  const { setTeamNo, setName } = useContext(GlobalContext);
+
   return (
     <SafeAreaView className="bg-primary h-full ">
       <ScrollView
@@ -54,7 +66,7 @@ export default function App() {
             
             <CustomButton
               title="Guest"
-              handlePress={() => router.push("/home")}
+              handlePress={() => guestLogin()}
               containerStyles="p-5 mt-5"
             />
 
@@ -66,6 +78,7 @@ export default function App() {
 
             <CustomButton
               title="Admin"
+              // handlePress={() => router.push("/warzone")}
               handlePress={() => router.push("/admin_sign_in")}
               // handlePress={() => router.push("/teams")}
               containerStyles="p-5 mt-5"

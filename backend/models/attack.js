@@ -17,6 +17,10 @@ const attackSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    war : {
+        type: String,
+        required: true
+    },
 }, {
     timestamps: true
 })

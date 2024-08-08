@@ -30,8 +30,10 @@ const MapZone = ({ points, color, label }) => {
       />
 
       <Marker coordinate={polygonCenter}>
-        <View className = "bg-white rounded-lg">
-          <Text className="p-2">{label}</Text>
+        {/* <View className = "bg-primary rounded-lg"> */}
+        <View className = "rounded-lg">
+          {/* <Text className="p-1 text-xs text-white">{label}</Text> */}
+          <Text className="p-1 text-xs font-bold text-white">{label}</Text>
         </View>
       </Marker>
     </>

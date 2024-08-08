@@ -10,7 +10,7 @@ class AttackController {
         return res.json(attacks);
     }
 
-    static async attack(req, res) {
+    static async attack_check(req, res) {
         const result = {
             success: false,
             errorMsg: "",
@@ -31,23 +31,53 @@ class AttackController {
             return res.json(result);
         }
 
-        const attack = new Attack({
-            attacking_zone: zone_1,
-            attacking_team: team_1,
-            defending_zone: zone_2,
-            defending_team: team_2,
-        });
+        result.success = true;
+        return res.json(result);
+
+    }
+
+    static async attack(req, res) {
+        const result = {
+            success: false,
+            errorMsg: "",
+        };
+        
+        const { zone_1, team_1, zone_2, team_2, war } = req.body;
+
+        const duplicate_attack = await AttackController.check_duplicate_attack(zone_1, team_1, zone_2, team_2);
+
+        if (!duplicate_attack.success) {
+            result.errorMsg = duplicate_attack.errorMsg;
+            return res.json(result);
+        }
+
+        if (duplicate_attack.duplicate) {
+            console.log("Duplicate Attack detected")
+            result.errorMsg = duplicate_attack.errorMsg;
+            return res.json(result);
+        }
 
         try {
+            const attack = new Attack({
+                attacking_zone: zone_1,
+                attacking_team: team_1,
+                defending_zone: zone_2,
+                defending_team: team_2,
+                war: war,
+            });
+
             await attack.save();
+
             result.success = true;
             return res.json(result);
         } catch (error) {
-            console.error("Server: Error attacking zone:", error);
-            result.errorMsg = "Server: Error attacking zone";
-            return res.json(result);    
+            console.error("Server: Error making attack:", error);
+            result.errorMsg = "Server: Error making attack";
+            return res.json(result);
         }
     }
+
+
     static async check_duplicate_attack(zone_1, team_1, zone_2, team_2) {
         const result = {
             success: false,
@@ -66,7 +96,7 @@ class AttackController {
 
             if (attack) {
                 result.duplicate = true;
-                result.errorMsg = "The same attack already exists";
+                result.errorMsg = "You have the same attack in progress";
                 return result;
             }
 
@@ -108,6 +138,7 @@ class AttackController {
         }
 
     }
+    
 }
 
 export default AttackController;

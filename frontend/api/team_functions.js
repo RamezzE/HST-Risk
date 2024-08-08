@@ -43,13 +43,36 @@ export const get_team = async (teamNo) => {
   }
 };
 
-export const attack = async (zone_1, team_1, zone_2, team_2) => {
+export const attack_check = async (zone_1, team_1, zone_2, team_2) => {
+
+  console.log("API: attack_check", zone_1, team_1, zone_2, team_2);
+
+  try {
+    const response = await axios.post(`${config.serverIP}/attacks/attack_check`, {
+      zone_1,
+      team_1,
+      zone_2,
+      team_2,
+    });
+
+    console.log("API: attack_check response", response.data);
+
+    return response.data;
+  } catch (error) {
+    return {
+      errorMsg: error.response?.data || "API: Error checking attack",
+    };
+  }
+}
+
+export const attack = async (zone_1, team_1, zone_2, team_2, war) => {
   try {
     const response = await axios.post(`${config.serverIP}/attacks/attack`, {
       zone_1,
       team_1,
       zone_2,
       team_2,
+      war,
     });
     
     return response.data;

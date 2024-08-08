@@ -4,24 +4,43 @@ import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
 
 import MapView from "react-native-maps";
-import { Link, router } from 'expo-router';
+import { Link, router } from "expo-router";
 
 import { get_zones_by_team } from "../../api/zone_functions";
-import { attack } from "../../api/team_functions";
 
 import { useEffect, useState, useContext } from "react";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
-const Attack = () => {
-  const { name, teamNo } = useContext(GlobalContext);
+import { attack_check } from "../../api/team_functions";
 
-  const [form, setForm] = useState({ teamNo: teamNo, your_zone: "" });
+const Attack = () => {
+  
+  const { name, teamNo, setAttackData } = useContext(GlobalContext);
+
+  const [form, setForm] = useState({
+    teamNo: teamNo,
+    your_zone: "",
+    other_zone: "",
+  });
   const [myZones, setMyZones] = useState([]);
   const [otherZones, setOtherZones] = useState([]);
   const [error, setError] = useState(null);
 
+  
+
   useEffect(() => {
+
+    if (!teamNo) {
+      setMyZones([]);
+      setOtherZones([]);
+
+      Alert.alert("Error", "Please login first");
+
+      router.push("/home");
+      return;
+    }
+
     const fetchZones = async () => {
       setError(null);
 
@@ -34,12 +53,9 @@ const Attack = () => {
         } else if (result2.errorMsg) {
           setError(result2.errorMsg);
         } else if (Array.isArray(result1) || Array.isArray(result2)) {
-          if (Array.isArray(result1)) 
-            setMyZones(result1);
+          if (Array.isArray(result1)) setMyZones(result1);
 
-          if (Array.isArray(result2)) 
-            setOtherZones(result2);
-          
+          if (Array.isArray(result2)) setOtherZones(result2);
         } else {
           setError("Unexpected response format");
         }
@@ -52,7 +68,7 @@ const Attack = () => {
     fetchZones();
   }, []);
 
-  const validateAttack = (zone_1, zone_2) => {
+  const validateAttack = (zone_1, zone_2, team_1, team_2) => {
     var result = {
       success: false,
       errorMsg: "",
@@ -63,32 +79,51 @@ const Attack = () => {
       return result;
     }
 
+    if (team_1 === team_2) {
+      result.errorMsg = "You cannot attack your own team";
+      return result;
+    }
+
     result.success = true;
     return result;
   };
 
   const attack_func = async (zone_1, team_1, zone_2, team_2) => {
-    var result = validateAttack(form.your_zone, form.other_zone);
-
-    if (!result.success) {
-      Alert.alert("Error", result.errorMsg);
-      return;
-    }
- 
     try {
+      var result = validateAttack(
+        form.your_zone,
+        form.other_zone,
+        team_1,
+        team_2
+      );
+      if (!result.success) {
+        Alert.alert("Attack Failed", result.errorMsg);
+        return;
+      }
 
-      const response = await attack(zone_1, team_1, zone_2, team_2);
-      if (response.errorMsg == "") {
-        Alert.alert("Attack", `Attack successful from ${zone_1} on ${zone_2}`);
-        router.push('/warzone');
+      const response = await attack_check(zone_1, team_1, zone_2, team_2);
+
+      if (!response.success) {
+        Alert.alert("Attack Failed", response.errorMsg);
+        return;
       }
-      else {
-        Alert.alert("Attack", response.errorMsg);
-      }
+
+      console.log("Response", response);
+      setAttackData({
+        attacking_zone: zone_1,
+        attacking_team: team_1,
+        defending_zone: zone_2,
+        defending_team: team_2,
+        war: "",
+      });
+
+      setForm({ your_zone: "", other_zone: "" });
+      router.push("/warzone");
     } catch (error) {
-      return {
-        errorMsg: error.response?.data || "API: Error making attack request",
-      };
+      Alert.alert(
+        "Attack Failed",
+        error.response?.data || "Error checking attack"
+      );
     }
   };
 
@@ -125,15 +160,6 @@ const Attack = () => {
               otherStyles="mt-5"
             />
 
-            {/* <View className="mt-3">
-              <Text className="text-white mt-2">Name: {form.teamNo}</Text>
-              <Text className="text-white mt-2">
-                Owned by Team {form.teamNo}
-              </Text>
-              <Text className="text-white mt-2">
-                Description: {form.teamNo}
-              </Text>
-            </View> */}
           </View>
 
           <MapView
@@ -154,7 +180,7 @@ const Attack = () => {
           ></MapView>
 
           <CustomButton
-            title={`Attack ${form.other_zone}`}
+            title={form.other_zone ? `Attack ${form.other_zone}` : "Attack"}
             handlePress={() =>
               attack_func(form.your_zone, parseInt(teamNo), form.other_zone, 2)
             }
