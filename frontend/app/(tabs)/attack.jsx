@@ -3,6 +3,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
 
+import { get_country_mappings } from "../../api/country_functions";
+
 import MapView from "react-native-maps";
 import { Link, router } from "expo-router";
 
@@ -13,25 +15,50 @@ import { GlobalContext } from "../../context/GlobalProvider";
 import { attack_check } from "../../api/team_functions";
 
 import { get_countries_by_team } from "../../api/country_functions";
+import { get_all_teams } from "../../api/team_functions";
+
+import countries from "../../constants/countries";
+
+import MapZone from "../../components/MapZone";
 
 const Attack = () => {
-  
   const { name, teamNo, setAttackData } = useContext(GlobalContext);
+  const [countryMappings, setCountryMappings] = useState([]);
+  const [initialArea, setInitialArea] = useState([30, 30]);
+  const [zones, setZones] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [myZones, setMyZones] = useState([]);
+  const [otherZones, setOtherZones] = useState([]);
+  const [error, setError] = useState(null);
 
   const [form, setForm] = useState({
     teamNo: teamNo,
     your_zone: "",
     other_zone: "",
   });
-  
-  const [myZones, setMyZones] = useState([]);
-  const [otherZones, setOtherZones] = useState([]);
-  const [error, setError] = useState(null);
 
-  
+  const getTeamColor = (countryName) => {
+    const country = countryMappings.find((c) => c.name === countryName);
+    const team = country
+      ? teams.find((t) => t.number === country.teamNo)
+      : null;
+    return team ? team.color : "#000000";
+  };
+
+  const changeMapPreview = (zone) => {
+    const country = countries.find((c) => c.name === zone);
+
+    const avgLat =
+      country.points.reduce((acc, curr) => acc + curr.latitude, 0) /
+      country.points.length;
+    const avgLong =
+      country.points.reduce((acc, curr) => acc + curr.longitude, 0) /
+      country.points.length;
+
+    setInitialArea([avgLat, avgLong]);
+  };
 
   useEffect(() => {
-
     if (!teamNo) {
       setMyZones([]);
       setOtherZones([]);
@@ -88,6 +115,54 @@ const Attack = () => {
     return result;
   };
 
+  const selectYourZone = (zone) => {
+    setForm({ ...form, your_zone: zone, other_zone: "" });
+    
+    if (!zone || zone == "") return;
+
+    changeMapPreview(zone);
+  };
+
+  const selectOtherZone = (zone) => {
+    setForm({ ...form, other_zone: zone });
+
+    if (!zone || zone == "") return;
+
+    changeMapPreview(zone);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setError(null);
+      setZones(countries);
+
+      try {
+        const result = await get_country_mappings();
+        setCountryMappings(result);
+      } catch (err) {
+        console.log(err);
+        setError("Failed to fetch country mappings");
+      }
+
+      try {
+        const teamsResult = await get_all_teams();
+        setTeams(teamsResult);
+      } catch (err) {
+        console.log(err);
+        setError("Failed to fetch teams data");
+      }
+    };
+
+    // Fetch zones and teams initially
+    fetchData();
+
+    // const interval = setInterval(fetchData, 60000);
+    const interval = setInterval(fetchData, 30000);
+
+    // Clear interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
+
   const attack_func = async (zone_1, team_1, zone_2, team_2) => {
     try {
       var result = validateAttack(
@@ -130,8 +205,8 @@ const Attack = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
-        <View className="w-full min-h-[80vh] px-4 my-6 flex flex-col justify-between">
-          <View className="flex flex-col ">
+        <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
+          <View className="flex flex-col mb-6">
             <Text className="text-white text-center text-xl p-5">
               Welcome, {name} -- Team {teamNo}
             </Text>
@@ -144,7 +219,7 @@ const Attack = () => {
                 label: `${zone.name} - Team ${zone.teamNo}`,
                 value: zone.name,
               }))}
-              handleChange={(e) => setForm({ ...form, your_zone: e })}
+              handleChange={(e) => selectYourZone(e)}
               otherStyles=""
             />
 
@@ -156,28 +231,34 @@ const Attack = () => {
                 label: `${zone.name} - Team ${zone.teamNo}`,
                 value: zone.name,
               }))}
-              handleChange={(e) => setForm({ ...form, other_zone: e })}
+              handleChange={(e) => selectOtherZone(e)}
               otherStyles="mt-5"
             />
-
           </View>
 
           <MapView
-            className="flex-1 mt-16"
-            initialRegion={{
-              latitude: 30.35927840030033,
-              // latitude: myZones.points[0].latitude,
-              longitude: 30.394175088567142,
-              // longitude: myZones.points[0].longitude,
-              latitudeDelta: 100,
-              longitudeDelta: 180,
+            className="flex-1"
+            region={{
+              latitude: initialArea[0],
+              longitude: initialArea[1],
+              latitudeDelta: 50,
+              longitudeDelta: 50,
             }}
             mapType="satellite"
-            // scrollEnabled={false}
-            // zoomEnabled={false}
+            scrollEnabled={false}
+            zoomEnabled={false}
             rotateEnabled={false}
             pitchEnabled={false}
-          ></MapView>
+          >
+            {zones.map((zone, index) => (
+              <MapZone
+                key={index}
+                points={zone.points}
+                color={getTeamColor(zone.name)}
+                label={zone.name}
+              />
+            ))}
+          </MapView>
 
           <CustomButton
             title={form.other_zone ? `Attack ${form.other_zone}` : "Attack"}

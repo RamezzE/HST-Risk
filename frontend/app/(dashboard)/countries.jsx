@@ -7,7 +7,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { get_country_mappings } from "../../api/country_functions";
 
 const Countries = () => {
-  
   const [countries, setCountries] = useState([]);
   const [error, setError] = useState(null);
 
@@ -45,7 +44,9 @@ const Countries = () => {
       <CustomButton
         title="Edit"
         handlePress={() =>
-          router.push(`/edit_territory?countryName=${item.name}&teamNo=${item.teamNo}`)
+          router.push(
+            `/edit_territory?countryName=${item.name}&teamNo=${item.teamNo}`
+          )
         }
         containerStyles="w-1/3 mt-2"
         textStyles="text-sm"
@@ -60,20 +61,20 @@ const Countries = () => {
           Countries
         </Text>
 
-        {error ? (
-          <Text style={{ color: "white", textAlign: "center" }}>{error}</Text>
-        ) : (
-          <FlatList
-            data={countries}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderItem}
-            ListEmptyComponent={
-              <Text className="text-3xl text-white text-center">
-                No Countries Found
-              </Text>
-            }
-          />
-        )}
+          {error ? (
+            <Text style={{ color: "white", textAlign: "center" }}>{error}</Text>
+          ) : (
+            <FlatList
+              data={countries}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderItem}
+              ListEmptyComponent={
+                <Text className="text-3xl text-white text-center">
+                  No Countries Found
+                </Text>
+              }
+            />
+          )}
       </View>
     </SafeAreaView>
   );

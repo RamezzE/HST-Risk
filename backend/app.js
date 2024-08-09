@@ -1,5 +1,4 @@
 import express from "express";
-import session from "express-session";
 
 import dotenv from "dotenv";
 import mongooseConnectionPromise from "./db.js";
@@ -18,13 +17,7 @@ import Country from "./models/country.js";
 
 const app = express();
 
-// app.use(session({
-//   secret: 'secret-key',
-//   resave: true,
-//   saveUninitialized: true
-// }));
-
-app.use(express.json()); // Middleware to parse JSON bodies
+app.use(express.json());
 
 dotenv.config({ path: "./.env" });
 

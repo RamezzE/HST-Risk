@@ -83,6 +83,21 @@ const TabsLayout = () => {
             ),
           }}
         />
+        <Tabs.Screen
+          name="admins"
+          options={{
+            title: "Admins",
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.home}
+                color={color}
+                name="Admins"
+                focused={focused}
+              />
+            ),
+          }}
+        />
       </Tabs>
       <StatusBar backgroundColor="#161622" style="light" />
     </>

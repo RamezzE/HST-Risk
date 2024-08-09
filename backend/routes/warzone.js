@@ -11,6 +11,6 @@ router.use(function (req, res, next) {
 });
 
 router.get("/", WarzoneController.get_warzones);
-
+router.get("/wars", WarzoneController.get_wars);
 
 export default router;
