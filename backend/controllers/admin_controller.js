@@ -1,5 +1,6 @@
 import Admin from "../models/admin.js";
 import Team from "../models/team.js";
+import Country from "../models/country.js";
 import { MongoClient } from "mongodb";
 
 const client = new MongoClient(process.env.MONGO_URI, {});
@@ -87,6 +88,36 @@ class AdminController {
     }
   }
 
+  static async update_country(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { name } = req.params;
+    const { teamNo } = req.body;
+
+    try {
+      const country = await Country.findOne({ name: name });
+
+      if (!country) {
+        result.errorMsg = `Server: ${name} not found`;
+        return res.json(result);
+      }
+
+      country.teamNo = teamNo;
+
+      await country.save();
+
+      result.success = true;
+      return res.json(result);
+    } catch (error) {
+      result.errorMsg = "Server: Error updating country";
+      console.log(error);
+      return res.json(result);
+    }
+  }
+
   static async delete_team(req, res) {
     const result = {
       success: false,
@@ -107,7 +138,6 @@ class AdminController {
 
       result.success = true;
       return res.json(result);
-
     } catch (error) {
       result.errorMsg = "Server: Error deleting team";
       console.log(error);

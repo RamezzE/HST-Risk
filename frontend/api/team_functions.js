@@ -81,3 +81,17 @@ export const attack = async (zone_1, team_1, zone_2, team_2, war) => {
     };
   }
 };
+
+
+export const get_all_attacks = async() => {
+
+  try {
+    const response = await axios.get(`${config.serverIP}/attacks`);
+    return response.data;
+  }
+  catch(error) {
+    return {
+      errorMsg: error.response?.data || "API: Error fetching all attacks",
+    }
+  }
+}

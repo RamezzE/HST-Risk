@@ -46,7 +46,6 @@ class TeamController {
 
     try {
       const teams = await Team.find();
-      console.log(teams)
       return res.json(teams);
     } catch (error) {
       return res.json({})    

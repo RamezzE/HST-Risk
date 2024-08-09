@@ -53,6 +53,18 @@ export const update_team = async (teamNo, teamName, password) => {
   }
 };
 
+export const update_country = async (name, teamNo) => {
+  try {
+    const response = await axios.put(`${config.serverIP}/admin/country/${name}`, {
+      teamNo,
+    });
+
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "API: Error updating country" };
+  }
+};
+
 export const delete_team = async (teamNo) => {
   try {
     const response = await axios.delete(`${config.serverIP}/admin/team/${teamNo}`);

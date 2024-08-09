@@ -14,6 +14,7 @@ router.post("/login", AdminController.login);
 router.post("/add_team", AdminController.add_team);
 
 router.put("/team/:number", AdminController.update_team);
+router.put("/country/:name", AdminController.update_country);
 
 router.delete("/team/:number", AdminController.delete_team);
 

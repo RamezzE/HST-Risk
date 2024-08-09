@@ -23,6 +23,7 @@ const Attack = () => {
     your_zone: "",
     other_zone: "",
   });
+  
   const [myZones, setMyZones] = useState([]);
   const [otherZones, setOtherZones] = useState([]);
   const [error, setError] = useState(null);

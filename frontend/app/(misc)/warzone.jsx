@@ -1,20 +1,16 @@
 import { View, Text, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useState, useEffect, useContext } from "react";
 
-import React, { useState, useEffect } from "react";
-
-import { get_warzones } from "../../api/country_functions.js";
-import { attack } from "../../api/team_functions.js";
-
+import { get_warzones } from "../../api/country_functions";
+import { attack } from "../../api/team_functions";
 import CustomButton from "../../components/CustomButton";
-
-import { useContext } from "react";
-
 import { GlobalContext } from "../../context/GlobalProvider";
+
+import { Link, router } from "expo-router";
 
 const Warzone = () => {
   const [warzones, setWarzones] = useState([]);
-
   const { attackData, setAttackData } = useContext(GlobalContext);
 
   useEffect(() => {
@@ -23,17 +19,16 @@ const Warzone = () => {
         console.log(data.errorMsg);
       } else {
         setWarzones(data);
-        console.log(data);
+        console.log("Warzones: ", data);
       }
     });
   }, []);
 
   const handlePress = async (warzone) => {
-    const randomWar =
-      warzone.wars[Math.floor(Math.random() * warzone.wars.length)];
+    const availableWars = warzone.wars.filter(war => war.available);
+    const randomWar = availableWars[Math.floor(Math.random() * availableWars.length)];
 
-    attackData.war = randomWar;
-    // setAttackData({});
+    setAttackData({ war: randomWar.name });
 
     try {
       const response = await attack(
@@ -41,22 +36,23 @@ const Warzone = () => {
         attackData.attacking_team,
         attackData.defending_zone,
         attackData.defending_team,
-        attackData.war
+        randomWar.name
       );
-      if (response.errorMsg == "") {
+      
+      if (!response.errorMsg) {
         Alert.alert(
           `${warzone.name}`,
-          `You are assigned ${randomWar}\n\nAttacking from: ${attackData.attacking_zone} - Team ${attackData.attacking_team}\nDefending Side: ${attackData.defending_zone} - Team ${attackData.defending_team}\n\nProceed to the warzone\n\nGood luck!`
+          `You are assigned ${randomWar.name}\n\nAttacking from: ${attackData.attacking_zone} - Team ${attackData.attacking_team}\nDefending Side: ${attackData.defending_zone} - Team ${attackData.defending_team}\n\nProceed to the warzone\n\nGood luck!`
         );
 
+        // Navigate to the home screen or any other route
         router.push("/home");
       } else {
         Alert.alert("Attack", response.errorMsg);
       }
     } catch (error) {
-      return {
-        errorMsg: error.response?.data || "API: Error making attack request",
-      };
+      Alert.alert("Error", "Error making attack request");
+      console.log(error)
     }
   };
 
@@ -81,10 +77,9 @@ const Warzone = () => {
                 {warzone.wars.map((war) => (
                   <View
                     className="p-1 flex flex-wrap flex-row justify-evenly align-center"
-                    key={war}
+                    key={war.name}
                   >
-                    <Text className="text-white text-xl">{war}</Text>
-                    <Text className="text-white text-xl">{war}</Text>
+                    <Text className="text-white text-xl">{war.name}</Text>
                   </View>
                 ))}
                 <CustomButton
