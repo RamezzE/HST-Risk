@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
@@ -21,7 +21,9 @@ const Home = () => {
 
       try {
         const result = await get_country_mappings();
+
         setCountryMappings(result);
+        console.log("Mappings: ", result);
       }
       catch (err) {
         console.log(err);
@@ -43,15 +45,21 @@ const Home = () => {
     fetchData();
 
     // const interval = setInterval(fetchData, 60000);
+    const interval = setInterval(fetchData, 5000);
 
     // Clear interval on component unmount
-    // return () => clearInterval(interval);
+    return () => clearInterval(interval);
   }, []);
+
+  const attackPrompt = (name, teamNo) => {
+    console.log(name, teamNo);
+    Alert.alert("Attack", `Do you want to attack ${name}?`)
+  };
 
   const getTeamColor = (countryName) => {
     const country = countryMappings.find(c => c.name === countryName);
     const team = country ? teams.find(t => t.number === country.teamNo) : null;
-    return team ? team.color : "#000000"; // default to black if not found
+    return team ? team.color : "#000000";
   };
 
   return (
@@ -76,6 +84,7 @@ const Home = () => {
               points={zone.points}
               color={getTeamColor(zone.name)}
               label={zone.name}
+              onMarkerPress={() => attackPrompt(zone.name, zone.teamNo)}
             />
           ))}
         </MapView>

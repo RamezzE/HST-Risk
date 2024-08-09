@@ -19,6 +19,12 @@ const FormsLayout = () => {
           }}
         />
         <Stack.Screen
+          name="edit_territory"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="add_territory"
           options={{
             headerShown: false,

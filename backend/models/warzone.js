@@ -9,10 +9,16 @@ const warzoneSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    wars: {
-        type: [String],
-        required: true
-    }
+    wars: [{
+        name: {
+            type: String,
+            required: true
+        },
+        available: {
+            type: Boolean,
+            required: true
+        }
+    }]
 }, {
     timestamps: true
 });

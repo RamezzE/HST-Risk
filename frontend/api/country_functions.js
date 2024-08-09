@@ -23,8 +23,6 @@ export const get_countries_by_team = async (teamNo) => {
 };
 
 
-
-
 export const get_warzones = async () => {
   try {
     const response = await axios.get(`${config.serverIP}/warzones`);

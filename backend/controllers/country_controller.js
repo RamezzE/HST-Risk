@@ -5,6 +5,9 @@ class CountryController {
     const countries = await Country.find();
     return res.json(countries);
   }
+
+  static async
+
 }
 
 export default CountryController;

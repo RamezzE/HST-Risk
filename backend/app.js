@@ -12,12 +12,9 @@ import team_router from "./routes/team.js";
 import attack_router from "./routes/attack.js";
 import warzone_router from "./routes/warzone.js";
 
-import Zone from "./models/zone.js";
-import Continent from "./models/continent.js";
 import Warzone from "./models/warzone.js";
 import Team from "./models/team.js";
 import Country from "./models/country.js";
-import countries from "../frontend/constants/countries.js";
 
 const app = express();
 
@@ -50,6 +47,41 @@ mongooseConnectionPromise
 
 app.get("/", (req, res, next) => {
   res.send("Server is up and running");
+
+  const warzones = [
+    {
+      name: "Pacific Theater",
+      number: 1,
+      wars: [
+        { name: "World War II", available: true },
+        { name: "Korean War", available: false },
+      ],
+    },
+    {
+      name: "Middle East Conflict",
+      number: 2,
+      wars: [
+        { name: "Gulf War", available: true },
+        { name: "Iraq War", available: true },
+      ],
+    },
+    {
+      name: "European Front",
+      number: 3,
+      wars: [
+        { name: "World War I", available: true },
+        { name: "World War II", available: true },
+      ],
+    },
+    {
+      name: "Cold War Era",
+      number: 4,
+      wars: [
+        { name: "Vietnam War", available: false },
+        { name: "Cuban Missile Crisis", available: true },
+      ],
+    },
+  ];
 
   // Zone.findOneAndDelete({ label: "Paraguay" }).then(() => {
   //   console.log("Zone deleted");
@@ -86,137 +118,112 @@ app.get("/", (req, res, next) => {
   //   console.error("Error creating admin:", err);
   // });
 
+  //   const africa = new Continent({
+  //     name: 'South America',
+  //     countryNames: ['Venezuela', 'Brazil', 'Peru', 'Bolivia', 'Paraguay', 'Argentina', 'Chile']
+  //     // countryNames: ['Indonesia', 'New Guinea', 'Western Australia', 'Eastern Australia', 'New Zealand']
+  //     // countryNames: ['North Africa', 'Egypt', 'East Africa', 'Central Africa', 'South Africa', 'Madagascar']
+  // });
+  // africa.save().then(() => {
+  //     console.log('Africa continent with countries saved');
+  // }).catch((err) => {
+  //     console.error('Error saving Africa continent:', err);
+  // });
 
 
-//   const africa = new Continent({
-//     name: 'South America',
-//     countryNames: ['Venezuela', 'Brazil', 'Peru', 'Bolivia', 'Paraguay', 'Argentina', 'Chile']
-//     // countryNames: ['Indonesia', 'New Guinea', 'Western Australia', 'Eastern Australia', 'New Zealand']
-//     // countryNames: ['North Africa', 'Egypt', 'East Africa', 'Central Africa', 'South Africa', 'Madagascar']
-// });
-// africa.save().then(() => {
-//     console.log('Africa continent with countries saved');
-// }).catch((err) => {
-//     console.error('Error saving Africa continent:', err);
-// });
+  Warzone.insertMany(warzones).then(() => {
+    console.log('Warzones saved');
+  }).catch((err) => {
+    console.error('Error saving warzones:', err);
+  });
 
-const warzones = [
-  {
-      name: 'Warzone Alpha',
-      number: 1,
-      wars: ['War A1', 'War A2', 'War A3']
-  },
-  {
-      name: 'Warzone Bravo',
-      number: 2,
-      wars: ['War B1', 'War B2', 'War B3']
-  },
-  {
-      name: 'Warzone Charlie',
-      number: 3,
-      wars: ['War C1', 'War C2', 'War C3']
-  },
-  {
-      name: 'Warzone Delta',
-      number: 4,
-      wars: ['War D1', 'War D2', 'War D3']
-  }
-];
+  const countries = [
+    {
+      name: "South Africa",
+      teamNo: 1,
+    },
+    {
+      name: "Central Africa",
+      teamNo: 2,
+    },
+    {
+      name: "East Africa",
+      teamNo: 3,
+    },
+    {
+      name: "Egypt",
+      teamNo: 4,
+    },
+    {
+      name: "North Africa",
+      teamNo: 5,
+    },
+    {
+      name: "Madagascar",
+      teamNo: 1,
+    },
+    {
+      name: "New Zealand",
+      teamNo: 2,
+    },
+    {
+      name: "Western Australia",
+      teamNo: 3,
+    },
+    {
+      name: "Eastern Australia",
+      teamNo: 4,
+    },
+    {
+      name: "New Guinea",
+      teamNo: 5,
+    },
+    {
+      name: "Indonesia",
+      teamNo: 1,
+    },
+    {
+      name: "Brazil",
+      teamNo: 2,
+    },
+    {
+      name: "Venezuela",
+      teamNo: 3,
+    },
+    {
+      name: "Peru",
+      teamNo: 4,
+    },
+    {
+      name: "Bolivia",
+      teamNo: 5,
+    },
+    {
+      name: "Chile",
+      teamNo: 1,
+    },
+    {
+      name: "Argentina",
+      teamNo: 2,
+    },
+    {
+      name: "Paraguay",
+      teamNo: 3,
+    },
+  ];
 
-// Warzone.insertMany(warzones).then(() => {
-//   console.log('Warzones saved');
-// }).catch((err) => {
-//   console.error('Error saving warzones:', err);
-// });
-
-const countries = [
-  {
-    name: 'South Africa',
-    teamNo: 1,
-  },
-  {
-    name: 'Central Africa',
-    teamNo: 2,
-  },
-  {
-    name: 'East Africa',
-    teamNo: 3,
-  },
-  {
-    name: 'Egypt',
-    teamNo: 4,
-  },
-  {
-    name: 'North Africa',
-    teamNo: 5,
-  },
-  {
-    name: 'Madagascar',
-    teamNo: 1,
-  },
-  {
-    name: 'New Zealand',
-    teamNo: 2,
-  },
-  {
-    name: 'Western Australia',
-    teamNo: 3,
-  },
-  {
-    name: 'Eastern Australia',
-    teamNo: 4,
-  },
-  {
-    name: 'New Guinea',
-    teamNo: 5,
-  },
-  {
-    name: 'Indonesia',
-    teamNo: 1,
-  },
-  {
-    name: 'Brazil',
-    teamNo: 2,
-  },
-  {
-    name: 'Venezuela',
-    teamNo: 3,
-  },
-  {
-    name: 'Peru',
-    teamNo: 4,
-  },
-  {
-    name: 'Bolivia',
-    teamNo: 5,
-  },
-  {
-    name: 'Chile',
-    teamNo: 1,
-  },
-  {
-    name: 'Argentina',
-    teamNo: 2,
-  },
-  {
-    name: 'Paraguay',
-    teamNo: 3,
-  },
-]
-
-// Country.insertMany(countries).then(() => {
-//   console.log('countries saved');
-// }).catch((err) => {
-//   console.error('Error saving countries:', err);
-// });
-
-
+  // Country.insertMany(countries).then(() => {
+  //   console.log('countries saved');
+  // }).catch((err) => {
+  //   console.error('Error saving countries:', err);
+  // });
 });
 
 app.use("/admin", admin_router);
 app.use("/teams", team_router);
 app.use("/countries", country_router);
 app.use("/attacks", attack_router);
+
 app.use("/warzones", warzone_router);
 
 app.get("/team/:number", TeamController.get_team);
