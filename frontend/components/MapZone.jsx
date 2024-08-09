@@ -25,13 +25,13 @@ const MapZone = ({ points, color, label }) => {
         strokeColor={`#000000`}
         // strokeColor={``}
         // fillColor={`${color}50`}
-        fillColor={`${color}75`}
+        fillColor={`${color}85`}
         strokeWidth={4}
       />
 
       <Marker coordinate={polygonCenter}>
-        {/* <View className = "bg-primary rounded-lg"> */}
-        <View className = "rounded-lg">
+        <View className = "bg-primary rounded-lg">
+        {/* <View> */}
           {/* <Text className="p-1 text-xs text-white">{label}</Text> */}
           <Text className="p-1 text-xs font-bold text-white">{label}</Text>
         </View>

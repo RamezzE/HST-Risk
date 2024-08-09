@@ -3,40 +3,56 @@ import { View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
-import { get_zones } from "../../api/zone_functions";
+import { get_country_mappings } from "../../api/country_functions";
+import { get_all_teams } from "../../api/team_functions";
+
+import countries from "../../constants/countries";
 
 const Home = () => {
   const [zones, setZones] = useState([]);
+  const [countryMappings, setCountryMappings] = useState([]);
   const [error, setError] = useState(null);
+  const [teams, setTeams] = useState([]);
 
   useEffect(() => {
-    const fetchZones = async () => {
+    const fetchData = async () => {
       setError(null);
+      setZones(countries);
 
       try {
-        const result = await get_zones();
-
-        if (result.success === false) {
-          setError(result.errorMsg);
-        } else if (Array.isArray(result)) {
-          setZones(result);
-        } else {
-          setError("Unexpected response format");
-        }
-      } catch (err) {
-        setError("Failed to fetch zones");
+        const result = await get_country_mappings();
+        setCountryMappings(result);
       }
+      catch (err) {
+        console.log(err);
+        setError("Failed to fetch country mappings");
+      }
+
+      try {
+        const teamsResult = await get_all_teams();
+        setTeams(teamsResult);
+      }
+      catch (err) {
+        console.log(err);
+        setError("Failed to fetch teams data");
+      }
+
     };
 
-    // Fetch zones initially
-    fetchZones();
+    // Fetch zones and teams initially
+    fetchData();
 
-    // Set up interval to fetch zones every 5 seconds
-    // const interval = setInterval(fetchZones, 5000);
+    // const interval = setInterval(fetchData, 60000);
 
     // Clear interval on component unmount
     // return () => clearInterval(interval);
   }, []);
+
+  const getTeamColor = (countryName) => {
+    const country = countryMappings.find(c => c.name === countryName);
+    const team = country ? teams.find(t => t.number === country.teamNo) : null;
+    return team ? team.color : "#000000"; // default to black if not found
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-primary">
@@ -51,9 +67,6 @@ const Home = () => {
             longitudeDelta: 180,
           }}
           mapType="satellite"
-          // mapType="terrain"
-          // scrollEnabled={false}
-          // zoomEnabled={false}
           rotateEnabled={false}
           pitchEnabled={false}
         >
@@ -61,15 +74,15 @@ const Home = () => {
             <MapZone
               key={index}
               points={zone.points}
-              color={zone.color}
-              label={zone.label}
+              color={getTeamColor(zone.name)}
+              label={zone.name}
             />
           ))}
         </MapView>
       </View>
       
       {error && (
-        <Text className="text-red text-center p-2 text-xl">{error}</Text>
+        <Text className="text-white text-center p-2 text-xl">{error}</Text>
       )}
     </SafeAreaView>
   );

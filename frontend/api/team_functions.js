@@ -27,7 +27,6 @@ export const check_team_session = async () => {
 export const get_all_teams = async () => {
   try {
     const response = await axios.get(`${config.serverIP}/all_teams`);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "API: Error fetching teams" };

@@ -7,7 +7,7 @@ import mongooseConnectionPromise from "./db.js";
 import TeamController from "./controllers/team_controller.js";
 
 import admin_router from "./routes/admin.js";
-import zone_router from "./routes/zone.js";
+import country_router from "./routes/country.js";
 import team_router from "./routes/team.js";
 import attack_router from "./routes/attack.js";
 import warzone_router from "./routes/warzone.js";
@@ -15,6 +15,9 @@ import warzone_router from "./routes/warzone.js";
 import Zone from "./models/zone.js";
 import Continent from "./models/continent.js";
 import Warzone from "./models/warzone.js";
+import Team from "./models/team.js";
+import Country from "./models/country.js";
+import countries from "../frontend/constants/countries.js";
 
 const app = express();
 
@@ -120,18 +123,99 @@ const warzones = [
   }
 ];
 
-Warzone.insertMany(warzones).then(() => {
-  console.log('Warzones saved');
-}).catch((err) => {
-  console.error('Error saving warzones:', err);
-});
+// Warzone.insertMany(warzones).then(() => {
+//   console.log('Warzones saved');
+// }).catch((err) => {
+//   console.error('Error saving warzones:', err);
+// });
+
+const countries = [
+  {
+    name: 'South Africa',
+    teamNo: 1,
+  },
+  {
+    name: 'Central Africa',
+    teamNo: 2,
+  },
+  {
+    name: 'East Africa',
+    teamNo: 3,
+  },
+  {
+    name: 'Egypt',
+    teamNo: 4,
+  },
+  {
+    name: 'North Africa',
+    teamNo: 5,
+  },
+  {
+    name: 'Madagascar',
+    teamNo: 1,
+  },
+  {
+    name: 'New Zealand',
+    teamNo: 2,
+  },
+  {
+    name: 'Western Australia',
+    teamNo: 3,
+  },
+  {
+    name: 'Eastern Australia',
+    teamNo: 4,
+  },
+  {
+    name: 'New Guinea',
+    teamNo: 5,
+  },
+  {
+    name: 'Indonesia',
+    teamNo: 1,
+  },
+  {
+    name: 'Brazil',
+    teamNo: 2,
+  },
+  {
+    name: 'Venezuela',
+    teamNo: 3,
+  },
+  {
+    name: 'Peru',
+    teamNo: 4,
+  },
+  {
+    name: 'Bolivia',
+    teamNo: 5,
+  },
+  {
+    name: 'Chile',
+    teamNo: 1,
+  },
+  {
+    name: 'Argentina',
+    teamNo: 2,
+  },
+  {
+    name: 'Paraguay',
+    teamNo: 3,
+  },
+]
+
+// Country.insertMany(countries).then(() => {
+//   console.log('countries saved');
+// }).catch((err) => {
+//   console.error('Error saving countries:', err);
+// });
 
 
 });
 
 app.use("/admin", admin_router);
 app.use("/teams", team_router);
-app.use("/zones", zone_router);
+app.use("/countries", country_router);
 app.use("/attacks", attack_router);
 app.use("/warzones", warzone_router);
 
