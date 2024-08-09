@@ -8,36 +8,43 @@ import { useState, useEffect, useContext } from "react";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
+import { get_wars } from "../../api/country_functions";
+import { get_attacks_by_war } from "../../api/admin_functions";
+
 const AdminHome = () => {
+  const { name, war } = useContext(GlobalContext);
+  const [zoneAttack, setZoneAttack] = useState({
+    attacking_team: "",
+    defending_team: "",
+  });
+  const [wars, setWars] = useState([]);
 
-    const { name } = useContext(GlobalContext);
-    const [zoneAttack, setZoneAttack] = useState("");
-
-    useEffect(() => {
-        const fetchAttacks = async () => {
-            const response = await get_attacks_on_zone("North Africa");
-            setZoneAttack(response.attack);
-            console.log(response.attack);
-        };
-        fetchAttacks();
-    }
-    , []);
+  useEffect(() => {
+    const fetchData = async () => {
+      // const response = await get_attacks_on_zone("North Africa");
+      // setZoneAttack(response.attack);
+      // console.log(response.attack);
+    };
+    fetchData();
+  }, []);
 
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <View className="w-full min-h-[80vh] px-4 my-6 flex flex-col justify-between">
           <View className="flex flex-col">
-            <Text className="text-white text-xl px-5 py-0">Welcome, {name}</Text>
+            <Text className="text-white text-xl px-5 py-0">
+              Welcome, {name}
+            </Text>
 
-            <Text className="text-white text-l p-5">Zone: North Africa</Text>
+            <Text className="text-white text-l p-5">War: {war}</Text>
 
             <Text className="text-white text-3xl p-5">Attack in progress:</Text>
             <Text className="text-white text-xl px-5 py-2">
-              Attacking Team: {zoneAttack.attacking_team}
+              {/* Attacking Team: {zoneAttack.attacking_team} */}
             </Text>
             <Text className="text-white text-xl px-5 py-2">
-              Defending Team: {zoneAttack.defending_team}
+              {/* Defending Team: {zoneAttack.defending_team} */}
             </Text>
           </View>
           <View>

@@ -9,6 +9,12 @@ class WarzoneController {
     const zones = await Warzone.find();
     return res.json(zones);
   }
+  static async get_wars(req, res) {
+    const zones = await Warzone.find();
+    const wars = zones.map(zone => zone.wars).flat();
+    return res.json(wars);
+  }
+  
 }
 
 export default WarzoneController;

@@ -31,3 +31,12 @@ export const get_warzones = async () => {
     return { errorMsg: error.response?.data || "Error fetching warzones" };
   }
 };
+
+export const get_wars = async () => {
+  try {
+    const response = await axios.get(`${config.serverIP}/warzones/wars`);
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "Error fetching wars" };
+  }
+}
