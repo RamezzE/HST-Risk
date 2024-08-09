@@ -48,9 +48,9 @@ const AddTeam = () => {
 
     try {
       const response = await add_team(
-        form.teamNo,
-        form.teamName,
-        form.password
+        form.teamNo.trim(),
+        form.teamName.trim(),
+        form.password.trim()
       );
 
       if (!response.success) {

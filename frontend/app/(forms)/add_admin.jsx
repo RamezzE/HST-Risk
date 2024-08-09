@@ -65,7 +65,7 @@ const AddAdmin = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await add_admin(form.name, form.password, form.war);
+      const response = await add_admin(form.name.trim(), form.password.trim(), form.war.trim());
       Alert.alert("Success", "Admin added successfully");
       router.push("/admins");
       

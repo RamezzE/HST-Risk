@@ -20,7 +20,7 @@ const EditTerritory = () => {
 
   const submit = async () => {
     try {
-        const result = await update_country(form.countryName, form.teamNo);
+        const result = await update_country(form.countryName.trim(), form.teamNo.trim());
         if (result.success === false) {
           Alert.alert("Error", result.errorMsg);
         } else {

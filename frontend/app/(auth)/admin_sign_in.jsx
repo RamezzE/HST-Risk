@@ -37,6 +37,7 @@ const SignIn = () => {
   const { setName } = useContext(GlobalContext);
 
   const submit = async () => {
+
     var result = validateSignIn(form.name, form.password);
 
     if (!result.success) {
@@ -47,14 +48,14 @@ const SignIn = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await admin_login(form.name, form.password);
+      const response = await admin_login(form.name.trim(), form.password.trim());
 
       if (!response.success) {
         Alert.alert("Error", response.errorMsg);
         return;
       }
 
-      setName(form.name);
+      setName(form.name.trim());
       router.push("/admin_home");
 
       // const user = await getCurrentUser(loginResult.token);
