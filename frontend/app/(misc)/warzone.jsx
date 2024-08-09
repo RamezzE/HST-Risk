@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import React, { useState, useEffect } from "react";
 
-import { get_warzones } from "../../api/zone_functions.js";
+import { get_warzones } from "../../api/country_functions.js";
 import { attack } from "../../api/team_functions.js";
 
 import CustomButton from "../../components/CustomButton";

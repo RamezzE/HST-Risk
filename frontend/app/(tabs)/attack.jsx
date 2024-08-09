@@ -6,13 +6,13 @@ import CustomButton from "../../components/CustomButton";
 import MapView from "react-native-maps";
 import { Link, router } from "expo-router";
 
-import { get_zones_by_team } from "../../api/zone_functions";
-
 import { useEffect, useState, useContext } from "react";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
 import { attack_check } from "../../api/team_functions";
+
+import { get_countries_by_team } from "../../api/country_functions";
 
 const Attack = () => {
   
@@ -41,12 +41,12 @@ const Attack = () => {
       return;
     }
 
-    const fetchZones = async () => {
+    const fetchData = async () => {
       setError(null);
 
       try {
-        const result1 = await get_zones_by_team(parseInt(teamNo));
-        const result2 = await get_zones_by_team(2);
+        const result1 = await get_countries_by_team(parseInt(teamNo));
+        const result2 = await get_countries_by_team(2);
 
         if (result1.errorMsg) {
           setError(result1.errorMsg);
@@ -60,12 +60,11 @@ const Attack = () => {
           setError("Unexpected response format");
         }
       } catch (err) {
-        setError("Failed to fetch zones");
+        setError("Failed to fetch data");
       }
     };
 
-    // Fetch zones initially
-    fetchZones();
+    fetchData();
   }, []);
 
   const validateAttack = (zone_1, zone_2, team_1, team_2) => {
@@ -141,8 +140,8 @@ const Attack = () => {
               value={form.your_zone}
               placeholder="Select Your Zone"
               items={myZones.map((zone) => ({
-                label: `${zone.label} - Team ${zone.team_no}`,
-                value: zone.label,
+                label: `${zone.name} - Team ${zone.teamNo}`,
+                value: zone.name,
               }))}
               handleChange={(e) => setForm({ ...form, your_zone: e })}
               otherStyles=""
@@ -153,8 +152,8 @@ const Attack = () => {
               value={form.other_zone}
               placeholder="Select Adjacent Zone"
               items={otherZones.map((zone) => ({
-                label: `${zone.label} - Team ${zone.team_no}`,
-                value: zone.label,
+                label: `${zone.name} - Team ${zone.teamNo}`,
+                value: zone.name,
               }))}
               handleChange={(e) => setForm({ ...form, other_zone: e })}
               otherStyles="mt-5"

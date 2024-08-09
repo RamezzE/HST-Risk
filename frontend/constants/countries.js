@@ -1015,3 +1015,26 @@ const Paraguay = {
   ],
   adjacent_zones: [],
 };
+
+
+export default [
+  SouthAfrica,
+  CentralAfrica,
+  EastAfrica,
+  Egypt,
+  NorthAfrica,
+  Madagascar,
+  NewZealand,
+  WesternAustralia,
+  EasternAustralia,
+  NewGuinea,
+  Indonesia,
+  Brazil,
+  Venezuela,
+  Peru,
+  Bolivia,
+  Chile,
+  Argentina,
+  Paraguay,
+];
+
