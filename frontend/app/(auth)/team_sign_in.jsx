@@ -52,23 +52,17 @@ const SignIn = () => {
     setIsSubmitting(true);
 
     try {
-      const loginResult = await login(form.teamNo, form.password);
+      const loginResult = await login(form.teamNo.trim(), form.password.trim());
       console.log(loginResult);
       if (!loginResult.success) {
         Alert.alert('Error', loginResult.errorMsg);
         return;
       }
 
-      setName(loginResult.name);
-      setTeamNo(form.teamNo);
+      setName(loginResult.name.trim());
+      setTeamNo(form.teamNo.trim());
       
       router.push('/home');
-
-      // const user = await getCurrentUser(loginResult.token);
-
-      // Assuming you have setUser and setIsLoggedIn functions from context
-      // setUser(user);
-      // setIsLoggedIn(true);
 
     } catch (error) {
       Alert.alert('Error', "Error logging in");

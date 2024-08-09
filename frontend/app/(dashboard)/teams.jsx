@@ -16,7 +16,7 @@ const Teams = () => {
 
       try {
         const result = await get_all_teams();
-
+        console.log(result);
         if (result.success === false) {
           setError(result.errorMsg);
         } else if (Array.isArray(result)) {
@@ -47,7 +47,7 @@ const Teams = () => {
         />
         <CustomButton
           title="Edit"
-          handlePress={() => router.push(`/edit_team?teamNo=${item.number}`)}
+          handlePress={() => router.push(`/edit_team?teamNo=${item.number.trim()}`)}
           containerStyles="mt-2"
           textStyles="text-sm"
         />

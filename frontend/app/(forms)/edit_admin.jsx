@@ -105,10 +105,10 @@ const EditTeam = () => {
 
     try {
       const response = await update_admin(
-        local.name,
-        form.name,
-        form.password,
-        form.war
+        local.name.trim(),
+        form.name.trim(),
+        form.password.trim(),
+        form.war.trim()
       );
 
       if (!response.success) {

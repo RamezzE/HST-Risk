@@ -35,7 +35,7 @@ const Admins = () => {
       <CustomButton
         title="Edit"
         handlePress={() =>
-          router.push(`/edit_admin?name=${item.name}&password=${item.password}&war=${item.war}`)
+          router.push(`/edit_admin?name=${item.name.trim()}&password=${item.password.trim()}&war=${item.war.trim()}`)
         }
         containerStyles="w-1/3 mt-2"
         textStyles="text-sm"

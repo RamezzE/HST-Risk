@@ -36,12 +36,6 @@ const FormsLayout = () => {
             headerShown: false,
           }}
         />
-        <Stack.Screen
-          name="add_territory"
-          options={{
-            headerShown: false,
-          }}
-        />
       </Stack>
       <StatusBar backgroundColor="#161622" style="light" />
     </>

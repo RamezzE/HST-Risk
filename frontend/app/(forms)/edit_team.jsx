@@ -70,9 +70,9 @@ const EditTeam = () => {
 
     try {
       const response = await update_team(
-        local.teamNo,
-        form.teamName,
-        form.password
+        local.teamNo.trim(),
+        form.teamName.trim(),
+        form.password.trim()
       );
 
       if (!response.success) {

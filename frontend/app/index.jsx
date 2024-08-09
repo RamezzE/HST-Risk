@@ -25,23 +25,13 @@ export default function App() {
         alwaysBounceVertical={true}
       >
         <View className="w-full justify-center items-center min-h-[95vh] px-4">
-          {/* <Image
-            source = { images.logo }
-            className = "w-[130px] h-[84px]"
-            resizeMode = 'contain'
-          /> */}
-
-          {/* <Image 
-            source = { images.cards }
-            className = "max-w-[380px] w-full h-[300px]"
-            resizeMode = 'contain'
-          /> */}
-
+      
           <View className="relative mt-5">
             <Text className="text-4xl text-white font-bold text-center">
-              {/* Discover Endless Possibilities with{' '}<Text className = 'text-secondary-200'>Aora</Text> */}
-              {/* {' '}<Text className = 'text-secondary-200' >Helio Sports Team</Text> */}{" "}
-              Domination
+              Risk
+            </Text>
+            <Text className="text-2xl text-white font-bold text-center">
+              Global Domination
             </Text>
             <Text className="text-gray-200 text-center mt-3 text-sm">
               by Helio Sports Team
