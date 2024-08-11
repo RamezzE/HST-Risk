@@ -2,12 +2,14 @@ import { View, Text, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useEffect, useContext } from "react";
 
-import { get_warzones } from "../../api/country_functions";
-import { attack } from "../../api/team_functions";
+
 import CustomButton from "../../components/CustomButton";
 import { GlobalContext } from "../../context/GlobalProvider";
 
 import { Link, router } from "expo-router";
+
+import { get_warzones } from "../../api/warzone_functions";
+import { attack } from "../../api/attack_functions";
 
 const Warzone = () => {
   const [warzones, setWarzones] = useState([]);

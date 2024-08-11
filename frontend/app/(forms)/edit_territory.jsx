@@ -8,7 +8,7 @@ import DropDownField from "../../components/DropDownField";
 
 import { get_all_teams } from "../../api/team_functions";
 
-import { update_country } from '../../api/admin_functions';
+import { update_country } from '../../api/country_functions';
 
 const EditTerritory = () => {
   const local = useLocalSearchParams();

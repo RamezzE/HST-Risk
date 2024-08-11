@@ -2,9 +2,11 @@ import axios from "axios";
 
 import config from "./config";
 
+serverIP = config.serverIP + "/countries";
+
 export const get_country_mappings = async () => {
   try {
-    const response = await axios.get(`${config.serverIP}/countries`);
+    const response = await axios.get(`${serverIP}`);
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "Error fetching countries" };
@@ -13,30 +15,26 @@ export const get_country_mappings = async () => {
 
 export const get_countries_by_team = async (teamNo) => {
   try {
-    const response = await axios.get(`${config.serverIP}/countries`);
-    const countries = response.data;
-    const filteredZones = countries.filter((country) => country.teamNo === teamNo);
-    return filteredZones;
+    const response = await axios.get(`${serverIP}/:${teamNo}`);
+    return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || `Error fetching contries for team ${teamNo}` };
+    return {
+      errorMsg:
+        error.response?.data || `Error fetching countries for team ${teamNo}`,
+    };
+  }
+};
+
+export const update_country = async (name, teamNo) => {
+  try {
+    const response = await axios.post(`${config.serverIP}/:${name}`, {
+      teamNo,
+    });
+
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "API: Error updating country" };
   }
 };
 
 
-export const get_warzones = async () => {
-  try {
-    const response = await axios.get(`${config.serverIP}/warzones`);
-    return response.data;
-  } catch (error) {
-    return { errorMsg: error.response?.data || "Error fetching warzones" };
-  }
-};
-
-export const get_wars = async () => {
-  try {
-    const response = await axios.get(`${config.serverIP}/warzones/wars`);
-    return response.data;
-  } catch (error) {
-    return { errorMsg: error.response?.data || "Error fetching wars" };
-  }
-}

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "HST Domination",
-    "slug": "hst-domination",
+    "name": "hst-risk",
+    "slug": "hst-risk",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "hst-domination",
+    "scheme": "hst-risk",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ramezze.hstrisk"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +32,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "0ecced42-df07-4e84-8212-7bd7d3ab75ba"
+      }
     }
   }
 }

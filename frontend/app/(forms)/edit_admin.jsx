@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import DropDownField from "../../components/DropDownField";
 
-import { get_wars } from "../../api/country_functions";
+import { get_wars } from "../../api/warzone_functions";
 
 import { update_admin, delete_admin } from "../../api/admin_functions";
 

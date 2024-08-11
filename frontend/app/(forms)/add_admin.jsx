@@ -6,7 +6,7 @@ import CustomButton from "../../components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
-import { get_wars } from "../../api/country_functions";
+import { get_wars } from "../../api/warzone_functions";
 import { add_admin } from "../../api/admin_functions";
 
 const validateAddAdmin = (name, war) => {

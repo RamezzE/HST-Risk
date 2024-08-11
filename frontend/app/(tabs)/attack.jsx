@@ -3,8 +3,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
 
-import { get_country_mappings } from "../../api/country_functions";
-
 import MapView from "react-native-maps";
 import { Link, router } from "expo-router";
 
@@ -12,9 +10,9 @@ import { useEffect, useState, useContext } from "react";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
-import { attack_check } from "../../api/team_functions";
+import { attack_check } from "../../api/attack_functions";
 
-import { get_countries_by_team } from "../../api/country_functions";
+import { get_countries_by_team, get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 
 import countries from "../../constants/countries";
@@ -242,7 +240,7 @@ const Attack = () => {
               latitude: initialArea[0],
               longitude: initialArea[1],
               latitudeDelta: 50,
-              longitudeDelta: 50,
+              longitudeDelta: 100,
             }}
             mapType="satellite"
             scrollEnabled={false}

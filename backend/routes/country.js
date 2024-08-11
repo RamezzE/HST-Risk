@@ -12,5 +12,8 @@ router.use(function (req, res, next) {
 
 
 router.get("/", CountryController.get_country_mappings);
+router.get("/:number", CountryController.get_countries_by_team);
+
+router.post("/:name", CountryController.update_country)
 
 export default router;
