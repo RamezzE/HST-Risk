@@ -33,7 +33,7 @@ const AdminHome = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
-        <View className="w-full min-h-[80vh] px-4 my-6 flex flex-col justify-between">
+        <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
           <BackButton style="w-[20vw]" color="white" size={32} path="/" />
           <View className="flex flex-col">
             <Text className="text-white text-xl px-5 py-0">

@@ -63,7 +63,7 @@ const Warzone = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
-        <View className="w-full min-h-[80vh] px-4 my-6 flex flex-col justify-between">
+        <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
           <BackButton style="w-[20vw]" color="white" size={32} path="/" />
           <Text className="text-white text-center p-3 text-3xl ">
             Choose Your Warzone

@@ -131,7 +131,7 @@ const EditAdmin = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
-        <View className="w-full justify-center min-h-[75vh] px-4 my-6">
+        <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
           <BackButton style="w-[20vw]" color="white" size={32} path="/admins" />
           <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
             Edit Admin
