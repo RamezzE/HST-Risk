@@ -57,8 +57,8 @@ const EditTerritory = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
-        <View className="w-full justify-center min-h-[75vh] px-4 my-6">
-          <BackButton style="w-[20vw] mb-4" color="white" size={32} path="/countries" />
+        <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+          <BackButton style="w-[20vw] mb-4" color="white" size={32} path="/" />
           <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
             Edit Country
           </Text>

@@ -50,7 +50,7 @@ const Admins = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full">
-      <View className="w-full justify-center min-h-[85vh] my-16 pb-16 px-4">
+      <View className="w-full justify-center min-h-[82.5vh] my-16 pb-16 px-4">
         <BackButton style="w-[20vw]" color="white" size={32} path="/" />
         <Text className="text-white text-3xl text-center text-semibold mb-5">
           Admins

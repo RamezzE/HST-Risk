@@ -61,9 +61,9 @@ const Teams = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full">
-      <View className="w-full justify-center min-h-[75vh] px-4 my-6 pb-16">
+      <View className="w-full justify-center min-h-[82.5vh] px-4 my-6 pb-16">
         <BackButton style="w-[20vw]" color="white" size={32} path="/" />
-          
+
         <Text className="text-white text-3xl text-center text-semibold mb-5">
           Teams
         </Text>

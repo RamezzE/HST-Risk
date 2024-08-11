@@ -82,7 +82,7 @@ const AddTeam = () => {
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <BackButton style="w-[20vw]" color="white" size={32} path="/teams" />
-        <View className="w-full justify-center min-h-[75vh] px-4 my-6">
+        <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
         <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
         Add Team
           </Text>

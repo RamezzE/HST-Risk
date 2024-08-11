@@ -23,7 +23,7 @@ export default function App() {
         contentContainerStyle={{ height: "100vh" }}
         alwaysBounceVertical={true}
       >
-        <View className="w-full justify-center items-center min-h-[95vh] px-4">
+        <View className="w-full justify-center items-center min-h-[82.5vh] px-4">
       
           <View className="relative mt-5">
             <Text className="text-4xl text-white font-bold text-center">
