@@ -25,7 +25,7 @@ const validateEditAdmin = (name, password, war) => {
   return result;
 };
 
-const EditTeam = () => {
+const EditAdmin = () => {
   const local = useLocalSearchParams();
 
   const [form, setForm] = useState({
@@ -188,4 +188,4 @@ const EditTeam = () => {
   );
 };
 
-export default EditTeam;
+export default EditAdmin;

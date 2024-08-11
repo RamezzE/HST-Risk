@@ -15,7 +15,7 @@ export const get_country_mappings = async () => {
 
 export const get_countries_by_team = async (teamNo) => {
   try {
-    const response = await axios.get(`${serverIP}/:${teamNo}`);
+    const response = await axios.get(`${serverIP}/${teamNo}`);
     return response.data;
   } catch (error) {
     return {
@@ -26,8 +26,9 @@ export const get_countries_by_team = async (teamNo) => {
 };
 
 export const update_country = async (name, teamNo) => {
+
   try {
-    const response = await axios.post(`${config.serverIP}/:${name}`, {
+    const response = await axios.post(`${serverIP}/${name}`, {
       teamNo,
     });
 
