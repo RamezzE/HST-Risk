@@ -95,7 +95,7 @@ class AdminController {
       errorMsg: "",
     };
 
-    const { name } = req.body;
+    const { name } = req.params;
 
     try {
       const admin = await Admin.findOne({ name });

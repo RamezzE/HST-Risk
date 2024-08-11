@@ -16,6 +16,6 @@ router.put("/", AdminController.add_admin);
 
 router.post("/update", AdminController.update_admin);
 
-router.delete("/", AdminController.delete_admin);
+router.delete("/:name", AdminController.delete_admin);
 
 export default router;

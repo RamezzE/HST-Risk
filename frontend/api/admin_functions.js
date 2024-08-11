@@ -45,9 +45,7 @@ export const update_admin = async (oldName, name, password, war) => {
 
 export const delete_admin = async (name) => {
   try {
-    const response = await axios.delete(`${serverIP}`, {
-      name,
-    });
+    const response = await axios.delete(`${serverIP}/${name}`);
 
     return response.data;
   } catch (error) {
