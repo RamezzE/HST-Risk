@@ -20,7 +20,7 @@ class CountryController {
         teamNo: number,
       });
 
-      result.countries = countries;
+      result.countries = response;
       result.success = true;
 
       return res.json(result);

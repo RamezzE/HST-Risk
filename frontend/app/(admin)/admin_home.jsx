@@ -11,6 +11,8 @@ import { GlobalContext } from "../../context/GlobalProvider";
 import { get_wars } from "../../api/country_functions";
 import { get_attacks_by_war } from "../../api/admin_functions";
 
+import BackButton from "../../components/BackButton";
+
 const AdminHome = () => {
   const { name, war } = useContext(GlobalContext);
   const [zoneAttack, setZoneAttack] = useState({
@@ -32,6 +34,7 @@ const AdminHome = () => {
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <View className="w-full min-h-[80vh] px-4 my-6 flex flex-col justify-between">
+          <BackButton style="w-[20vw]" color="white" size={32} path="/" />
           <View className="flex flex-col">
             <Text className="text-white text-xl px-5 py-0">
               Welcome, {name}
