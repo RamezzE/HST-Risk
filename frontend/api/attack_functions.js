@@ -2,7 +2,7 @@ import axios from "axios";
 
 import config from "./config";
 
-serverIP = config.serverIP + "/attacks";
+const serverIP = config.serverIP + "/attacks";
 
 export const attack_check = async (zone_1, team_1, zone_2, team_2) => {
   try {

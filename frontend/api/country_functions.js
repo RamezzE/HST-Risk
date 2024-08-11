@@ -2,7 +2,7 @@ import axios from "axios";
 
 import config from "./config";
 
-serverIP = config.serverIP + "/countries";
+const serverIP = config.serverIP + "/countries";
 
 export const get_country_mappings = async () => {
   try {

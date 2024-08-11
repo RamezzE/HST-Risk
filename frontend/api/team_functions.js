@@ -2,7 +2,7 @@ import axios from "axios";
 
 import config from "./config";
 
-serverIP = config.serverIP + "/teams"
+const serverIP = config.serverIP + "/teams"
 
 export const add_team = async (teamNo, teamName, password) => {
   try {
@@ -49,7 +49,6 @@ export const delete_team = async (teamNo) => {
 export const get_all_teams = async () => {
   try {
     const response = await axios.get(`${serverIP}`);
-    console.log(response)
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "API: Error fetching teams" };
