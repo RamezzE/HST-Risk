@@ -2,7 +2,7 @@ import axios from "axios";
 
 import config from "./config";
 
-serverIP = config.serverIP + "/warzones";
+const serverIP = config.serverIP + "/warzones";
 
 export const get_warzones = async () => {
   try {

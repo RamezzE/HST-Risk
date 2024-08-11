@@ -1,8 +1,6 @@
 import Team from "../models/team.js";
 import { MongoClient } from "mongodb";
 
-const client = new MongoClient(process.env.MONGO_URI, {});
-
 class TeamController {
   static async add_team(req, res) {
     const result = {

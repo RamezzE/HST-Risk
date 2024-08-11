@@ -2,7 +2,7 @@ import axios from "axios";
 
 import config from "./config";
 
-serverIP = config.serverIP + "/admins"
+const serverIP = config.serverIP + "/admins"
 
 export const get_admins = async () => {
   try {

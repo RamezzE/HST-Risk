@@ -22,8 +22,10 @@ const Home = () => {
       setError(null);
       setZones(countries);
 
+
       try {
         const result = await get_country_mappings();
+        
         setCountryMappings(result);
 
         const attacksResult = await get_all_attacks();
@@ -72,9 +74,8 @@ const Home = () => {
       const team = country ? teams.find((t) => t.number === country.teamNo) : null;
       return team ? team.color : "#000000";
     } catch (error) {
-      console.log("Error in getTeamColor");
-    } finally {
-      return team ? team.color : "#000000";
+      console.log("Error in getTeamColor: ", error);
+      return "#000000";
     }
   };
 

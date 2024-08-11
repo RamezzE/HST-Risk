@@ -11,15 +11,13 @@ router.use(function (req, res, next) {
 });
 
 router.get("/", TeamController.get_all_teams)
-router.get(":number", TeamController.get_team);
+router.get("/:number", TeamController.get_team);
 
 router.put("/", TeamController.add_team)
 
-router.post("/update:number", TeamController.update_team)
+router.post("/update/:number", TeamController.update_team)
 
 router.delete("/:number", TeamController.delete_team)
-
-
 
 
 export default router;
