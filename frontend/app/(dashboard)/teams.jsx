@@ -5,6 +5,8 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { get_all_teams } from "../../api/team_functions";
 
+import BackButton from "../../components/BackButton";
+
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
@@ -47,7 +49,9 @@ const Teams = () => {
         />
         <CustomButton
           title="Edit"
-          handlePress={() => router.push(`/edit_team?teamNo=${item.number.trim()}`)}
+          handlePress={() =>
+            router.push(`/edit_team?teamNo=${item.number.trim()}`)
+          }
           containerStyles="mt-2"
           textStyles="text-sm"
         />
@@ -58,6 +62,8 @@ const Teams = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <View className="w-full justify-center min-h-[75vh] px-4 my-6 pb-16">
+        <BackButton style="w-[20vw]" color="white" size={32} path="/" />
+          
         <Text className="text-white text-3xl text-center text-semibold mb-5">
           Teams
         </Text>

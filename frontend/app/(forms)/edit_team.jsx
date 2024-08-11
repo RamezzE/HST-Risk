@@ -7,6 +7,8 @@ import { router, useLocalSearchParams } from "expo-router";
 
 import { get_team, update_team, delete_team } from "../../api/team_functions";
 
+import BackButton from "../../components/BackButton";
+
 const validateEditTeam = (teamName, password) => {
   var result = {
     success: false,
@@ -115,7 +117,6 @@ const EditTeam = () => {
               Alert.alert("Success", "Team deleted successfully");
 
               router.push("/teams");
-              
             } catch (error) {
               Alert.alert("Error", "Error deleting team");
               console.log(error);
@@ -132,7 +133,8 @@ const EditTeam = () => {
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <View className="w-full justify-center min-h-[75vh] px-4 my-6">
-          <Text className="text-4xl text-white font-bold text-center">
+          <BackButton style="w-[20vw]" color="white" size={32} path="/teams" />
+          <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
             Edit Team
           </Text>
           <FormField

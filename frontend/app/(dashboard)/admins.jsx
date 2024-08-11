@@ -6,6 +6,8 @@ import { get_admins } from "../../api/admin_functions";
 
 import CustomButton from "../../components/CustomButton";
 
+import BackButton from "../../components/BackButton";
+
 const Admins = () => {
   const [admins, setAdmins] = useState([]);
 
@@ -13,7 +15,8 @@ const Admins = () => {
     const fetchData = async () => {
       try {
         const result = await get_admins();
-        if (result && result.admins) {  // Adjust this line based on your API response structure
+        if (result && result.admins) {
+          // Adjust this line based on your API response structure
           setAdmins(result.admins);
         } else {
           setAdmins([]); // Ensure an empty array is set if there's no data
@@ -35,7 +38,9 @@ const Admins = () => {
       <CustomButton
         title="Edit"
         handlePress={() =>
-          router.push(`/edit_admin?name=${item.name.trim()}&password=${item.password.trim()}&war=${item.war.trim()}`)
+          router.push(
+            `/edit_admin?name=${item.name.trim()}&password=${item.password.trim()}&war=${item.war.trim()}`
+          )
         }
         containerStyles="w-1/3 mt-2"
         textStyles="text-sm"
@@ -46,6 +51,7 @@ const Admins = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <View className="w-full justify-center min-h-[85vh] my-16 pb-16 px-4">
+        <BackButton style="w-[20vw]" color="white" size={32} path="/" />
         <Text className="text-white text-3xl text-center text-semibold mb-5">
           Admins
         </Text>

@@ -7,6 +7,8 @@ import { router } from "expo-router";
 
 import { add_team } from "../../api/team_functions";
 
+import BackButton from "../../components/BackButton";
+
 const validateAddTeam = (teamNo, teamName, password) => {
   var result = {
     success: false,
@@ -79,10 +81,11 @@ const AddTeam = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
+        <BackButton style="w-[20vw]" color="white" size={32} path="/teams" />
         <View className="w-full justify-center min-h-[75vh] px-4 my-6">
-            <Text className="text-4xl text-white font-bold text-center">
-                Add Team
-            </Text>
+        <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
+        Add Team
+          </Text>
           <FormField
             title="Team Number"
             value={form.teamNo}
@@ -104,20 +107,12 @@ const AddTeam = () => {
             otherStyles="mt-7"
           />
 
-          <View className="w-full flex flex-row items-center justify-evenly">
-            <CustomButton
-              title="Cancel"
-              handlePress={() => router.push("/teams")}
-              containerStyles="w-[45%] mt-7"
-              isLoading={isSubmitting}
-            />
             <CustomButton
               title="Add Team"
               handlePress={submit}
-              containerStyles="w-[45%] mt-7"
+              containerStyles="mt-7"
               isLoading={isSubmitting}
             />
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

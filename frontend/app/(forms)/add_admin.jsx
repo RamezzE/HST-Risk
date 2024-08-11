@@ -9,6 +9,8 @@ import { router } from "expo-router";
 import { get_wars } from "../../api/warzone_functions";
 import { add_admin } from "../../api/admin_functions";
 
+import BackButton from "../../components/BackButton";
+
 const validateAddAdmin = (name, war) => {
   var result = {
     success: false,
@@ -80,9 +82,11 @@ const AddAdmin = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
-        <View className="w-full justify-center min-h-[75vh] px-4 my-6">
-          <Text className="text-4xl text-white font-bold text-center">
-            Add Admin
+      <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+
+      <BackButton style="w-[20vw]" color="white" size={32} path="/admins" />
+        <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
+        Add Admin
           </Text>
           <FormField
             title="Admin Name"
@@ -110,20 +114,12 @@ const AddAdmin = () => {
             otherStyles="mt-7"
           />
 
-          <View className="w-full flex flex-row items-center justify-evenly">
-            <CustomButton
-              title="Cancel"
-              handlePress={() => router.push("/admins")}
-              containerStyles="w-[45%] mt-7"
-              isLoading={isSubmitting}
-            />
             <CustomButton
               title="Add Admin"
               handlePress={submit}
-              containerStyles="w-[45%] mt-7"
+              containerStyles="mt-7"
               isLoading={isSubmitting}
             />
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

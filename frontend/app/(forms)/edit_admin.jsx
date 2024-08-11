@@ -10,6 +10,8 @@ import { get_wars } from "../../api/warzone_functions";
 
 import { update_admin, delete_admin } from "../../api/admin_functions";
 
+import BackButton from "../../components/BackButton";
+
 const validateEditAdmin = (name, password, war) => {
   var result = {
     success: false,
@@ -80,7 +82,6 @@ const EditAdmin = () => {
               Alert.alert("Success", "Admin deleted successfully");
 
               router.push("/admins");
-              
             } catch (error) {
               Alert.alert("Error", "Error deleting admin");
               console.log(error);
@@ -131,7 +132,8 @@ const EditAdmin = () => {
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <View className="w-full justify-center min-h-[75vh] px-4 my-6">
-          <Text className="text-4xl text-white font-bold text-center">
+          <BackButton style="w-[20vw]" color="white" size={32} path="/admins" />
+          <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
             Edit Admin
           </Text>
           <FormField
@@ -161,20 +163,12 @@ const EditAdmin = () => {
             otherStyles="mt-7"
           />
 
-          <View className="w-full flex flex-row items-center justify-evenly">
-            <CustomButton
-              title="Cancel"
-              handlePress={() => router.push("/admins")}
-              containerStyles="w-[45%] mt-7"
-              isLoading={isSubmitting}
-            />
-            <CustomButton
-              title="Update Admin"
-              handlePress={submit}
-              containerStyles="w-[45%] mt-7"
-              isLoading={isSubmitting}
-            />
-          </View>
+          <CustomButton
+            title="Update Admin"
+            handlePress={submit}
+            containerStyles="mt-7"
+            isLoading={isSubmitting}
+          />
           <CustomButton
             title="Delete Admin"
             handlePress={() => deleteAdmin()}

@@ -12,12 +12,16 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import { attack_check } from "../../api/attack_functions";
 
-import { get_countries_by_team, get_country_mappings } from "../../api/country_functions";
+import {
+  get_countries_by_team,
+  get_country_mappings,
+} from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 
 import countries from "../../constants/countries";
 
 import MapZone from "../../components/MapZone";
+import BackButton from "../../components/BackButton";
 
 const Attack = () => {
   const { name, teamNo, setAttackData } = useContext(GlobalContext);
@@ -36,11 +40,15 @@ const Attack = () => {
   });
 
   const getTeamColor = (countryName) => {
-    const country = countryMappings.find((c) => c.name === countryName);
-    const team = country
-      ? teams.find((t) => t.number === country.teamNo)
-      : null;
-    return team ? team.color : "#000000";
+    try {
+      const country = countryMappings.find((c) => c.name === countryName);
+      const team = country
+        ? teams.find((t) => t.number === country.teamNo)
+        : null;
+      return team ? team.color : "#000000";
+    } catch (error) {
+      return "#000000";
+    }
   };
 
   const changeMapPreview = (zone) => {
@@ -115,7 +123,7 @@ const Attack = () => {
 
   const selectYourZone = (zone) => {
     setForm({ ...form, your_zone: zone, other_zone: "" });
-    
+
     if (!zone || zone == "") return;
 
     changeMapPreview(zone);
@@ -204,6 +212,7 @@ const Attack = () => {
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
+          <BackButton style="w-[20vw]" color="white" size={32} path="/" />
           <View className="flex flex-col mb-6">
             <Text className="text-white text-center text-xl p-5">
               Welcome, {name} -- Team {teamNo}

@@ -2,7 +2,6 @@ import { View, Text, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useEffect, useContext } from "react";
 
-
 import CustomButton from "../../components/CustomButton";
 import { GlobalContext } from "../../context/GlobalProvider";
 
@@ -10,6 +9,8 @@ import { Link, router } from "expo-router";
 
 import { get_warzones } from "../../api/warzone_functions";
 import { attack } from "../../api/attack_functions";
+
+import BackButton from "../../components/BackButton";
 
 const Warzone = () => {
   const [warzones, setWarzones] = useState([]);
@@ -27,8 +28,9 @@ const Warzone = () => {
   }, []);
 
   const handlePress = async (warzone) => {
-    const availableWars = warzone.wars.filter(war => war.available);
-    const randomWar = availableWars[Math.floor(Math.random() * availableWars.length)];
+    const availableWars = warzone.wars.filter((war) => war.available);
+    const randomWar =
+      availableWars[Math.floor(Math.random() * availableWars.length)];
 
     setAttackData({ war: randomWar.name });
 
@@ -40,7 +42,7 @@ const Warzone = () => {
         attackData.defending_team,
         randomWar.name
       );
-      
+
       if (!response.errorMsg) {
         Alert.alert(
           `${warzone.name}`,
@@ -54,7 +56,7 @@ const Warzone = () => {
       }
     } catch (error) {
       Alert.alert("Error", "Error making attack request");
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -62,6 +64,7 @@ const Warzone = () => {
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <View className="w-full min-h-[80vh] px-4 my-6 flex flex-col justify-between">
+          <BackButton style="w-[20vw]" color="white" size={32} path="/" />
           <Text className="text-white text-center p-3 text-3xl ">
             Choose Your Warzone
           </Text>
