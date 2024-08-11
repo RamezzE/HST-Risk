@@ -4,51 +4,102 @@ import { MongoClient } from "mongodb";
 const client = new MongoClient(process.env.MONGO_URI, {});
 
 class TeamController {
-  static async login(req, res) {
+  static async add_team(req, res) {
     const result = {
       success: false,
-      name: "",
       errorMsg: "",
     };
 
-    const { teamNo, password } = req.body;
+    const { teamNo, teamName, password } = req.body;
+
+    const team = await Team.findOne({ number: teamNo });
+
+    if (team) {
+      result.errorMsg = `Team ${teamNo} already exists`;
+      return res.json(result);
+    }
+
+    const newTeam = new Team({
+      number: teamNo,
+      name: teamName,
+      password: password,
+    });
 
     try {
-      const team = await Team.findOne({ number: teamNo });
-
-      if (!team) {
-        console.log(`Team ${teamNo} not found`);
-        result.errorMsg = `Team ${teamNo} not found`;
-        return res.json(result);
-      }
-
-      const isPasswordValid = team.password === password;
-
-      if (!isPasswordValid) {
-        console.log("Invalid password");
-        result.errorMsg = "Invalid password";
-        return res.json(result);
-      }
-
-      console.log("Login Successful");
-
+      await newTeam.save();
       result.success = true;
-      result.name = team.name;
       return res.json(result);
     } catch (error) {
-      console.log("Server: Error during login:", error);
-      result.errorMsg = "Server: Error logging in";
+      console.error("Error adding team:", error);
+      result.errorMsg = "Error adding team";
+      return res.json(result);
+    }
+  }
+
+  static async update_team(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { number } = req.params;
+    const { teamName, password } = req.body;
+
+    try {
+      const team = await Team.findOne({ number });
+
+      if (!team) {
+        result.errorMsg = `Server: Team ${number} not found`;
+        return res.json(result);
+      }
+
+      team.name = teamName;
+      team.password = password;
+
+      await team.save();
+
+      result.success = true;
+      return res.json(result);
+    } catch (error) {
+      result.errorMsg = "Server: Error updating team";
+      console.log(error);
+      return res.json(result);
+    }
+  }
+
+  static async delete_team(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { number } = req.params;
+
+    try {
+      const team = await Team.findOne({ number });
+
+      if (!team) {
+        result.errorMsg = `Server: Team ${number} not found`;
+        return res.json(result);
+      }
+
+      const response = await Team.deleteOne({ number });
+
+      result.success = true;
+      return res.json(result);
+    } catch (error) {
+      result.errorMsg = "Server: Error deleting team";
+      console.log(error);
       return res.json(result);
     }
   }
 
   static async get_all_teams(req, res) {
-
     try {
       const teams = await Team.find();
       return res.json(teams);
     } catch (error) {
-      return res.json({})    
+      return res.json({});
     }
   }
 
@@ -71,14 +122,12 @@ class TeamController {
       result.success = true;
       result.team = team;
       return res.json(result);
-
     } catch (error) {
       console.error("Error fetching team:", error);
       result.errorMsg = "Error fetching team";
       return res.json(result);
     }
   }
-
 }
 
 export default TeamController;

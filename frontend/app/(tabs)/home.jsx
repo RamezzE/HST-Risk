@@ -3,9 +3,10 @@ import { View, Text, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
+
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
-import { get_all_attacks } from "../../api/team_functions";
+import { get_all_attacks } from "../../api/attack_functions";
 
 import countries from "../../constants/countries";
 
@@ -27,7 +28,6 @@ const Home = () => {
 
         const attacksResult = await get_all_attacks();
         setAttacks(attacksResult);
-
       } catch (err) {
         console.log(err);
         setError("Failed to fetch country mappings");
@@ -51,17 +51,31 @@ const Home = () => {
 
   const onMarkerPress = (zone) => {
     const country = countryMappings.find((c) => c.name === zone.name);
-    const team = country ? teams.find((t) => t.number === country.teamNo) : null;
+    const team = country
+      ? teams.find((t) => t.number === country.teamNo)
+      : null;
     const attack = attacks.find((a) => a.defending_zone === zone.name);
 
-    Alert.alert(zone.name, `Owned by: Team ${team.number}\n${attack ? `Under attack by: Team ${attack.attacking_team}` : "Not under attack"}`);
-      
+    Alert.alert(
+      zone.name,
+      `Owned by: Team ${team.number}\n${
+        attack
+          ? `Under attack by: Team ${attack.attacking_team}`
+          : "Not under attack"
+      }`
+    );
   };
 
   const getTeamColor = (countryName) => {
-    const country = countryMappings.find((c) => c.name === countryName);
-    const team = country ? teams.find((t) => t.number === country.teamNo) : null;
-    return team ? team.color : "#000000";
+    try {
+      const country = countryMappings.find((c) => c.name === countryName);
+      const team = country ? teams.find((t) => t.number === country.teamNo) : null;
+      return team ? team.color : "#000000";
+    } catch (error) {
+      console.log("Error in getTeamColor");
+    } finally {
+      return team ? team.color : "#000000";
+    }
   };
 
   return (
@@ -76,7 +90,8 @@ const Home = () => {
             latitudeDelta: 100,
             longitudeDelta: 180,
           }}
-          mapType="satellite"
+          // mapType="satellite"
+          mapType="terrain"
           rotateEnabled={false}
           pitchEnabled={false}
         >

@@ -5,7 +5,7 @@ import CustomButton from "../../components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
-import { add_team } from "../../api/admin_functions";
+import { add_team } from "../../api/team_functions";
 
 const validateAddTeam = (teamNo, teamName, password) => {
   var result = {

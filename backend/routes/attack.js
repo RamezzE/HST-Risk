@@ -12,11 +12,11 @@ router.use(function (req, res, next) {
 
 
 router.get('/', AttackController.get_attacks);
-router.get('/get_attacks/:zone', AttackController.get_attacks_on_zone);
+router.get('/zones/:zone', AttackController.get_attacks_on_zone);
+router.get('/wars/:war', AttackController.get_attacks_by_war);
 
 router.post('/attack', AttackController.attack);
-router.post('/attack_check', AttackController.attack_check);
+router.post('/check', AttackController.attack_check);
 
-router.get('/wars/:war', AttackController.get_attacks_by_war);
 
 export default router;

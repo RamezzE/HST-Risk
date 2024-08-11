@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState, useContext } from "react";
 
 import { GlobalContext } from "../../context/GlobalProvider";
-import { get_all_attacks } from "../../api/team_functions";
+import { get_all_attacks } from "../../api/attack_functions";
 
 const TeamAttacks = () => {
   const [attacks, setAttacks] = useState([]);
@@ -16,15 +16,15 @@ const TeamAttacks = () => {
   useEffect(() => {
 
 
-    if (!teamNo) {
-      setMyZones([]);
-      setOtherZones([]);
+    // if (!teamNo) {
+    //   setMyZones([]);
+    //   setOtherZones([]);
 
-      Alert.alert("Error", "Please login first");
+    //   Alert.alert("Error", "Please login first");
 
-      router.push("/home");
-      return;
-    }
+    //   router.push("/home");
+    //   return;
+    // }
 
     const fetchData = async () => {
       setError(null);

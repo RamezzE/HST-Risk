@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongooseConnectionPromise from "./db.js";
 
 import TeamController from "./controllers/team_controller.js";
+import UserController from "./controllers/user_controller.js";
 
 import admin_router from "./routes/admin.js";
 import country_router from "./routes/country.js";
@@ -14,6 +15,7 @@ import warzone_router from "./routes/warzone.js";
 import Warzone from "./models/warzone.js";
 import Team from "./models/team.js";
 import Country from "./models/country.js";
+import SuperAdmin from "./models/super_admin.js";
 
 const app = express();
 
@@ -104,6 +106,15 @@ app.get("/", (req, res, next) => {
   //   zone: "North Africa",
   // });
 
+  const newSuperAdmin = new SuperAdmin ({
+    name: "a",
+    password: "1",
+  });
+
+  newSuperAdmin.save().then(() =>{
+    console.log("Super Admin Created")
+  }).catch((e) => {});
+
   // newAdmin.save().then(() => {
   //   console.log("Admin created");
   // }
@@ -122,13 +133,6 @@ app.get("/", (req, res, next) => {
   // }).catch((err) => {
   //     console.error('Error saving Africa continent:', err);
   // });
-
-
-  Warzone.insertMany(warzones).then(() => {
-    console.log('Warzones saved');
-  }).catch((err) => {
-    console.error('Error saving warzones:', err);
-  });
 
   const countries = [
     {
@@ -212,12 +216,12 @@ app.get("/", (req, res, next) => {
   // });
 });
 
-app.use("/admin", admin_router);
+app.post("/login", UserController.login);
+
+app.use("/admins", admin_router);
 app.use("/teams", team_router);
 app.use("/countries", country_router);
 app.use("/attacks", attack_router);
 
 app.use("/warzones", warzone_router);
 
-app.get("/team/:number", TeamController.get_team);
-app.get("/all_teams", TeamController.get_all_teams);

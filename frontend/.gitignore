@@ -22,5 +22,7 @@ expo-env.d.ts
 app-example/
 hooks/
 scripts/
+android/
+.idea/
 
 tsconfig.json

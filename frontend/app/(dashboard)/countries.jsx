@@ -45,7 +45,7 @@ const Countries = () => {
         title="Edit"
         handlePress={() =>
           router.push(
-            `/edit_territory?countryName=${item.name.trim()}&teamNo=${item.teamNo.trim()}`
+            `/edit_territory?countryName=${item.name.trim()}&teamNo=${item.teamNo}`
           )
         }
         containerStyles="w-1/3 mt-2"

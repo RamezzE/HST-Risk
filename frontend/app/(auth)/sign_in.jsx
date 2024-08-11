@@ -1,29 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { images } from '../../constants';
 import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
-import { Link, router } from 'expo-router';
-import { login } from '../../api/team_functions';
+import { router } from 'expo-router';
+import { login } from '../../api/user_functions';
 
 import { useContext } from 'react';
 
 import { GlobalContext } from '../../context/GlobalProvider';
 
-const validateSignIn = (teamNo, password) => {
+const validateSignIn = (username, password) => {
   var result = {
     success: false,
     errorMsg: ''
   };
 
-  if (!teamNo || !password) {
+  if (!username || !password) {
     result.errorMsg = 'Please fill in all the fields';
-    return result;
-  }
-
-  if (isNaN(teamNo)) {
-    result.errorMsg = 'Team number must be a number';
     return result;
   }
 
@@ -33,16 +27,16 @@ const validateSignIn = (teamNo, password) => {
 
 const SignIn = () => {
   const [form, setForm] = useState({
-    teamNo: '',
+    username: '',
     password: ''
   });
 
-  const { setName, setTeamNo } = useContext(GlobalContext);
+  const { setName, setTeamNo, setUserMode } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async () => {
-    var result = validateSignIn(form.teamNo, form.password);
+    var result = validateSignIn(form.username, form.password);
 
     if (!result.success) {
       Alert.alert('Error', result.errorMsg);
@@ -52,20 +46,35 @@ const SignIn = () => {
     setIsSubmitting(true);
 
     try {
-      const loginResult = await login(form.teamNo.trim(), form.password.trim());
-      console.log(loginResult);
-      if (!loginResult.success) {
-        Alert.alert('Error', loginResult.errorMsg);
+      const response = await login(form.username.trim(), form.password.trim());
+      
+      if (!response.success) {
+        Alert.alert('Error', response.errorMsg);
         return;
       }
 
-      setName(loginResult.name.trim());
-      setTeamNo(form.teamNo.trim());
-      
-      router.push('/home');
+      if (response.team != "") {
+        setTeamNo(form.username)
+        router.push("/home")
+        return;
+      }
 
+      if (response.admin != "") {
+        setName(form.username)
+        router.push("/admin_home")
+        return;
+      }
+
+      if (response.superAdmin != "") {
+        setName(form.username)
+        router.push("/dashboard")
+        return;
+      }
+
+      Alert.alert("Error", response.errorMsg);
+      
     } catch (error) {
-      Alert.alert('Error', "Error logging in");
+      Alert.alert('Error', "Cannot sign in");
       console.log(error)
     } finally {
       setIsSubmitting(false);
@@ -76,20 +85,15 @@ const SignIn = () => {
     <SafeAreaView className='bg-primary h-full'>
       <ScrollView>
         <View className='w-full justify-center min-h-[75vh] px-4 my-6'>
-          {/* <Image 
-            source={images.logo}
-            resizeMode='contain'
-            className='w-[115px] h-[35px]'
-          /> */}
 
           <Text className='text-2xl text-white text-semibold mt-10 font-psemibold'>
-            Log in to Domination
+            Sign In
           </Text>
 
           <FormField 
-            title='Team Number'
-            value={form.teamNo}
-            handleChangeText={(e) => setForm({ ...form, teamNo: e })}
+            title='Username'
+            value={form.username}
+            handleChangeText={(e) => setForm({ ...form, username: e })}
             otherStyles='mt-7'
           />
 

@@ -2,31 +2,54 @@ import axios from "axios";
 
 import config from "./config";
 
-export const login = async (teamNo, password) => {
+serverIP = config.serverIP + "/teams"
+
+export const add_team = async (teamNo, teamName, password) => {
   try {
-    const response = await axios.post(`${config.serverIP}/teams/login`, {
+    const response = await axios.put(`${serverIP}`, {
       teamNo,
+      teamName,
       password,
     });
 
     return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || "API: Error logging in" };
+    return { errorMsg: error.response?.data || "API: Error Adding Team" };
   }
 };
 
-export const check_team_session = async () => {
+export const update_team = async (teamNo, teamName, password) => {
   try {
-    const response = await axios.post('')
+    const response = await axios.post(
+      `${serverIP}/update/${teamNo}`,
+      {
+        teamName,
+        password,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "API: Error updating team" };
   }
-  catch(error) {
-    return false 
+};
+
+export const delete_team = async (teamNo) => {
+  try {
+    const response = await axios.delete(
+      `${serverIP}/${teamNo}`
+    );
+
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "API: Error deleting team" };
   }
-}
+};
 
 export const get_all_teams = async () => {
   try {
-    const response = await axios.get(`${config.serverIP}/all_teams`);
+    const response = await axios.get(`${serverIP}`);
+    console.log(response)
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "API: Error fetching teams" };
@@ -35,63 +58,9 @@ export const get_all_teams = async () => {
 
 export const get_team = async (teamNo) => {
   try {
-    const response = await axios.get(`${config.serverIP}/team/${teamNo}`);
+    const response = await axios.get(`${serverIP}/${teamNo}`);
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "API: Error fetching team" };
   }
 };
-
-export const attack_check = async (zone_1, team_1, zone_2, team_2) => {
-
-  console.log("API: attack_check", zone_1, team_1, zone_2, team_2);
-
-  try {
-    const response = await axios.post(`${config.serverIP}/attacks/attack_check`, {
-      zone_1,
-      team_1,
-      zone_2,
-      team_2,
-    });
-
-    console.log("API: attack_check response", response.data);
-
-    return response.data;
-  } catch (error) {
-    return {
-      errorMsg: error.response?.data || "API: Error checking attack",
-    };
-  }
-}
-
-export const attack = async (zone_1, team_1, zone_2, team_2, war) => {
-  try {
-    const response = await axios.post(`${config.serverIP}/attacks/attack`, {
-      zone_1,
-      team_1,
-      zone_2,
-      team_2,
-      war,
-    });
-    
-    return response.data;
-  } catch (error) {
-    return {
-      errorMsg: error.response?.data || "API: Error making attack request",
-    };
-  }
-};
-
-
-export const get_all_attacks = async() => {
-
-  try {
-    const response = await axios.get(`${config.serverIP}/attacks`);
-    return response.data;
-  }
-  catch(error) {
-    return {
-      errorMsg: error.response?.data || "API: Error fetching all attacks",
-    }
-  }
-}

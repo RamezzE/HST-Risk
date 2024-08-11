@@ -3,7 +3,6 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import CustomButton from "../components/CustomButton";
-// import { images } from '../constants'
 
 import { useContext } from "react";
 import { GlobalContext } from "../context/GlobalProvider";
@@ -36,21 +35,7 @@ export default function App() {
             <Text className="text-gray-200 text-center mt-3 text-sm">
               by Helio Sports Team
             </Text>
-
-            {/* <Image 
-              source = { images.path }
-              className = 'w-[136px] h-[15px] absolute -bottom-2 -right-8'
-              resizeMode = 'contain'
-            /> */}
           </View>
-          {/* <Text className="text-sm font-pregular text-gray-100 mt-7 text-center">
-            Where creativity meets innovation: embark on a journey of limitless
-            with Aora
-          </Text> */}
-
-          <Text className="text-lg mt-7 text-white text-left w-full">
-            Login as:
-          </Text>
 
           <View className="w-full flex flex-row justify-evenly items-center">
             
@@ -61,18 +46,18 @@ export default function App() {
             />
 
             <CustomButton
-              title="Team"
-              handlePress={() => router.push("/team_sign_in")}
+              title="Sign in"
+              handlePress={() => router.push("/sign_in")}
               containerStyles="p-5 mt-5"
             />
 
-            <CustomButton
+            {/* <CustomButton
               title="Admin"
               // handlePress={() => router.push("/warzone")}
-              handlePress={() => router.push("/admin_sign_in")}
+              handlePress={() => router.push("/sign_in")}
               // handlePress={() => router.push("/teams")}
               containerStyles="p-5 mt-5"
-            />
+            /> */}
           </View>
         </View>
       </ScrollView>
