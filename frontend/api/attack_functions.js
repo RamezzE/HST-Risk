@@ -15,8 +15,9 @@ export const attack_check = async (zone_1, team_1, zone_2, team_2) => {
 
     return response.data;
   } catch (error) {
+    console.log("Error checking attack:", error);
     return {
-      errorMsg: error.response?.data || "API: Error checking attack",
+      errorMsg: error.response?.data || "API: Error checking attack"
     };
   }
 };

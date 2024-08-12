@@ -5,8 +5,6 @@ import { useEffect, useState, useContext } from "react";
 import { GlobalContext } from "../../context/GlobalProvider";
 import { get_all_attacks } from "../../api/attack_functions";
 
-import BackButton from "../../components/BackButton";
-
 const TeamAttacks = () => {
   const [attacks, setAttacks] = useState([]);
   const [error, setError] = useState(null);
@@ -47,7 +45,6 @@ const TeamAttacks = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full">
-      <BackButton style="w-[20vw]" color="white" size={32} path="/" />
       <Text className="text-white text-center text-2xl p-4">Team Attacks</Text>
       {error ? (
         <Text className="text-red-500 text-center p-2 text-xl">{error}</Text>

@@ -120,6 +120,33 @@ class AdminController {
       return res.json(result);
     }
   }
+
+  static async get_admin_by_name(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+      admin: {},
+    };
+
+    const { name } = req.params;
+
+    try {
+      const admin = await Admin.findOne({ name });
+
+      if (!admin) {
+        result.errorMsg = `Server: Admin ${name} not found`;
+        return res.json(result);
+      }
+
+      result.success = true;
+      result.admin = admin;
+      return res.json(result);
+    } catch (error) {
+      result.errorMsg = "Server: Error getting admin by name";
+      console.log(error);
+      return res.json(result);
+    }
+  }
 }
 
 export default AdminController;

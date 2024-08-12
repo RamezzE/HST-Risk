@@ -7,10 +7,11 @@ export const GlobalProvider = ({ children }) => {
   const [name, setName] = useState('');
   const [teamNo, setTeamNo] = useState('');
   const [attackData, setAttackData] = useState({});
-//   const [globalVariable3, setGlobalVariable3] = useState('defaultValue3');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userMode, setUserMode] = useState('');
 
   return (
-    <GlobalContext.Provider value={{ name, teamNo, attackData, setName, setTeamNo, setAttackData }}>
+    <GlobalContext.Provider value={{ name, teamNo, attackData, isLoggedIn, userMode, setName, setTeamNo, setAttackData, setIsLoggedIn, setUserMode }}>
       {children}
     </GlobalContext.Provider>
   );

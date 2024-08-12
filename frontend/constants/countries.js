@@ -51,7 +51,7 @@ const SouthAfrica = {
     { latitude: -34.11527677409753, longitude: 18.55028635244981 },
     { latitude: -34.13102062966398, longitude: 18.807031191182936 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Congo", "Madagascar"],
 };
 
 const Congo = {
@@ -79,7 +79,7 @@ const Congo = {
     { latitude: 0.1116679083567425, longitude: 34.001076617354876 },
     { latitude: -4.3587815908493, longitude: 39.12548819306352 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Central Africa", "Madagascar"],
 };
 
 const CentralAfrica = {
@@ -110,7 +110,7 @@ const CentralAfrica = {
     { latitude: -0.6302739868516516, longitude: 8.66877124486643 },
     { latitude: -1.9534387420808224, longitude: 9.304913520540412 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["North Africa", "Egypt", "Congo", "Middle East"],
 };
 
 const Egypt = {
@@ -185,7 +185,7 @@ const Egypt = {
       longitude: 24.807954815418174,
     },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["North Africa", "Central Africa", "Middle East"],
 };
 
 const NorthAfrica = {
@@ -340,7 +340,7 @@ const NorthAfrica = {
       longitude: 10.697733500790408,
     },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Europe", "Egypt", "Central Africa", "Brazil"],
 };
 
 const Madagascar = {
@@ -427,7 +427,7 @@ const Madagascar = {
       longitude: 46.42478116318981,
     },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Congo", "South Africa", "Western Australia"],
 };
 
 /* ##################### AUSTRALIA ##################### */
@@ -535,7 +535,7 @@ const WesternAustralia = {
     { latitude: -26.015495892055373, longitude: 134.9284389133305 },
     { latitude: -25.938734239908193, longitude: 129.12201804947927 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Eastern Australia", "Chile"],
 };
 
 const EasternAustralia = {
@@ -575,7 +575,7 @@ const EasternAustralia = {
     { latitude: -25.938734239908193, longitude: 129.12201804947927 },
     { latitude: -26.015495892055373, longitude: 134.9284389133305 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Western Australia", "New Zealand", "New Guinea"],
 };
 
 const NewGuinea = {
@@ -639,7 +639,7 @@ const NewGuinea = {
     { latitude: -7.440432011468366, longitude: 138.1645858480317 },
     { latitude: -8.229340337825192, longitude: 137.6405682101394 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Indonesia", "Eastern Australia"],
 };
 
 const Indonesia = {
@@ -762,7 +762,7 @@ const Indonesia = {
     { latitude: 5.870192979666426, longitude: 95.06471063470617 },
     { latitude: 5.376112879835446, longitude: 94.85567033244105 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["India", "Western Australia", "New Guinea"],
 };
 
 /* ##################### SOUTH AMERICA #####################*/
@@ -804,7 +804,7 @@ const Brazil = {
     { latitude: 5.6944557735199535, longitude: -53.33600928282119 },
     { latitude: 4.695274342276375, longitude: -52.07652828661817 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["North Africa", "Venezuela", "Paraguay", "Bolivia"],
 };
 
 const Venezuela = {
@@ -842,7 +842,7 @@ const Venezuela = {
     { latitude: 0.5035869655257817, longitude: -76.64904753263556 },
     { latitude: -1.3607202928711508, longitude: -73.54164484793529 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Honduras", "Brazil", "Peru"],
 };
 
 const Peru = {
@@ -864,7 +864,7 @@ const Peru = {
     { latitude: -7.212847794540873, longitude: -73.41757562367728 },
     { latitude: -1.3607202928711508, longitude: -73.54164484793529 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Venezuela", "Bolivia", "Chile"],
 };
 
 const Bolivia = {
@@ -886,7 +886,7 @@ const Bolivia = {
     { latitude: -11.134942453874828, longitude: -69.18761833867856 },
     { latitude: -16.395430799643538, longitude: -68.8610443799119 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Brazil", "Peru", "Chile", "Argentina", "Paraguay"],
 };
 
 const Chile = {
@@ -920,7 +920,7 @@ const Chile = {
     { latitude: -22.57191061317443, longitude: -67.73971795710327 },
     { latitude: -19.527327862236337, longitude: -68.45442057458432 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Peru", "Bolivia", "Argentina", "New Zealand"],
 };
 
 const Argentina = {
@@ -980,7 +980,7 @@ const Argentina = {
     { latitude: -23.15804512313257, longitude: -67.08101225971139 },
     { latitude: -22.57191061317443, longitude: -67.73971795710327 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Chile", "Bolivia", "Paraguay"],
 };
 
 const Paraguay = {
@@ -1013,7 +1013,7 @@ const Paraguay = {
     { latitude: -25.46258135992365, longitude: -48.02613465820195 },
     { latitude: -25.420889842058976, longitude: -48.091958150269484 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Argentina", "Bolivia", "Brazil"],
 };
 
 // ##################### NORTH AMERICA #####################
@@ -1299,7 +1299,7 @@ const Greenland = {
 
 
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Northwest Territories", "Quebec", "Iceland"],
 };
 
 const Honduras = {
@@ -1376,7 +1376,7 @@ const Honduras = {
     { latitude: 13.129091516159372, longitude: -88.49047422908235 },
     { latitude: 13.028790391461325, longitude: -87.96541122971246 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Cuba", "Venezuela", "Mexico"],
 };
 
 const Mexico = {
@@ -1504,7 +1504,7 @@ const Mexico = {
     { latitude: 18.394394368088527, longitude: -88.08799833889495 },
     { latitude: 18.42953545414978, longitude: -88.24026159074661 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Western US", "Honduras", "Cuba"],
 };
 
 const WesternUS = {
@@ -1563,7 +1563,7 @@ const WesternUS = {
     { latitude: 32.96522663719689, longitude: -117.42839020004388 },
     { latitude: 32.716284651351174, longitude: -117.39546841585974 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Canada", "Mexico", "Eastern US"],
 };
 
 const EasternUS = {
@@ -1633,7 +1633,7 @@ const EasternUS = {
     { latitude: 29.584356697351232, longitude: -93.46581489900416 },
     { latitude: 29.354799738025374, longitude: -94.43261168356184 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Western US", "Canada", "Quebec", "Cuba"],
 };
 
 const Cuba = {
@@ -1809,7 +1809,7 @@ const Cuba = {
     { latitude: 21.87265986239569, longitude: -84.95730719668889 },
     { latitude: 21.918916763470115, longitude: -84.9299610179261 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Eastern US", "Mexico", "Honduras"],
 };
 
 const Quebec = {
@@ -1893,7 +1893,7 @@ const Quebec = {
     { latitude: 47.630481586723825, longitude: -79.52274156485475 },
     { latitude: 46.46201193448213, longitude: -78.98141225657108 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Canada", "Eastern US", "Greenland"],
 };
 
 const Canada = {
@@ -1946,7 +1946,7 @@ const Canada = {
     { latitude: 43.94831083042384, longitude: -77.05932592365008 },
     { latitude: 45.126444697205834, longitude: -75.17077270743967 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Northwest Territories", "Western US", "Eastern US", "Quebec"],
 };
 
 const Alaska = {
@@ -2166,7 +2166,7 @@ const Alaska = {
     { latitude: 69.608418043853, longitude: -139.00404160177547 },
     { latitude: 69.610418043853, longitude: -139.00404160177547 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Russia", "Northwest Territories"],
 };
 
 const NorthwestTerritories = {
@@ -2397,7 +2397,7 @@ const NorthwestTerritories = {
     { latitude: 69.61850376448189, longitude: -140.41819908542325 },
     { latitude: 69.6522600737505, longitude: -140.93554739613037 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Alaska", "Canada", "Greenland"],
 };
 
 /*##################### ASIA & EUROPE #####################*/
@@ -2630,7 +2630,7 @@ const Russia = {
     { latitude: 58.89245883715533, longitude: 142.2679123694772 },
     { latitude: 59.16140591999185, longitude: 144.3583153921286 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Alaska", "Northern Europe", "Europe", "Kazakhstan", "Mongolia", "China", "Korea"],
 };
 
 const Japan = {
@@ -2920,7 +2920,7 @@ const Japan = {
     { latitude: 31.124143080214242, longitude: 130.5512182253039 },
     { latitude: 30.97863587603112, longitude: 130.60347829871108 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["China", "Korea"],
 };
 
 const Iceland = {
@@ -3063,7 +3063,7 @@ const Iceland = {
     { latitude: 64.71917436414256, longitude: -23.679662879692927 },
     { latitude: 64.77435211180088, longitude: -23.439465429874353 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Britain", "Greenland", "Northern Europe"],
 };
 
 const China = {
@@ -3189,7 +3189,7 @@ const China = {
     { latitude: 48.43307066985152, longitude: 134.7424614879322 },
     { latitude: 47.31136131467915, longitude: 134.63794133679963 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Russia", "Mongolia", "Korea", "Japan", "India", "Kazakhstan"],
 };
 
 const Mongolia = {
@@ -3223,7 +3223,7 @@ const Mongolia = {
     { latitude: 45.542667410103775, longitude: 90.97943248642441 },
     { latitude: 46.9228993698727, longitude: 90.60989793103471 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Russia", "China"],
 };
 
 const Korea = {
@@ -3366,7 +3366,7 @@ const Korea = {
     { latitude: 40.222266153058264, longitude: 123.92961072971788 },
     { latitude: 39.23820056100606, longitude: 121.79066149194074 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Russia", "Japan", "China"],
 };
 
 const India = {
@@ -3544,7 +3544,7 @@ const India = {
     { latitude: 22.10830954246297, longitude: 106.8843093339252 },
     { latitude: 21.421932815909763, longitude: 108.436354466562 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Indonesia", "China", "Kazakhstan", "Middle East"],
 };
 
 const Kazakhstan = {
@@ -3623,7 +3623,7 @@ const Kazakhstan = {
     { latitude: 46.505064255873855, longitude: 50.64420632902986 },
     { latitude: 46.05457232764639, longitude: 49.61992071897895 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Russia", "China", "India", "Middle East"],
 };
 
 const MiddleEast = {
@@ -3803,7 +3803,7 @@ const MiddleEast = {
     { latitude: 29.491495646403447, longitude: 34.86615758750031 },
     { latitude: 31.086857436138178, longitude: 34.293379026646264 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Egypt", "Europe", "Kazakhstan", "India"],
 };
 
 const NorthernEurope = {
@@ -4068,7 +4068,7 @@ const NorthernEurope = {
     { latitude: 55.327044192805076, longitude: 12.857015150106678 },
     { latitude: 55.872826882740625, longitude: 12.736257507658138 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Russia", "Britain", "Europe", "Iceland"],
 };
 
 const Britain = {
@@ -4202,7 +4202,7 @@ const Britain = {
     { latitude: 57.74179658846468, longitude: -6.185095641564689 },
     { latitude: 57.61563340663887, longitude: -6.036291835237198 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Iceland", "Northern Europe", "Europe"],
 };
 
 const Europe = {
@@ -4854,7 +4854,7 @@ const Europe = {
     { latitude: 36.46264429052175, longitude: -3.668658126131045 },
     { latitude: 36.25028687005287, longitude: -4.750023848431742 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Britain", "North Africa", "Middle East", "Russia", "Northern Europe"],
 };
 
 export default [

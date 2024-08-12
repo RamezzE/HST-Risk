@@ -19,38 +19,98 @@ class UserController {
     const { username, password } = req.body;
 
     if (isNumberString(username)) {
-      const team = await Team.findOne({ number: username, password });
-
+  
       try {
-        if (team) {
+        const team = await Team.findOne({ number: username, password });
+
+        if (team != null) {
+          req.session.user = { id: team._id, mode: "team" };
           response.success = true;
           response.team = team;
           return res.json(response);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     }
 
-    const admin = await Admin.findOne({ name: username, password });
 
     try {
+      const admin = await Admin.findOne({ name: username, password });
+
+      if (admin != null) {
+        req.session.user = { id: admin._id, mode: "admin" };
+        response.success = true;
+        response.admin = admin;
+        return res.json(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+
+    try {
+      const superAdmin = await SuperAdmin.findOne({ name: username, password });
+      if (superAdmin != null) {
+        req.session.user = { id: superAdmin._id, mode: "super_admin" };
+        response.success = true;
+        response.superAdmin = superAdmin;
+        return res.json(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    response.errorMsg = "Invalid Credentials";
+    return res.json(response);
+  }
+
+  static async logout(req, res) {
+    req.session.destroy((err) => {});
+  }
+
+  static async is_logged_in(req, res) {
+    const response = {
+      success: false,
+      team: "",
+      admin: "",
+      superAdmin: "",
+      errorMsg: "",
+    };
+
+    if (!req.session.user) {
+      response.success = false;
+      return res.json(response);
+    }
+
+    const { id, mode } = req.session.user;
+
+    if (mode === "team") {
+      const team = await Team.findById(id);
+
+      if (team) {
+        response.success = true;
+        response.team = team;
+        return res.json(response);
+      }
+    } else if (mode === "admin") {
+      const admin = await Admin.findById(id);
+
       if (admin) {
         response.success = true;
         response.admin = admin;
         return res.json(response);
       }
-    } catch (error) {}
+    } else if (mode === "super_admin") {
+      const superAdmin = await SuperAdmin.findById(id);
 
-    const superAdmin = await SuperAdmin.findOne({ name: username, password });
-
-    try {
       if (superAdmin) {
         response.success = true;
         response.superAdmin = superAdmin;
         return res.json(response);
       }
-    } catch (error) {}
-
-    response.errorMsg = "Invalid Credentials";
+    }
+    response.success = false;
     return res.json(response);
   }
 }

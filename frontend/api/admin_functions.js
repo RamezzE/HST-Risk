@@ -4,6 +4,16 @@ import config from "./config";
 
 const serverIP = config.serverIP + "/admins"
 
+export const get_admin_by_name = async (name) => {
+  try {
+    const response = await axios.get(`${serverIP}/${name}`);
+
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "API: Error getting admin by name" };
+  }
+}
+
 export const get_admins = async () => {
   try {
     const response = await axios.get(`${serverIP}`);
