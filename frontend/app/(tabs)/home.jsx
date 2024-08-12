@@ -3,6 +3,7 @@ import { View, Text, Alert, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
+import DottedLine from "../../components/DottedLine";
 
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
@@ -10,6 +11,8 @@ import { get_all_attacks } from "../../api/attack_functions";
 
 import countries from "../../constants/countries";
 import BackButton from "../../components/BackButton";
+
+import CountryConnections from "../../constants/country_connections";
 
 const Home = () => {
   const [zones, setZones] = useState([]);
@@ -110,6 +113,18 @@ const Home = () => {
                 color={getTeamColor(zone.name)}
                 label={zone.name}
                 onMarkerPress={() => onMarkerPress(zone)}
+              />
+            ))}
+
+            {CountryConnections.map((points, index) => (
+              <DottedLine
+                key={index}
+                startPoint={points.point1}
+                endPoint={points.point2}
+                color="#FFF"
+                thickness={1.5}
+                // dashLength={25}
+                dashGap={2}
               />
             ))}
           </MapView>

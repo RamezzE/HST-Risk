@@ -23,12 +23,12 @@ const MapZone = ({ points, color, label, onMarkerPress }) => {
         coordinates={points}
         strokeColor={`#000000`}
         fillColor={`${color}85`}
-        strokeWidth={4}
+        strokeWidth={2}
       />
 
       <Marker coordinate={polygonCenter} onPress={onMarkerPress}>
-        <View className="bg-primary rounded-lg">
-          <Text className="p-1 text-xs font-bold text-white">{label}</Text>
+        <View className="opacity-70 bg-primary rounded-lg">
+          <Text className="p-1 text-[8px] font-bold text-white">{label}</Text>
         </View>
       </Marker>
     </>
