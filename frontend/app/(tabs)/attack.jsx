@@ -22,6 +22,8 @@ import countries from "../../constants/countries";
 
 import MapZone from "../../components/MapZone";
 import BackButton from "../../components/BackButton";
+import CountryConnections from "../../constants/country_connections";
+import DottedLine from "../../components/DottedLine";
 
 const Attack = () => {
   const { name, teamNo, setAttackData } = useContext(GlobalContext);
@@ -65,34 +67,36 @@ const Attack = () => {
   };
 
   useEffect(() => {
-    if (!teamNo) {
-      setMyZones([]);
-      setOtherZones([]);
+    // if (!teamNo) {
+    //   setMyZones([]);
+    //   setOtherZones([]);
 
-      Alert.alert("Error", "Please login first");
+    //   Alert.alert("Error", "Please login first");
 
-      router.push("/home");
-      return;
-    }
+    //   router.push("/home");
+    //   return;
+    // }
 
     const fetchData = async () => {
       setError(null);
 
       try {
         const result1 = await get_countries_by_team(parseInt(teamNo));
+        setMyZones(result1.countries);
         const result2 = await get_countries_by_team(2);
+        setOtherZones(result2.countries);
 
-        if (result1.errorMsg) {
-          setError(result1.errorMsg);
-        } else if (result2.errorMsg) {
-          setError(result2.errorMsg);
-        } else if (Array.isArray(result1) || Array.isArray(result2)) {
-          if (Array.isArray(result1)) setMyZones(result1);
+        // if (result1.errorMsg) {
+        //   setError(result1.errorMsg);
+        // } else if (result2.errorMsg) {
+        //   setError(result2.errorMsg);
+        // } else if (Array.isArray(result1) || Array.isArray(result2)) {
+        //   if (Array.isArray(result1)) setMyZones(result1);
 
-          if (Array.isArray(result2)) setOtherZones(result2);
-        } else {
-          setError("Unexpected response format");
-        }
+        //   if (Array.isArray(result2)) setOtherZones(result2);
+        // } else {
+        //   setError("Unexpected response format");
+        // }
       } catch (err) {
         setError("Failed to fetch data");
       }
@@ -218,29 +222,41 @@ const Attack = () => {
               Welcome, {name} -- Team {teamNo}
             </Text>
 
-            <DropDownField
-              title="Select Your Zone"
-              value={form.your_zone}
-              placeholder="Select Your Zone"
-              items={myZones.map((zone) => ({
-                label: `${zone.name} - Team ${zone.teamNo}`,
-                value: zone.name,
-              }))}
-              handleChange={(e) => selectYourZone(e)}
-              otherStyles=""
-            />
+            {!Array.isArray(myZones) || myZones.length === 0 ? (
+              <Text style={{ color: "red" }}>
+                Error: Zones data is unavailable or incorrect.
+              </Text>
+            ) : (
+              <DropDownField
+                title="Select Your Zone"
+                value={form.your_zone}
+                placeholder="Select Your Zone"
+                items={myZones.map((zone) => ({
+                  label: `${zone.name} - Team ${zone.teamNo}`,
+                  value: zone.name,
+                }))}
+                handleChange={(e) => selectYourZone(e)}
+                otherStyles=""
+              />
+            )}
 
-            <DropDownField
-              title="Select Adjacent Zone"
-              value={form.other_zone}
-              placeholder="Select Adjacent Zone"
-              items={otherZones.map((zone) => ({
-                label: `${zone.name} - Team ${zone.teamNo}`,
-                value: zone.name,
-              }))}
-              handleChange={(e) => selectOtherZone(e)}
-              otherStyles="mt-5"
-            />
+            {!Array.isArray(otherZones) || otherZones.length === 0 ? (
+              <Text style={{ color: "red" }}>
+                Error: Adjacent Zones data is unavailable or incorrect.
+              </Text>
+            ) : (
+              <DropDownField
+                title="Select Adjacent Zone"
+                value={form.other_zone}
+                placeholder="Select Adjacent Zone"
+                items={otherZones.map((zone) => ({
+                  label: `${zone.name} - Team ${zone.teamNo}`,
+                  value: zone.name,
+                }))}
+                handleChange={(e) => selectOtherZone(e)}
+                otherStyles="mt-5"
+              />
+            )}
           </View>
 
           <MapView
@@ -263,6 +279,18 @@ const Attack = () => {
                 points={zone.points}
                 color={getTeamColor(zone.name)}
                 label={zone.name}
+              />
+            ))}
+
+            {CountryConnections.map((points, index) => (
+              <DottedLine
+                key={index}
+                startPoint={points.point1}
+                endPoint={points.point2}
+                color="#FFF"
+                thickness={1.5}
+                // dashLength={25}
+                dashGap={2}
               />
             ))}
           </MapView>

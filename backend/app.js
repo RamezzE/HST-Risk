@@ -106,14 +106,14 @@ app.get("/", (req, res, next) => {
   //   zone: "North Africa",
   // });
 
-  const newSuperAdmin = new SuperAdmin ({
-    name: "a",
-    password: "1",
-  });
+  // const newSuperAdmin = new SuperAdmin ({
+  //   name: "a",
+  //   password: "1",
+  // });
 
-  newSuperAdmin.save().then(() =>{
-    console.log("Super Admin Created")
-  }).catch((e) => {});
+  // newSuperAdmin.save().then(() =>{
+  //   console.log("Super Admin Created")
+  // }).catch((e) => {});
 
   // newAdmin.save().then(() => {
   //   console.log("Admin created");
@@ -134,80 +134,54 @@ app.get("/", (req, res, next) => {
   //     console.error('Error saving Africa continent:', err);
   // });
 
-  const countries = [
-    {
-      name: "South Africa",
-      teamNo: 1,
-    },
-    {
-      name: "Central Africa",
-      teamNo: 2,
-    },
-    {
-      name: "East Africa",
-      teamNo: 3,
-    },
-    {
-      name: "Egypt",
-      teamNo: 4,
-    },
-    {
-      name: "North Africa",
-      teamNo: 5,
-    },
-    {
-      name: "Madagascar",
-      teamNo: 1,
-    },
-    {
-      name: "New Zealand",
-      teamNo: 2,
-    },
-    {
-      name: "Western Australia",
-      teamNo: 3,
-    },
-    {
-      name: "Eastern Australia",
-      teamNo: 4,
-    },
-    {
-      name: "New Guinea",
-      teamNo: 5,
-    },
-    {
-      name: "Indonesia",
-      teamNo: 1,
-    },
-    {
-      name: "Brazil",
-      teamNo: 2,
-    },
-    {
-      name: "Venezuela",
-      teamNo: 3,
-    },
-    {
-      name: "Peru",
-      teamNo: 4,
-    },
-    {
-      name: "Bolivia",
-      teamNo: 5,
-    },
-    {
-      name: "Chile",
-      teamNo: 1,
-    },
-    {
-      name: "Argentina",
-      teamNo: 2,
-    },
-    {
-      name: "Paraguay",
-      teamNo: 3,
-    },
-  ];
+  // const countries = [
+  //   { name: 'South Africa', teamNo: 1 },
+  //   { name: 'Madagascar', teamNo: 1 },
+  //   { name: 'Indonesia', teamNo: 1 },
+  //   { name: 'Chile', teamNo: 1 },
+  //   { name: 'Mexico', teamNo: 1 },
+  //   { name: 'Canada', teamNo: 1 },
+  //   { name: 'Iceland', teamNo: 1 },
+  //   { name: 'Kazakhstan', teamNo: 1 },
+  
+  //   { name: 'Congo', teamNo: 2 },
+  //   { name: 'New Zealand', teamNo: 2 },
+  //   { name: 'Brazil', teamNo: 2 },
+  //   { name: 'Argentina', teamNo: 2 },
+  //   { name: 'Western US', teamNo: 2 },
+  //   { name: 'Alaska', teamNo: 2 },
+  //   { name: 'China', teamNo: 2 },
+  //   { name: 'Middle East', teamNo: 2 },
+  
+  //   { name: 'Central Africa', teamNo: 3 },
+  //   { name: 'Western Australia', teamNo: 3 },
+  //   { name: 'Venezuela', teamNo: 3 },
+  //   { name: 'Paraguay', teamNo: 3 },
+  //   { name: 'Eastern US', teamNo: 3 },
+  //   { name: 'Northwest Territories', teamNo: 3 },
+  //   { name: 'Mongolia', teamNo: 3 },
+  //   { name: 'Northern Europe', teamNo: 3 },
+  
+  //   { name: 'Egypt', teamNo: 4 },
+  //   { name: 'Eastern Australia', teamNo: 4 },
+  //   { name: 'Peru', teamNo: 4 },
+  //   { name: 'Greenland', teamNo: 4 },
+  //   { name: 'Cuba', teamNo: 4 },
+  //   { name: 'Russia', teamNo: 4 },
+  //   { name: 'Korea', teamNo: 4 },
+  //   { name: 'Britain', teamNo: 4 },
+  
+  //   { name: 'North Africa', teamNo: 5 },
+  //   { name: 'New Guinea', teamNo: 5 },
+  //   { name: 'Bolivia', teamNo: 5 },
+  //   { name: 'Honduras', teamNo: 5 },
+  //   { name: 'Quebec', teamNo: 5 },
+  //   { name: 'Japan', teamNo: 5 },
+  //   { name: 'India', teamNo: 5 },
+  //   { name: 'Europe', teamNo: 5 },
+  // ];
+  
+  
 
   // Country.insertMany(countries).then(() => {
   //   console.log('countries saved');
