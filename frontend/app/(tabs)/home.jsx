@@ -98,8 +98,8 @@ const Home = () => {
               latitudeDelta: 100,
               longitudeDelta: 180,
             }}
-            // mapType="satellite"
-            mapType="terrain"
+            mapType="satellite"
+            // mapType="terrain"
             rotateEnabled={false}
             pitchEnabled={false}
           >
