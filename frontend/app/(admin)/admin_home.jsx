@@ -2,19 +2,19 @@ import { View, Text, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import CustomButton from "../../components/CustomButton";
-import { get_attacks_on_zone } from "../../api/admin_functions";
 
 import { useState, useEffect, useContext } from "react";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
-import { get_wars } from "../../api/country_functions";
-import { get_attacks_by_war } from "../../api/admin_functions";
+import { get_admin_by_name } from "../../api/admin_functions";
+import { get_attacks_by_war } from "../../api/attack_functions";
 
 import BackButton from "../../components/BackButton";
 
 const AdminHome = () => {
-  const { name, war } = useContext(GlobalContext);
+  const { name } = useContext(GlobalContext);
+  const [war, setWar] = useState("");
   const [zoneAttack, setZoneAttack] = useState({
     attacking_team: "",
     defending_team: "",
@@ -23,9 +23,13 @@ const AdminHome = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // const response = await get_attacks_on_zone("North Africa");
-      // setZoneAttack(response.attack);
-      // console.log(response.attack);
+      const admin = await get_admin_by_name(name);
+      setWar(admin.admin.war);
+      const response = await get_attacks_by_war(admin.admin.war); // returns undefined
+
+      console.log(response)
+      setZoneAttack(response.attack);
+      console.log(response.attack);
     };
     fetchData();
   }, []);

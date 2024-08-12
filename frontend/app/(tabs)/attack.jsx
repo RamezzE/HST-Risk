@@ -21,7 +21,6 @@ import { get_all_teams } from "../../api/team_functions";
 import countries from "../../constants/countries";
 
 import MapZone from "../../components/MapZone";
-import BackButton from "../../components/BackButton";
 import CountryConnections from "../../constants/country_connections";
 import DottedLine from "../../components/DottedLine";
 
@@ -67,15 +66,6 @@ const Attack = () => {
   };
 
   useEffect(() => {
-    // if (!teamNo) {
-    //   setMyZones([]);
-    //   setOtherZones([]);
-
-    //   Alert.alert("Error", "Please login first");
-
-    //   router.push("/home");
-    //   return;
-    // }
 
     const fetchData = async () => {
       setError(null);
@@ -83,20 +73,6 @@ const Attack = () => {
       try {
         const result1 = await get_countries_by_team(parseInt(teamNo));
         setMyZones(result1.countries);
-        const result2 = await get_countries_by_team(2);
-        setOtherZones(result2.countries);
-
-        // if (result1.errorMsg) {
-        //   setError(result1.errorMsg);
-        // } else if (result2.errorMsg) {
-        //   setError(result2.errorMsg);
-        // } else if (Array.isArray(result1) || Array.isArray(result2)) {
-        //   if (Array.isArray(result1)) setMyZones(result1);
-
-        //   if (Array.isArray(result2)) setOtherZones(result2);
-        // } else {
-        //   setError("Unexpected response format");
-        // }
       } catch (err) {
         setError("Failed to fetch data");
       }
@@ -105,7 +81,7 @@ const Attack = () => {
     fetchData();
   }, []);
 
-  const validateAttack = (zone_1, zone_2, team_1, team_2) => {
+  const validateAttack = (zone_1, zone_2) => {
     var result = {
       success: false,
       errorMsg: "",
@@ -113,11 +89,6 @@ const Attack = () => {
 
     if (!zone_1 || !zone_2) {
       result.errorMsg = "Please fill in all the fields";
-      return result;
-    }
-
-    if (team_1 === team_2) {
-      result.errorMsg = "You cannot attack your own team";
       return result;
     }
 
@@ -131,10 +102,17 @@ const Attack = () => {
     if (!zone || zone == "") return;
 
     changeMapPreview(zone);
+
+    let country = countries.find((c) => c.name === zone);
+
+    if (!country) return;
+
+    setOtherZones(country.adjacent_zones);
   };
 
   const selectOtherZone = (zone) => {
-    setForm({ ...form, other_zone: zone });
+
+    setForm({ ...form, other_zone: zone});
 
     if (!zone || zone == "") return;
 
@@ -173,18 +151,25 @@ const Attack = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const attack_func = async (zone_1, team_1, zone_2, team_2) => {
+  const attack_func = async (zone_1, team_1, zone_2) => {
     try {
       var result = validateAttack(
         form.your_zone,
         form.other_zone,
-        team_1,
-        team_2
       );
+
+      setForm({ ...form, your_zone: "", other_zone: ""});
+      setOtherZones([]);
+
       if (!result.success) {
         Alert.alert("Attack Failed", result.errorMsg);
         return;
       }
+
+      team_2 = parseInt(countryMappings.find((c) => c.name === zone_2).teamNo);
+
+      console.log("Attacking", zone_1, team_1)
+      console.log("Defending: ", zone_2, team_2);
 
       const response = await attack_check(zone_1, team_1, zone_2, team_2);
 
@@ -216,23 +201,20 @@ const Attack = () => {
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
-          <BackButton style="w-[20vw]" color="white" size={32} path="/" />
           <View className="flex flex-col mb-6">
             <Text className="text-white text-center text-xl p-5">
               Welcome, {name} -- Team {teamNo}
             </Text>
 
             {!Array.isArray(myZones) || myZones.length === 0 ? (
-              <Text style={{ color: "red" }}>
-                Error: Zones data is unavailable or incorrect.
-              </Text>
+              <View></View>
             ) : (
               <DropDownField
-                title="Select Your Zone"
+                title="Select Your Country"
                 value={form.your_zone}
-                placeholder="Select Your Zone"
+                placeholder="Select Your Country"
                 items={myZones.map((zone) => ({
-                  label: `${zone.name} - Team ${zone.teamNo}`,
+                  label: `${zone.name}`,
                   value: zone.name,
                 }))}
                 handleChange={(e) => selectYourZone(e)}
@@ -241,17 +223,15 @@ const Attack = () => {
             )}
 
             {!Array.isArray(otherZones) || otherZones.length === 0 ? (
-              <Text style={{ color: "red" }}>
-                Error: Adjacent Zones data is unavailable or incorrect.
-              </Text>
+              <View></View>
             ) : (
               <DropDownField
-                title="Select Adjacent Zone"
+                title="Select Country to Attack"
                 value={form.other_zone}
-                placeholder="Select Adjacent Zone"
+                placeholder="Select Country to Attack"
                 items={otherZones.map((zone) => ({
-                  label: `${zone.name} - Team ${zone.teamNo}`,
-                  value: zone.name,
+                  label: `${zone}`,
+                  value: zone,
                 }))}
                 handleChange={(e) => selectOtherZone(e)}
                 otherStyles="mt-5"
@@ -268,8 +248,8 @@ const Attack = () => {
               longitudeDelta: 100,
             }}
             mapType="satellite"
-            scrollEnabled={false}
-            zoomEnabled={false}
+            // scrollEnabled={false}
+            // zoomEnabled={false}
             rotateEnabled={false}
             pitchEnabled={false}
           >
@@ -298,7 +278,7 @@ const Attack = () => {
           <CustomButton
             title={form.other_zone ? `Attack ${form.other_zone}` : "Attack"}
             handlePress={() =>
-              attack_func(form.your_zone, parseInt(teamNo), form.other_zone, 2)
+              attack_func(form.your_zone, parseInt(teamNo), form.other_zone)
             }
             containerStyles="mt-7"
           />

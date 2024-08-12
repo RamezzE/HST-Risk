@@ -1,6 +1,7 @@
 import { MongoClient } from "mongodb";
 
 import Attack from "../models/attack.js";
+import Country from "../models/country.js";
 
 const client = new MongoClient(process.env.MONGO_URI, {});
 
@@ -17,6 +18,22 @@ class AttackController {
     };
 
     const { zone_1, team_1, zone_2, team_2 } = req.body;
+
+    const attacking_country = await Country.findOne({ name: zone_1 });
+    const defending_country = await Country.findOne({ name: zone_2 });
+
+    const real_team_1 = attacking_country.teamNo;
+    const real_team_2 = defending_country.teamNo;
+
+    if (team_1 !== real_team_1) {
+      result.errorMsg = `You do not own ${zone_1}`;
+      return res.json(result);
+    }
+
+    if (team_2 !== real_team_2) {
+      result.errorMsg = `Defending team changed from ${team_2} to ${real_team_2}. Please recheck if you want to proceed`;
+      return res.json(result);
+    }
 
     const duplicate_attack = await AttackController.check_duplicate_attack(
       zone_1,
@@ -48,6 +65,27 @@ class AttackController {
 
     const { zone_1, team_1, zone_2, team_2, war } = req.body;
 
+    const attacking_country = await Country.findOne({ name: zone_1 });
+    const defending_country = await Country.findOne({ name: zone_2 });
+
+    const real_team_1 = attacking_country.teamNo;
+    const real_team_2 = defending_country.teamNo;
+
+    if (team_1 !== real_team_1) {
+      result.errorMsg = `You do not own ${zone_1}`;
+      return res.json(result);
+    }
+
+    if (team_1 === real_team_2) {
+      result.errorMsg = "You cannot attack your own zone";
+      return res.json(result);
+    }
+
+    if (team_2 !== real_team_2) {
+      result.errorMsg = `Defending team changed from ${team_2} to ${real_team_2}. Please recheck if you want to proceed`;
+      return res.json(result);
+    }
+
     const duplicate_attack = await AttackController.check_duplicate_attack(
       zone_1,
       team_1,
@@ -61,7 +99,7 @@ class AttackController {
     }
 
     if (duplicate_attack.duplicate) {
-      console.log("Duplicate Attack detected");
+      console.log("You are already attacking this country");
       result.errorMsg = duplicate_attack.errorMsg;
       return res.json(result);
     }
@@ -71,7 +109,7 @@ class AttackController {
         attacking_zone: zone_1,
         attacking_team: team_1,
         defending_zone: zone_2,
-        defending_team: team_2,
+        defending_team: real_team_2,
         war: war,
       });
 

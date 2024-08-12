@@ -11,6 +11,7 @@ router.use(function (req, res, next) {
 });
 
 router.get("/", AdminController.get_admins);
+router.get("/:name", AdminController.get_admin_by_name);
 
 router.put("/", AdminController.add_admin);
 

@@ -100,6 +100,10 @@ const CountryConnections = [
     point1: { latitude: 58.57190575533907, longitude: 17.138347348018197 },
     point2: { latitude: 54.886957163466846, longitude: 17.66569109502877 },
   },
+  {
+    point1: { latitude: -9.224464350429308, longitude: 141.36600911506895 },
+    point2: { latitude: -17.528215356850126, longitude: 140.11902770870654 },
+  },
 ];
 
 export default CountryConnections;

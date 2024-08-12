@@ -9,6 +9,14 @@ import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
 
+import { logout } from "../../api/user_functions";
+
+import { router } from "expo-router";
+
+import { useContext } from "react";
+
+import { GlobalContext } from "../../context/GlobalProvider";
+
 import countries from "../../constants/countries";
 import BackButton from "../../components/BackButton";
 
@@ -54,6 +62,18 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const { setIsLoggedIn, setUserMode } = useContext(GlobalContext);
+
+  const logoutFunc = async () => {
+    console.log("Logging out")
+    try {
+      setIsLoggedIn(false);
+      setUserMode("guest");
+      router.push("/")
+      await logout();
+    } catch (error) {console.log("Error logging out\n", error)}
+  };
+
   const onMarkerPress = (zone) => {
     try {
       const country = countryMappings.find((c) => c.name === zone.name);
@@ -89,7 +109,7 @@ const Home = () => {
     <SafeAreaView className="flex-1 bg-primary">
       <ScrollView>
         <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
-          <BackButton style="w-[20vw] mb-4" color="white" size={32} path="/" />
+          <BackButton style="w-[20vw] mb-4" color="white" size={32} onPress={() => logoutFunc()} />
           {/* <Text className="text-white text-center text-2xl p-3">
               World Map
             </Text> */}

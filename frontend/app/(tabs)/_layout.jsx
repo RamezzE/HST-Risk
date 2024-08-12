@@ -89,36 +89,7 @@ const TabsLayout = () => {
             ),
           }}
         />
-        <Tabs.Screen
-          name="news"
-          options={{
-            title: "News",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={icons.eye}
-                color={color}
-                name="News"
-                focused={focused}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="statistics"
-          options={{
-            title: "Stats",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={icons.eye}
-                color={color}
-                name="Stats"
-                focused={focused}
-              />
-            ),
-          }}
-        />
+        
       </Tabs>
       <StatusBar backgroundColor="#161622" style="light" />
     </>

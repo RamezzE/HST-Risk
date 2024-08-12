@@ -6,16 +6,75 @@ import CustomButton from "../components/CustomButton";
 
 import { useContext } from "react";
 import { GlobalContext } from "../context/GlobalProvider";
+import { is_logged_in } from "../api/user_functions";
 
 export default function App() {
+  const {
+    setName,
+    setTeamNo,
+    setIsLoggedIn,
+    isLoggedIn,
+    userMode,
+    setUserMode,
+  } = useContext(GlobalContext);
+
+  const checkLoggedIn = async () => {
+    if (isLoggedIn) {
+      if (userMode === "team") {
+        router.push("/home");
+        return;
+      }
+
+      if (userMode === "admin") {
+        router.push("/admin_home");
+        return;
+      }
+
+      if (userMode === "super_admin") {
+        router.push("/dashboard");
+        return;
+      }
+    }
+
+    try {
+      const response = await is_logged_in();
+
+      if (!response.success) {
+        router.push("/sign_in");
+        return;
+      }
+
+      if (response.team != "") {
+        setIsLoggedIn(true);
+        setTeamNo(response.team.number);
+        setUserMode("team");
+        router.push("/home");
+        return;
+      }
+
+      if (response.admin != "") {
+        setIsLoggedIn(true);
+        setName(response.admin.name);
+        setUserMode("admin");
+        router.push("/admin_home");
+        return;
+      }
+
+      if (response.superAdmin != "") {
+        setIsLoggedIn(true);
+        setName(response.superAdmin.name);
+        setUserMode("super_admin");
+        router.push("/dashboard");
+        return;
+      }
+    } catch (error) {}
+  };
 
   const guestLogin = () => {
     setTeamNo("");
     setName("Guest");
     router.push("/home");
   };
-
-  const { setTeamNo, setName } = useContext(GlobalContext);
 
   return (
     <SafeAreaView className="bg-primary h-full ">
@@ -24,7 +83,6 @@ export default function App() {
         alwaysBounceVertical={true}
       >
         <View className="w-full justify-center items-center min-h-[82.5vh] px-4">
-      
           <View className="relative mt-5">
             <Text className="text-4xl text-white font-bold text-center">
               Risk
@@ -38,7 +96,6 @@ export default function App() {
           </View>
 
           <View className="w-full flex flex-row justify-evenly items-center">
-            
             <CustomButton
               title="Guest"
               handlePress={() => guestLogin()}
@@ -47,7 +104,7 @@ export default function App() {
 
             <CustomButton
               title="Sign in"
-              handlePress={() => router.push("/sign_in")}
+              handlePress={() => checkLoggedIn()}
               containerStyles="p-5 mt-5"
             />
 

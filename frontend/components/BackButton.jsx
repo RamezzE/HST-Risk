@@ -1,16 +1,12 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 
-const BackButton = ({ color = 'black', size = 24, path = null, style = '' }) => {
-  const router = useRouter();
+const BackButton = ({ color = 'black', size = 24, style = '', onPress }) => {
 
   const handlePress = () => {
-    if (path) {
-      router.push(path);
-    } else {
-      router.back();
+    if (onPress) {
+      onPress();
     }
   };
 
