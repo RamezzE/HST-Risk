@@ -116,6 +116,7 @@ class AttackController {
         attacking_team: team_1,
         defending_zone: zone_2,
         defending_team: real_team_2,
+        warzone_id: warzone_id,
         war: war,
       });
 
@@ -125,7 +126,7 @@ class AttackController {
         .save()
         .then(async () => {
           try {
-            const warzone = await Warzone.findById(warzone_id)
+            const warzone = await Warzone.findById(warzone_id);
 
             if (warzone) {
               console.log(warzone);
@@ -139,7 +140,7 @@ class AttackController {
 
                 // Save the updated warzone
                 await warzone.save();
-                
+
                 console.log(`${chosenWar.name} is now marked as unavailable.`);
               } else {
                 console.log("War not found in the warzone.");
@@ -248,6 +249,86 @@ class AttackController {
       console.error("Server: Error getting attacks by war:", error);
       result.success = false;
       result.errorMsg = "Server: Error getting attacks by war";
+      return res.json(result);
+    }
+  }
+
+  static async set_attack_result(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { attack_id, winnerTeam } = req.body;
+
+    try {
+      const attack = await Attack.findById(attack_id);
+
+      if (!attack) {
+        result.errorMsg = "Attack not found";
+        return res.json(result);
+      }
+
+      const winnerZone = attack.attacking_zone;
+      const loserZone = attack.defending_zone;
+
+      console.log("Winner Zone:", winnerZone);
+      console.log("Loser Zone:", loserZone);
+
+      const country1 = await Country.findOne({ name: winnerZone });
+      country1.teamNo = winnerTeam;
+      await country1.save();
+
+      const country2 = await Country.findOne({ name: loserZone });
+      country2.teamNo = winnerTeam;
+      await country2.save();
+
+      await Attack.deleteOne({ _id: attack_id })
+        .then(() => {
+          console.log("Attack deleted successfully.");
+        })
+        .catch((e) => {
+          console.log("Error deleting attack:", e);
+          result.errorMsg = "Error deleting attack";
+          return res.json(result);
+        });
+
+      var warzone = await Warzone.findById(attack.warzone_id);
+
+      const warIndex = warzone.wars.findIndex((war) => war.name === attack.war);
+
+      Attack.deleteOne({ _id: attack_id })
+        .then(() => {
+          console.log("Attack deleted successfully.");
+        })
+        .catch((e) => {
+          console.log("Error deleting attack:", e);
+        });
+
+      if (warIndex !== -1) {
+        warzone.wars[warIndex].available = true;
+
+        await warzone
+          .save()
+          .then(() => {
+            console.log(`${attack.war.name} is now marked as available.`);
+          })
+          .catch((e) => {
+            console.log("Error saving warzone:", e);
+            result.errorMsg = "Error saving warzone";
+            return res.json(result);
+          });
+
+        console.log(`${attack.war.name} is now marked as available.`);
+
+        result.success = true;
+        return res.json(result);
+      } else {
+        console.log("War not found in the warzone.");
+      }
+    } catch (error) {
+      console.error("Server: Error setting attack result:", error);
+      result.errorMsg = "Server: Error setting attack result";
       return res.json(result);
     }
   }
