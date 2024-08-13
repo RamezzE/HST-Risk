@@ -65,7 +65,7 @@ export const get_attacks_on_zone = async (zone) => {
 
 export const get_attacks_by_war = async (war) => {
   try {
-    const response = await axios.get(`${config.serverIP}/wars/${war}`);
+    const response = await axios.get(`${serverIP}/wars/${war}`);
 
     return response.data;
   } catch (error) {

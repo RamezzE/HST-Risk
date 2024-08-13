@@ -57,19 +57,19 @@ const SignIn = () => {
 
       if (response.team != "") {
         setTeamNo(form.username);
-        router.push("/home");
+        router.replace("/home");
         return;
       }
 
       if (response.admin != "") {
         setName(form.username);
-        router.push("/admin_home");
+        router.replace("/admin_home");
         return;
       }
 
       if (response.superAdmin != "") {
         setName(form.username);
-        router.push("/dashboard");
+        router.replace("/dashboard");
         return;
       }
 
@@ -86,8 +86,8 @@ const SignIn = () => {
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
-          <BackButton style="w-[20vw] mb-4" color="white" size={32} path="/" />
-            <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
+        <BackButton style="w-[20vw] mb-4" color="white" size={32} onPress={() => router.replace("/")} />
+        <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
               Sign In
             </Text>
 
