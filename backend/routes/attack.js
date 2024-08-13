@@ -17,6 +17,7 @@ router.get('/wars/:war', AttackController.get_attacks_by_war);
 
 router.post('/attack', AttackController.attack);
 router.post('/check', AttackController.attack_check);
+router.post('/set_result', AttackController.set_attack_result);
 
 
 export default router;

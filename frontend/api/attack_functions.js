@@ -75,3 +75,18 @@ export const get_attacks_by_war = async (war) => {
     };
   }
 };
+
+export const set_attack_result = async (attack_id, result) => {
+  try {
+    const response = await axios.post(`${serverIP}/set_result`, {
+      attack_id,
+      winnerTeam: result,
+    });
+
+    return response.data;
+  } catch (error) {
+    return {
+      errorMsg: error.response?.data || "API: Error setting attack result",
+    };
+  }
+}
