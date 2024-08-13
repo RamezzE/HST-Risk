@@ -9,11 +9,12 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import { get_admin_by_name } from "../../api/admin_functions";
 import { get_attacks_by_war } from "../../api/attack_functions";
+import { router } from "expo-router";
 
 import BackButton from "../../components/BackButton";
 
 const AdminHome = () => {
-  const { name } = useContext(GlobalContext);
+  const { name, Logout } = useContext(GlobalContext);
   const [war, setWar] = useState("");
   const [zoneAttack, setZoneAttack] = useState({
     attacking_team: "",
@@ -27,19 +28,23 @@ const AdminHome = () => {
       setWar(admin.admin.war);
       const response = await get_attacks_by_war(admin.admin.war); // returns undefined
 
-      console.log(response)
-      setZoneAttack(response.attack);
-      console.log(response.attack);
+      setZoneAttack(response.attacks);
+      console.log(response.attacks);
     };
     fetchData();
   }, []);
+
+  const logoutFunc = () => {
+    Logout();
+    router.replace("/")
+  }
 
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
         <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
-          <BackButton style="w-[20vw]" color="white" size={32} path="/" />
-          <View className="flex flex-col">
+        <BackButton style="w-[20vw] mb-4" color="white" size={32} onPress={() => logoutFunc()} />
+        <View className="flex flex-col">
             <Text className="text-white text-xl px-5 py-0">
               Welcome, {name}
             </Text>

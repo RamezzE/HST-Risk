@@ -8,9 +8,6 @@ import DottedLine from "../../components/DottedLine";
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
-
-import { logout } from "../../api/user_functions";
-
 import { router } from "expo-router";
 
 import { useContext } from "react";
@@ -62,17 +59,12 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const { setIsLoggedIn, setUserMode } = useContext(GlobalContext);
+  const { Logout } = useContext(GlobalContext);
 
-  const logoutFunc = async () => {
-    console.log("Logging out")
-    try {
-      setIsLoggedIn(false);
-      setUserMode("guest");
-      router.push("/")
-      await logout();
-    } catch (error) {console.log("Error logging out\n", error)}
-  };
+  const logoutFunc = () => {
+    Logout();
+    router.replace("/")
+  }
 
   const onMarkerPress = (zone) => {
     try {

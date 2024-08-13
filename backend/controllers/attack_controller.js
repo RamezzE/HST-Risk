@@ -196,10 +196,15 @@ class AttackController {
         war: war,
       });
 
-      result.attacks = response;
-      result.success = true;
+      if (response) {
+        result.attacks = response;
+        result.success = true;
+        return res.json(result);
+      }
 
+      result.errorMsg = "No attacks found";
       return res.json(result);
+
     } catch (error) {
       console.error("Server: Error getting attacks by war:", error);
       result.success = false;

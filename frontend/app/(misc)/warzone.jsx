@@ -50,7 +50,7 @@ const Warzone = () => {
         );
 
         // Navigate to the home screen or any other route
-        router.push("/home");
+        router.replace("/home");
       } else {
         Alert.alert("Attack", response.errorMsg);
       }
