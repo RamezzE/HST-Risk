@@ -22,13 +22,14 @@ export const attack_check = async (zone_1, team_1, zone_2, team_2) => {
   }
 };
 
-export const attack = async (zone_1, team_1, zone_2, team_2, war) => {
+export const attack = async (zone_1, team_1, zone_2, team_2, warzone_id, war) => {
   try {
     const response = await axios.post(`${serverIP}/attack`, {
       zone_1,
       team_1,
       zone_2,
       team_2,
+      warzone_id,
       war,
     });
 

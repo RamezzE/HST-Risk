@@ -32,6 +32,7 @@ const Attack = () => {
   const [teams, setTeams] = useState([]);
   const [myZones, setMyZones] = useState([]);
   const [otherZones, setOtherZones] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
   const [form, setForm] = useState({
@@ -152,6 +153,7 @@ const Attack = () => {
   }, []);
 
   const attack_func = async (zone_1, team_1, zone_2) => {
+    setIsSubmitting(true)
     try {
       var result = validateAttack(
         form.your_zone,
@@ -194,6 +196,9 @@ const Attack = () => {
         "Attack Failed",
         error.response?.data || "Error checking attack"
       );
+    }
+    finally{
+      setIsSubmitting(false);
     }
   };
 
@@ -281,6 +286,7 @@ const Attack = () => {
               attack_func(form.your_zone, parseInt(teamNo), form.other_zone)
             }
             containerStyles="mt-7"
+            isLoading= {isSubmitting}
           />
         </View>
       </ScrollView>
