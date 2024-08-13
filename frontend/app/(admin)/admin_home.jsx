@@ -16,7 +16,7 @@ import BackButton from "../../components/BackButton";
 const AdminHome = () => {
   const { name, Logout } = useContext(GlobalContext);
   const [war, setWar] = useState("");
-  const [zoneAttack, setZoneAttack] = useState({
+  const [currentAttack, setCurrentAttack] = useState({
     attacking_team: "",
     defending_team: "",
   });
@@ -26,10 +26,12 @@ const AdminHome = () => {
     const fetchData = async () => {
       const admin = await get_admin_by_name(name);
       setWar(admin.admin.war);
-      const response = await get_attacks_by_war(admin.admin.war); // returns undefined
+      const response = await get_attacks_by_war(admin.admin.war);
 
-      setZoneAttack(response.attacks);
-      console.log(response.attacks);
+      setCurrentAttack({
+        attacking_team: response.attacks[0].attacking_team,
+        defending_team: response.attacks[0].defending_team,
+      });
     };
     fetchData();
   }, []);
@@ -53,10 +55,10 @@ const AdminHome = () => {
 
             <Text className="text-white text-3xl p-5">Attack in progress:</Text>
             <Text className="text-white text-xl px-5 py-2">
-              {/* Attacking Team: {zoneAttack.attacking_team} */}
+              Attacking Team: {currentAttack.attacking_team}
             </Text>
             <Text className="text-white text-xl px-5 py-2">
-              {/* Defending Team: {zoneAttack.defending_team} */}
+              Defending Team: {currentAttack.defending_team}
             </Text>
           </View>
           <View>

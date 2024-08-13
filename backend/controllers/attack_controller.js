@@ -2,6 +2,7 @@ import { MongoClient } from "mongodb";
 
 import Attack from "../models/attack.js";
 import Country from "../models/country.js";
+import Warzone from "../models/warzone.js";
 
 const client = new MongoClient(process.env.MONGO_URI, {});
 
@@ -35,6 +36,11 @@ class AttackController {
       return res.json(result);
     }
 
+    if (team_1 === real_team_2) {
+      result.errorMsg = "You cannot attack your own zone";
+      return res.json(result);
+    }
+
     const duplicate_attack = await AttackController.check_duplicate_attack(
       zone_1,
       team_1,
@@ -63,7 +69,7 @@ class AttackController {
       errorMsg: "",
     };
 
-    const { zone_1, team_1, zone_2, team_2, war } = req.body;
+    const { zone_1, team_1, zone_2, team_2, warzone_id, war } = req.body;
 
     const attacking_country = await Country.findOne({ name: zone_1 });
     const defending_country = await Country.findOne({ name: zone_2 });
@@ -113,7 +119,41 @@ class AttackController {
         war: war,
       });
 
-      await attack.save();
+      let chosenWar = war;
+
+      attack
+        .save()
+        .then(async () => {
+          try {
+            const warzone = await Warzone.findById(warzone_id)
+
+            if (warzone) {
+              console.log(warzone);
+              const warIndex = warzone.wars.findIndex(
+                (war) => war.name === chosenWar
+              );
+
+              if (warIndex !== -1) {
+                // Set the war's availability to false
+                warzone.wars[warIndex].available = false;
+
+                // Save the updated warzone
+                await warzone.save();
+                
+                console.log(`${chosenWar.name} is now marked as unavailable.`);
+              } else {
+                console.log("War not found in the warzone.");
+              }
+            } else {
+              console.log("Warzone not found.");
+            }
+          } catch (error) {
+            console.error("Error updating war availability:", error);
+          }
+        })
+        .catch((e) => {
+          console.log("Error saving attack:", e);
+        });
 
       result.success = true;
       return res.json(result);
@@ -204,7 +244,6 @@ class AttackController {
 
       result.errorMsg = "No attacks found";
       return res.json(result);
-
     } catch (error) {
       console.error("Server: Error getting attacks by war:", error);
       result.success = false;

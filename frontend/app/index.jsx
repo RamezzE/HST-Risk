@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import CustomButton from "../components/CustomButton";
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { GlobalContext } from "../context/GlobalProvider";
 import { is_logged_in } from "../api/user_functions";
 
@@ -18,22 +18,31 @@ export default function App() {
     setUserMode,
   } = useContext(GlobalContext);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const checkLoggedIn = async () => {
-    if (isLoggedIn) {
-      if (userMode === "team") {
-        router.push("/home");
-        return;
-      }
+    setIsSubmitting(true);
 
-      if (userMode === "admin") {
-        router.push("/admin_home");
-        return;
-      }
+    try {
+      if (isLoggedIn) {
+        if (userMode === "team") {
+          router.push("/home");
+          return;
+        }
 
-      if (userMode === "super_admin") {
-        router.push("/dashboard");
-        return;
+        if (userMode === "admin") {
+          router.push("/admin_home");
+          return;
+        }
+
+        if (userMode === "super_admin") {
+          router.push("/dashboard");
+          return;
+        }
       }
+    } catch (error) {
+    } finally {
+      setIsSubmitting(false);
     }
 
     try {
@@ -68,6 +77,9 @@ export default function App() {
         return;
       }
     } catch (error) {}
+    finally {
+      setIsSubmitting(false)
+    }
   };
 
   const guestLogin = () => {
@@ -106,15 +118,9 @@ export default function App() {
               title="Sign in"
               handlePress={() => checkLoggedIn()}
               containerStyles="p-5 mt-5"
+              isLoading= {isSubmitting}
             />
-
-            {/* <CustomButton
-              title="Admin"
-              // handlePress={() => router.push("/warzone")}
-              handlePress={() => router.push("/sign_in")}
-              // handlePress={() => router.push("/teams")}
-              containerStyles="p-5 mt-5"
-            /> */}
+            
           </View>
         </View>
       </ScrollView>

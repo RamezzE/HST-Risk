@@ -19,11 +19,14 @@ class UserController {
     const { username, password } = req.body;
 
     if (isNumberString(username)) {
-  
       try {
-        const team = await Team.findOne({ number: username, password });
+        const team = await Team.findOne({ number: username });
 
         if (team != null) {
+          if (team.password !== password) {
+            response.errorMsg = "Invalid Credentials";
+            return res.json(response);
+          }
           req.session.user = { id: team._id, mode: "team" };
           response.success = true;
           response.team = team;
@@ -34,11 +37,14 @@ class UserController {
       }
     }
 
-
     try {
       const admin = await Admin.findOne({ name: username, password });
 
       if (admin != null) {
+        if (admin.password !== password) {
+          response.errorMsg = "Invalid Credentials";
+          return res.json(response);
+        }
         req.session.user = { id: admin._id, mode: "admin" };
         response.success = true;
         response.admin = admin;
@@ -48,10 +54,13 @@ class UserController {
       console.log(error);
     }
 
-
     try {
       const superAdmin = await SuperAdmin.findOne({ name: username, password });
       if (superAdmin != null) {
+        if (superAdmin.password !== password) {
+          response.errorMsg = "Invalid Credentials";
+          return res.json(response);
+        }
         req.session.user = { id: superAdmin._id, mode: "super_admin" };
         response.success = true;
         response.superAdmin = superAdmin;

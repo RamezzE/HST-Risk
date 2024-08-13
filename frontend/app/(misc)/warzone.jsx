@@ -22,35 +22,39 @@ const Warzone = () => {
         console.log(data.errorMsg);
       } else {
         setWarzones(data);
-        console.log("Warzones: ", data);
       }
     });
   }, []);
 
   const handlePress = async (warzone) => {
     const availableWars = warzone.wars.filter((war) => war.available);
+  
+    if (availableWars.length === 0) {
+      Alert.alert("Warzone unavailable",`All wars are currently occupied in ${warzone.name}\nPlease check other warzones`);
+      return;
+    }
+  
     const randomWar =
       availableWars[Math.floor(Math.random() * availableWars.length)];
-
-    setAttackData({ war: randomWar.name });
-
+    
     try {
       const response = await attack(
         attackData.attacking_zone,
         attackData.attacking_team,
         attackData.defending_zone,
         attackData.defending_team,
-        randomWar.name
+        warzone._id,
+        randomWar.name,
       );
-
+  
       if (!response.errorMsg) {
         Alert.alert(
           `${warzone.name}`,
           `You are assigned ${randomWar.name}\n\nAttacking from: ${attackData.attacking_zone} - Team ${attackData.attacking_team}\nDefending Side: ${attackData.defending_zone} - Team ${attackData.defending_team}\n\nProceed to the warzone\n\nGood luck!`
         );
-
+  
         // Navigate to the home screen or any other route
-        router.replace("/home");
+        router.navigate("/home");
       } else {
         Alert.alert("Attack", response.errorMsg);
       }
@@ -59,7 +63,7 @@ const Warzone = () => {
       console.log(error);
     }
   };
-
+  
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
