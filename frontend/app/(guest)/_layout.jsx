@@ -4,6 +4,9 @@ import { StatusBar } from "expo-status-bar";
 
 import { icons } from "../../constants";
 
+import { useContext } from "react";
+import { GlobalContext } from "../../context/GlobalProvider";
+
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
     <View className="items-center justify-center gap-2">
@@ -24,12 +27,15 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 const TabsLayout = () => {
+  const { teamNo } = useContext(GlobalContext);
+
   return (
     <>
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
-          tabBarActiveTintColor: "#F2E9D0",
+          // tabBarActiveTintColor: "#F2E9D0",
+          tabBarActiveTintColor: "#FFF",
           tabBarInactiveTintColor: "#BBB",
           tabBarStyle: {
             backgroundColor: "#4b320c",
@@ -40,22 +46,38 @@ const TabsLayout = () => {
         }}
       >
         <Tabs.Screen
-          name="admin_home"
+          name="guest_home"
           options={{
-            title: "Home",
+            title: "Map",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.home}
+                icon={icons.globe}
                 color={color}
-                name="Home"
+                name="Map"
                 focused={focused}
               />
             ),
           }}
         />
+        <Tabs.Screen
+          name="guest_team_attacks"
+          options={{
+            title: "Stats",
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.stats}
+                color={color}
+                name="Stats"
+                focused={focused}
+              />
+            ),
+          }}
+        />
+        
       </Tabs>
-      <StatusBar backgroundColor="#161622" style="light" />
+      <StatusBar backgroundColor="#000" style="light" />
     </>
   );
 };

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "hst-risk",
-    "slug": "hst-risk",
+    "name": "HST Risk",
+    "slug": "HST Risk",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "hst-risk",
+    "scheme": "HST Risk",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",

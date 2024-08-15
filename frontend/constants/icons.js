@@ -11,8 +11,10 @@ import logout from "../assets/icons/logout.png";
 import eyeHide from "../assets/icons/eye-hide.png";
 import eye from "../assets/icons/eye.png";
 import play from "../assets/icons/play.png";
+
 import globe from "../assets/icons/globe.png";
 import sword from "../assets/icons/sword.png";
+import stats from "../assets/icons/stats.png";
 
 export default {
   play,
@@ -30,4 +32,5 @@ export default {
   eye,
   globe,
   sword,
+  stats,
 };

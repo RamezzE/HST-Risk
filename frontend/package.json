@@ -1,5 +1,5 @@
 {
-  "name": "hst-risk",
+  "name": "HST Risk",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -27,7 +27,6 @@
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.4",
     "expo-web-browser": "~13.0.3",
-    "hst-risk": "file:",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-dom": "18.2.0",
