@@ -1,14 +1,7 @@
 import { Router } from 'express';
 var router = Router();
 
-import UserController from './../controllers/user_controller.js';
-
-router.use(function (req, res, next) {
-//   if (req.session.userType)
-//     return res.redirect('/');
-  
-  next();
-});
+import UserController from '../controllers/user_controller.js';
 
 router.post("/login", UserController.login);
 router.get("/logout", UserController.logout);
