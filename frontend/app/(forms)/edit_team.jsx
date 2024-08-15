@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, Alert } from "react-native";
+import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,6 +8,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { get_team, update_team, delete_team } from "../../api/team_functions";
 
 import BackButton from "../../components/BackButton";
+
+import { images } from "../../constants";
 
 const validateEditTeam = (teamName, password) => {
   var result = {
@@ -131,12 +133,17 @@ const EditTeam = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full">
+      <ImageBackground
+        source={images.background}
+        style={{ resizeMode: "cover" }}
+        className="min-h-[100vh]"
+      >
       <ScrollView>
         <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-          <BackButton style="w-[20vw]" color="white" size={32} path="/teams" />
-          <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
-            Edit Team
-          </Text>
+          <BackButton style="w-[20vw]" color="black" size={32} onPress={() => router.dismiss(1)} />
+          <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
+              Edit Team
+            </Text>
           <FormField
             title="Team Number"
             value={teamNo}
@@ -157,30 +164,24 @@ const EditTeam = () => {
             handleChangeText={(e) => setForm({ ...form, password: e })}
             otherStyles="mt-7"
           />
-
-          <View className="w-full flex flex-row items-center justify-evenly">
-            <CustomButton
-              title="Cancel"
-              handlePress={() => router.push("/teams")}
-              containerStyles="w-[45%] mt-7"
-              isLoading={isSubmitting}
-            />
+            
             <CustomButton
               title="Update Team"
               handlePress={submit}
-              containerStyles="w-[45%] mt-7"
+              containerStyles="mt-7 p-3 bg-green-800"
+              textStyles={"text-3xl"}
               isLoading={isSubmitting}
             />
-          </View>
           <CustomButton
             title="Delete Team"
             handlePress={deleteTeam}
-            containerStyles="mt-7 bg-red-800"
-            textStyles={"text-white"}
+            containerStyles="mt-7 p-3 bg-red-800"
+              textStyles={"text-3xl"}
             isLoading={isSubmitting}
           />
         </View>
       </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };

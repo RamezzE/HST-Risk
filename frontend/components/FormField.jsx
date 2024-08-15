@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-
-import { icons } from "../constants";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { FontAwesome } from '@expo/vector-icons'; // or any other icon library
 
 const FormField = ({
   title,
@@ -15,14 +14,17 @@ const FormField = ({
 
   return (
     <View className={`space-y-2 ${otherStyles}`}>
-      <Text className="text-base text-gray-100 font-pmedium">{title}</Text>
+      <Text className="text-black text-3xl font-montez">{title}</Text>
 
-      <View className="w-full h-16 px-4 bg-black-100 rounded-2xl border-2 border-black-200 focus:border-secondary flex flex-row items-center">
+      <View
+        className="w-full h-16 px-4 rounded-md flex flex-row items-center"
+        style={{ backgroundColor: 'rgba(75, 50, 12, 0.5)' }} // Transparent background
+      >
         <TextInput
-          className="flex-1 text-white font-psemibold text-base"
+          className="flex-1 text-white font-montez text-3xl"
           value={value}
           placeholder={placeholder}
-          placeholderTextColor="#7B7B8B"
+          placeholderTextColor="#F2E9D0"
           onChangeText={handleChangeText}
           secureTextEntry={title === "Password" && !showPassword}
           {...props}
@@ -30,10 +32,10 @@ const FormField = ({
 
         {title === "Password" && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Image
-              source={!showPassword ? icons.eye : icons.eyeHide}
-              className="w-6 h-6"
-              resizeMode="contain"
+            <FontAwesome
+              name={showPassword ? "eye-slash" : "eye"}
+              size={24}
+              color="#F2E9D0"
             />
           </TouchableOpacity>
         )}

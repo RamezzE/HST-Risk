@@ -31,7 +31,7 @@ const FormsLayout = () => {
           }}
         />
         <Stack.Screen
-          name="edit_territory"
+          name="edit_country"
           options={{
             headerShown: false,
           }}
