@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, ImageBackground } from "react-native";
 import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { get_all_teams } from "../../api/team_functions";
+
+import { images } from "../../constants";
 
 import BackButton from "../../components/BackButton";
 
@@ -35,60 +37,64 @@ const Teams = () => {
   }, []);
 
   const renderItem = ({ item }) => (
-    <View className="p-4 mb-4 rounded-[8px] flex flex-row items-center justify-between">
-      <View className="flex flex-col">
-        <Text className="text-white text-xl font-semibold">{item.name}</Text>
-        <Text className="text-white text-sm">Team Number: {item.number}</Text>
+
+
+    <View className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+    style={{ backgroundColor : 'rgba(75,50,12,0.25)' }}>
+      <View className="flex flex-col ">
+        <Text className="text-4xl font-montez">{item.name}</Text>
+        <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
       </View>
 
-      <View className="flex flex-col justify-between align-center w-1/3">
-        <CustomButton
-          title="View"
-          containerStyles="mt-2"
-          textStyles="text-sm"
-        />
-        <CustomButton
-          title="Edit"
-          handlePress={() =>
-            router.push(`/edit_team?teamNo=${item.number.trim()}`)
-          }
-          containerStyles="mt-2"
-          textStyles="text-sm"
-        />
-      </View>
+      <CustomButton
+        title="Edit"
+        handlePress={() =>
+          router.push(`/edit_team?teamNo=${item.number}`)
+        }
+        containerStyles="w-1/4 h-2/3 mt-2 "
+        textStyles="text-2xl"
+      />
     </View>
+
   );
 
   return (
     <SafeAreaView className="bg-primary h-full">
-      <View className="w-full justify-center min-h-[82.5vh] px-4 my-6 pb-16">
-        <BackButton style="w-[20vw]" color="white" size={32} path="/" />
+      <ImageBackground
+        source={images.background}
+        style={{ resizeMode: "cover" }}
+        className="min-h-[100vh]"
+      >
+      <View className="w-full justify-center min-h-[82.5vh] max-h-[90vh] p-4  ">
+      <BackButton style="w-[20vw]" color="black" size={32} path="/" />
 
-        <Text className="text-white text-3xl text-center text-semibold mb-5">
-          Teams
-        </Text>
+          <Text className="text-6xl text-center font-montez py-2">
+            Teams
+          </Text>
 
-        <CustomButton
-          title="Add Team"
-          handlePress={() => router.push("/add_team")}
-          containerStyles="p-1 w-1/2 my-5"
-        />
-
-        {error ? (
-          <Text style={{ color: "white", textAlign: "center" }}>{error}</Text>
-        ) : (
-          <FlatList
-            data={teams}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderItem}
-            ListEmptyComponent={
-              <Text className="text-3xl text-white text-center">
-                No teams found
-              </Text>
-            }
+          <CustomButton
+            title="Add Team"
+            handlePress={() => router.push("/add_team")}
+            containerStyles="w-1/2 my-2 p-3"
+            textStyles={"text-2xl"}
           />
-        )}
-      </View>
+
+          {error ? (
+            <Text style={{ color: "white", textAlign: "center" }}>{error}</Text>
+          ) : (
+            <FlatList
+              data={teams}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderItem}
+              ListEmptyComponent={
+                <Text className="text-5xl text-black text-center font-montez p-5">
+                  No Teams Found
+                </Text>
+              }
+            />
+          )}
+        </View>
+      </ImageBackground>
     </SafeAreaView>
   );
 };

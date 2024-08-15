@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';  // Import FontAwesome for different icon
 
 const BackButton = ({ color = 'black', size = 24, style = '', onPress }) => {
 
@@ -12,7 +12,7 @@ const BackButton = ({ color = 'black', size = 24, style = '', onPress }) => {
 
   return (
     <TouchableOpacity onPress={handlePress} className={style}>
-      <Ionicons name="arrow-back" size={size} color={color} />
+      <FontAwesome name="long-arrow-left" size={size} color={color} /> 
     </TouchableOpacity>
   );
 };

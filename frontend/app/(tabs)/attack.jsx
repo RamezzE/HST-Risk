@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Alert } from "react-native";
+import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
@@ -11,6 +11,8 @@ import { useEffect, useState, useContext } from "react";
 import { GlobalContext } from "../../context/GlobalProvider";
 
 import { attack_check } from "../../api/attack_functions";
+
+import { images } from "../../constants";
 
 import {
   get_countries_by_team,
@@ -26,6 +28,7 @@ import DottedLine from "../../components/DottedLine";
 
 const Attack = () => {
   const { name, teamNo, setAttackData } = useContext(GlobalContext);
+
   const [countryMappings, setCountryMappings] = useState([]);
   const [initialArea, setInitialArea] = useState([30, 30]);
   const [zones, setZones] = useState([]);
@@ -67,7 +70,6 @@ const Attack = () => {
   };
 
   useEffect(() => {
-
     const fetchData = async () => {
       setError(null);
 
@@ -112,8 +114,7 @@ const Attack = () => {
   };
 
   const selectOtherZone = (zone) => {
-
-    setForm({ ...form, other_zone: zone});
+    setForm({ ...form, other_zone: zone });
 
     if (!zone || zone == "") return;
 
@@ -153,14 +154,11 @@ const Attack = () => {
   }, []);
 
   const attack_func = async (zone_1, team_1, zone_2) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      var result = validateAttack(
-        form.your_zone,
-        form.other_zone,
-      );
+      var result = validateAttack(form.your_zone, form.other_zone);
 
-      setForm({ ...form, your_zone: "", other_zone: ""});
+      setForm({ ...form, your_zone: "", other_zone: "" });
       setOtherZones([]);
 
       if (!result.success) {
@@ -170,7 +168,7 @@ const Attack = () => {
 
       team_2 = parseInt(countryMappings.find((c) => c.name === zone_2).teamNo);
 
-      console.log("Attacking", zone_1, team_1)
+      console.log("Attacking", zone_1, team_1);
       console.log("Defending: ", zone_2, team_2);
 
       const response = await attack_check(zone_1, team_1, zone_2, team_2);
@@ -196,100 +194,105 @@ const Attack = () => {
         "Attack Failed",
         error.response?.data || "Error checking attack"
       );
-    }
-    finally{
+    } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
     <SafeAreaView className="bg-primary h-full">
-      <ScrollView>
-        <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
-          <View className="flex flex-col mb-6">
-            <Text className="text-white text-center text-xl p-5">
-              Welcome, {name} -- Team {teamNo}
-            </Text>
+      <ImageBackground
+        source={images.background}
+        style={{ flex: 1, resizeMode: "cover" }}
+      >
+        <ScrollView>
+          <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
+            <View className="flex flex-col mb-6">
+              <Text className="font-montez text-center text-4xl py-5">
+                Welcome, {name} -- Team {teamNo}
+              </Text>
 
-            {!Array.isArray(myZones) || myZones.length === 0 ? (
-              <View></View>
-            ) : (
-              <DropDownField
-                title="Select Your Country"
-                value={form.your_zone}
-                placeholder="Select Your Country"
-                items={myZones.map((zone) => ({
-                  label: `${zone.name}`,
-                  value: zone.name,
-                }))}
-                handleChange={(e) => selectYourZone(e)}
-                otherStyles=""
-              />
-            )}
+              {!Array.isArray(myZones) || myZones.length === 0 ? (
+                <View></View>
+              ) : (
+                <DropDownField
+                  title="Select Your Country"
+                  value={form.your_zone}
+                  placeholder="Select Your Country"
+                  items={myZones.map((zone) => ({
+                    label: `${zone.name}`,
+                    value: zone.name,
+                  }))}
+                  handleChange={(e) => selectYourZone(e)}
+                  otherStyles=""
+                />
+              )}
 
-            {!Array.isArray(otherZones) || otherZones.length === 0 ? (
-              <View></View>
-            ) : (
-              <DropDownField
-                title="Select Country to Attack"
-                value={form.other_zone}
-                placeholder="Select Country to Attack"
-                items={otherZones.map((zone) => ({
-                  label: `${zone}`,
-                  value: zone,
-                }))}
-                handleChange={(e) => selectOtherZone(e)}
-                otherStyles="mt-5"
-              />
-            )}
+              {!Array.isArray(otherZones) || otherZones.length === 0 ? (
+                <View></View>
+              ) : (
+                <DropDownField
+                  title="Select Country to Attack"
+                  value={form.other_zone}
+                  placeholder="Select Country to Attack"
+                  items={otherZones.map((zone) => ({
+                    label: `${zone}`,
+                    value: zone,
+                  }))}
+                  handleChange={(e) => selectOtherZone(e)}
+                  otherStyles="mt-5"
+                />
+              )}
+            </View>
+
+            <MapView
+              className="flex-1"
+              region={{
+                latitude: initialArea[0],
+                longitude: initialArea[1],
+                latitudeDelta: 50,
+                longitudeDelta: 100,
+              }}
+              mapType="satellite"
+              // scrollEnabled={false}
+              // zoomEnabled={false}
+              rotateEnabled={false}
+              pitchEnabled={false}
+            >
+              {zones.map((zone, index) => (
+                <MapZone
+                  key={index}
+                  points={zone.points}
+                  color={getTeamColor(zone.name)}
+                  label={zone.name}
+                />
+              ))}
+
+              {CountryConnections.map((points, index) => (
+                <DottedLine
+                  key={index}
+                  startPoint={points.point1}
+                  endPoint={points.point2}
+                  color="#FFF"
+                  thickness={1.5}
+                  // dashLength={25}
+                  dashGap={2}
+                />
+              ))}
+            </MapView>
+
+            <CustomButton
+              title={form.other_zone ? `Attack ${form.other_zone}` : "Attack"}
+              handlePress={() =>
+                attack_func(form.your_zone, parseInt(teamNo), form.other_zone)
+              }
+              containerStyles="mt-7 p-3"
+              textStyles={"text-3xl"}
+              isLoading={isSubmitting}
+            />
           </View>
-
-          <MapView
-            className="flex-1"
-            region={{
-              latitude: initialArea[0],
-              longitude: initialArea[1],
-              latitudeDelta: 50,
-              longitudeDelta: 100,
-            }}
-            mapType="satellite"
-            // scrollEnabled={false}
-            // zoomEnabled={false}
-            rotateEnabled={false}
-            pitchEnabled={false}
-          >
-            {zones.map((zone, index) => (
-              <MapZone
-                key={index}
-                points={zone.points}
-                color={getTeamColor(zone.name)}
-                label={zone.name}
-              />
-            ))}
-
-            {CountryConnections.map((points, index) => (
-              <DottedLine
-                key={index}
-                startPoint={points.point1}
-                endPoint={points.point2}
-                color="#FFF"
-                thickness={1.5}
-                // dashLength={25}
-                dashGap={2}
-              />
-            ))}
-          </MapView>
-
-          <CustomButton
-            title={form.other_zone ? `Attack ${form.other_zone}` : "Attack"}
-            handlePress={() =>
-              attack_func(form.your_zone, parseInt(teamNo), form.other_zone)
-            }
-            containerStyles="mt-7"
-            isLoading= {isSubmitting}
-          />
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };

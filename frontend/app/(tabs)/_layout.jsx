@@ -34,12 +34,13 @@ const TabsLayout = () => {
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
-          tabBarActiveTintColor: "#FFA001",
-          tabBarInactiveTintColor: "#CDCDE0",
+          // tabBarActiveTintColor: "#F2E9D0",
+          tabBarActiveTintColor: "#FFF",
+          tabBarInactiveTintColor: "#BBB",
           tabBarStyle: {
-            backgroundColor: "#161622",
+            backgroundColor: "#4b320c",
             borderTopWidth: 1,
-            borderTopColor: "#232533",
+            borderTopColor: "#000",
             height: 84,
           },
         }}
@@ -51,7 +52,7 @@ const TabsLayout = () => {
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.home}
+                icon={icons.globe}
                 color={color}
                 name="Map"
                 focused={focused}
@@ -66,7 +67,7 @@ const TabsLayout = () => {
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.home}
+                icon={icons.sword}
                 color={color}
                 name="Attack"
                 focused={focused}

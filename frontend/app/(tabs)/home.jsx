@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Alert, ScrollView } from "react-native";
+import { View, Text, Alert, ScrollView, ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
@@ -18,6 +18,8 @@ import countries from "../../constants/countries";
 import BackButton from "../../components/BackButton";
 
 import CountryConnections from "../../constants/country_connections";
+
+import { images } from "../../constants";
 
 const Home = () => {
   const [zones, setZones] = useState([]);
@@ -63,8 +65,8 @@ const Home = () => {
 
   const logoutFunc = () => {
     Logout();
-    router.replace("/")
-  }
+    router.replace("/");
+  };
 
   const onMarkerPress = (zone) => {
     try {
@@ -99,53 +101,74 @@ const Home = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-primary">
-      <ScrollView>
-        <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
-          <BackButton style="w-[20vw] mb-4" color="white" size={32} onPress={() => logoutFunc()} />
-          {/* <Text className="text-white text-center text-2xl p-3">
+      <ImageBackground
+        source={images.background}
+        style={{ flex: 1, resizeMode: "cover" }}
+      >
+        <ScrollView>
+          <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
+            <BackButton
+              style="w-[20vw] mb-4"
+              size={32}
+              onPress={() => logoutFunc()}
+            />
+            {/* <Text className="text-white text-center text-2xl p-3">
               World Map
             </Text> */}
-          <MapView
-            className="flex-1"
-            initialRegion={{
-              latitude: 30.357810872761366,
-              longitude: 30.392057112613095,
-              latitudeDelta: 100,
-              longitudeDelta: 180,
-            }}
-            mapType="satellite"
-            // mapType="terrain"
-            rotateEnabled={false}
-            pitchEnabled={false}
-          >
-            {zones.map((zone, index) => (
-              <MapZone
-                key={zone.name}
-                points={zone.points}
-                color={getTeamColor(zone.name)}
-                label={zone.name}
-                onMarkerPress={() => onMarkerPress(zone)}
-              />
-            ))}
+            <View
+              style={{
+                flex: 1,
+                borderWidth: 5,
+                borderColor: "black",
+                borderRadius: 2,
+                overflow: "hidden",
+              }}
+            >
+              <MapView
+                className="flex-1"
+                initialRegion={{
+                  latitude: 30.357810872761366,
+                  longitude: 30.392057112613095,
+                  latitudeDelta: 100,
+                  longitudeDelta: 180,
+                }}
+                mapType="satellite"
+                // mapType="terrain"
+                rotateEnabled={false}
+                pitchEnabled={false}
+              >
+                {zones.map((zone, index) => (
+                  <MapZone
+                    key={zone.name}
+                    points={zone.points}
+                    color={getTeamColor(zone.name)}
+                    label={zone.name}
+                    onMarkerPress={() => onMarkerPress(zone)}
+                  />
+                ))}
 
-            {CountryConnections.map((points, index) => (
-              <DottedLine
-                key={index}
-                startPoint={points.point1}
-                endPoint={points.point2}
-                color="#FFF"
-                thickness={1.5}
-                // dashLength={25}
-                dashGap={2}
-              />
-            ))}
-          </MapView>
+                {CountryConnections.map((points, index) => (
+                  <DottedLine
+                    key={index}
+                    startPoint={points.point1}
+                    endPoint={points.point2}
+                    color="#FFF"
+                    thickness={1.5}
+                    // dashLength={25}
+                    dashGap={2}
+                  />
+                ))}
+              </MapView>
+            </View>
 
-          {error && (
-            <Text className="text-white text-center p-2 text-xl">{error}</Text>
-          )}
-        </View>
-      </ScrollView>
+            {error && (
+              <Text className="text-white text-center p-2 text-xl">
+                {error}
+              </Text>
+            )}
+          </View>
+        </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };

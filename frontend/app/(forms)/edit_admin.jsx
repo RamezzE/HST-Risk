@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, Alert } from "react-native";
+import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,6 +11,8 @@ import { get_wars } from "../../api/warzone_functions";
 import { update_admin, delete_admin } from "../../api/admin_functions";
 
 import BackButton from "../../components/BackButton";
+
+import { images } from "../../constants";
 
 const validateEditAdmin = (name, password, war) => {
   var result = {
@@ -130,12 +132,17 @@ const EditAdmin = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full">
+      <ImageBackground
+        source={images.background}
+        style={{ resizeMode: "cover" }}
+        className="min-h-[100vh]"
+      >
       <ScrollView>
         <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-          <BackButton style="w-[20vw]" color="white" size={32} path="/admins" />
-          <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
-            Edit Admin
-          </Text>
+          <BackButton style="w-[20vw]" color="black" size={32} onPress={()=> router.dismiss(1)} />
+          <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
+              Edit Admin
+            </Text>
           <FormField
             title="Admin Name"
             value={form.name}
@@ -166,18 +173,20 @@ const EditAdmin = () => {
           <CustomButton
             title="Update Admin"
             handlePress={submit}
-            containerStyles="mt-7"
+            containerStyles="mt-7 p-3 bg-green-800"
+            textStyles={"text-3xl"}
             isLoading={isSubmitting}
           />
           <CustomButton
             title="Delete Admin"
             handlePress={() => deleteAdmin()}
-            containerStyles="mt-7 bg-red-800"
-            textStyles={"text-white"}
+            containerStyles="mt-7 p-3 bg-red-800"
+            textStyles={"text-3xl"}
             isLoading={isSubmitting}
           />
         </View>
       </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };

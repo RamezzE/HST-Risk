@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, Alert } from "react-native";
+import { View, Text, ImageBackground , ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
@@ -9,6 +9,8 @@ import { login } from "../../api/user_functions";
 import { useContext } from "react";
 
 import { GlobalContext } from "../../context/GlobalProvider";
+
+import { images } from "../../constants";
 
 import BackButton from "../../components/BackButton";
 
@@ -33,7 +35,7 @@ const SignIn = () => {
     password: "",
   });
 
-  const { setName, setTeamNo} = useContext(GlobalContext);
+  const { setName, setTeamNo } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,6 +59,7 @@ const SignIn = () => {
 
       if (response.team != "") {
         setTeamNo(form.username);
+        setName(response.team.name);
         router.replace("/home");
         return;
       }
@@ -84,10 +87,15 @@ const SignIn = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full">
+      <ImageBackground
+        source={images.background}
+        style={{ resizeMode: "cover" }}
+        className='min-h-[100vh]'
+      >
       <ScrollView>
         <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
-        <BackButton style="w-[20vw] mb-4" color="white" size={32} onPress={() => router.replace("/")} />
-        <Text className="text-2xl text-white text-semibold mt-10 font-psemibold">
+        <BackButton style="w-[20vw] mb-4" color="#4B320C" size={32} onPress={() => router.replace("/")} />
+        <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
               Sign In
             </Text>
 
@@ -108,11 +116,13 @@ const SignIn = () => {
             <CustomButton
               title="Sign In"
               handlePress={submit}
-              containerStyles="mt-7"
+              containerStyles="mt-7 p-3"
+              textStyles={"text-3xl"}
               isLoading={isSubmitting}
             />
         </View>
       </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };

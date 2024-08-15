@@ -14,14 +14,18 @@ const DropdownField = ({
 }) => {
   return (
     <View className={`space-y-2 ${otherStyles}`}>
-      <Text className="text-base text-gray-100">{title}</Text>
+      <Text className="font-montez text-black text-3xl">{title}</Text>
 
-      <View className="w-full h-16 px-4 bg-black-100 rounded-2xl border-2 border-black-200 focus:border-secondary flex flex-row items-center">
+      <View 
+      className="w-full h-16 px-4 bg- rounded-md focus:border-secondary flex flex-row items-center"
+      style={{ backgroundColor: 'rgba(75, 50, 12, 0.5)' }} // Transparent background
+
+      >
         <TextInput
-          className="flex-1 text-white text-base"
+          className="flex-1 text-white font-montez text-2xl"
           value={value}
           placeholder={placeholder}
-          placeholderTextColor="#7B7B8B"
+          placeholderTextColor="#F2E9D0"
           // onChangeText={handleChange}
           editable={false}
           {...props}
@@ -33,6 +37,7 @@ const DropdownField = ({
           value={value}
           style={pickerSelectStyles}
           placeholder={{ label: placeholder, value: null }}
+          placeholderTextColor="#F2E9D0"
           // Icon={() => {
           //   return <Icon name="arrow-drop-down" size={24} color="white" />;
           // }}

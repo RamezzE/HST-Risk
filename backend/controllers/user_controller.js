@@ -28,6 +28,9 @@ class UserController {
             return res.json(response);
           }
           req.session.user = { id: team._id, mode: "team" };
+          req.session.save();
+          console.log("Session Created");
+          console.log(req.session);
           response.success = true;
           response.team = team;
           return res.json(response);
@@ -46,6 +49,9 @@ class UserController {
           return res.json(response);
         }
         req.session.user = { id: admin._id, mode: "admin" };
+        req.session.save();
+        console.log("Session Created");
+        console.log(req.session.user);
         response.success = true;
         response.admin = admin;
         return res.json(response);
@@ -62,6 +68,9 @@ class UserController {
           return res.json(response);
         }
         req.session.user = { id: superAdmin._id, mode: "super_admin" };
+        req.session.save();
+        console.log("Session Created");
+        console.log(req.session.user);
         response.success = true;
         response.superAdmin = superAdmin;
         return res.json(response);
@@ -75,6 +84,8 @@ class UserController {
   }
 
   static async logout(req, res) {
+    console.log("Logging out");
+    console.log(req.session);
     req.session.destroy((err) => {});
   }
 
@@ -88,13 +99,17 @@ class UserController {
     };
 
     if (!req.session.user) {
+      console.log("Session Does Not Exist");
+      console.log(req.session);
       response.success = false;
       return res.json(response);
     }
 
+    console.log("Session Exists");
+    console.log(req.session);
     const { id, mode } = req.session.user;
 
-    if (mode === "team") {
+    if (mode == "team") {
       const team = await Team.findById(id);
 
       if (team) {
@@ -102,7 +117,7 @@ class UserController {
         response.team = team;
         return res.json(response);
       }
-    } else if (mode === "admin") {
+    } else if (mode == "admin") {
       const admin = await Admin.findById(id);
 
       if (admin) {
@@ -110,7 +125,7 @@ class UserController {
         response.admin = admin;
         return res.json(response);
       }
-    } else if (mode === "super_admin") {
+    } else if (mode == "super_admin") {
       const superAdmin = await SuperAdmin.findById(id);
 
       if (superAdmin) {
