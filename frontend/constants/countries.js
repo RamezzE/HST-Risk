@@ -79,7 +79,7 @@ const Congo = {
     { latitude: 0.1116679083567425, longitude: 34.001076617354876 },
     { latitude: -4.3587815908493, longitude: 39.12548819306352 },
   ],
-  adjacent_zones: ["Central Africa", "Madagascar"],
+  adjacent_zones: ["Central Africa", "South Africa", "Madagascar"],
 };
 
 const CentralAfrica = {
@@ -508,7 +508,7 @@ const NewZealand = {
     { latitude: -34.405514371546815, longitude: 172.68849993091493 },
     { latitude: -34.41511718573815, longitude: 172.94748121831967 },
   ],
-  adjacent_zones: [],
+  adjacent_zones: ["Eastern Australia", "Chile"],
 };
 
 const WesternAustralia = {

@@ -18,8 +18,14 @@ const MiscLayout = () => {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="guest_choose_team"
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack>
-      <StatusBar backgroundColor="#161622" style="light" />
+      <StatusBar backgroundColor="#000" style="light" />
     </>
   );
 };

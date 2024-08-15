@@ -90,3 +90,4 @@ export const set_attack_result = async (attack_id, result) => {
     };
   }
 }
+

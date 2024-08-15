@@ -47,7 +47,6 @@ export default function App() {
         }
   
         const response = await is_logged_in();
-        console.log("Response:", response);
   
         if (!response.success) {
           console.log("Not success");
@@ -58,6 +57,7 @@ export default function App() {
         if (response.team !== "") {
           setIsLoggedIn(true);
           setTeamNo(response.team.number);
+          setName(response.team.name);
           setUserMode("team");
           router.push("/home");
           return;
@@ -92,13 +92,12 @@ export default function App() {
   
   const checkLoggedIn = () => {
     setIsSubmitting(true);
-    console.log("isSubmitting:", isSubmitting);
   };
 
   const guestLogin = () => {
     setTeamNo("");
     setName("Guest");
-    router.push("/home");
+    router.push("/guest_choose_team");
   };
 
   return (
@@ -145,7 +144,7 @@ export default function App() {
             </View>
           </View>
         </View>
-        <StatusBar backgroundColor="#161622" style="light" />
+        <StatusBar backgroundColor="#000" style="light" />
       </ImageBackground>
     </SafeAreaView>
   );

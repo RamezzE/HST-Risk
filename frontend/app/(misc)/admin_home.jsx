@@ -82,13 +82,13 @@ const AdminHome = () => {
       >
         <ScrollView>
           <View className="w-full min-h-[100vh] px-4 py-5 flex flex-col justify-between">
-          <View>
-          <BackButton
-              style="w-[20vw] mb-6"
-              color="#4B320C"
-              size={32}
-              onPress={() => logoutFunc()}
-            />
+            <View>
+              <BackButton
+                style="w-[20vw] mb-6"
+                color="#4B320C"
+                size={32}
+                onPress={() => logoutFunc()}
+              />
 
               <Text className="font-montez text-black text-5xl px-5 pt-1 text-center">
                 Welcome, {name}
@@ -125,13 +125,14 @@ const AdminHome = () => {
             <View>
               <View className="flex flex-row justify-between mr-1 mt-7">
                 {response.attacks.length > 0 && (
-                  <>
+                  <View className="w-full">
+                    <View className="flex flex-row">
                     <CustomButton
                       title="Attack Won"
                       textStyles={"text-3xl"}
                       containerStyles="w-1/2 mr-1 bg-green-500 p-3"
                       handlePress={() => {
-                        setAttackResult(currentAttack._id, "true");
+                        setAttackResult("true");
                       }}
                     />
                     <CustomButton
@@ -139,18 +140,20 @@ const AdminHome = () => {
                       textStyles={"text-3xl"}
                       containerStyles="w-1/2 ml-1 bg-red-500 p-3"
                       handlePress={() => {
-                        setAttackResult(currentAttack._id, "false");
+                        setAttackResult("false");
                       }}
                     />
-                  </>
+                    </View>
+                    <CustomButton
+                      title="Cancel Attack"
+                      containerStyles="mt-5 p-3"
+                      textStyles={"text-3xl"}
+                      onPress={() => {}}
+                    />
+                  </View>
+                  
                 )}
               </View>
-              <CustomButton
-                title="Cancel Attack"
-                containerStyles="mt-5 p-3"
-                textStyles={"text-3xl"}
-                onPress={() => {}}
-              />
             </View>
           </View>
         </ScrollView>

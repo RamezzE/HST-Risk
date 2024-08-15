@@ -7,7 +7,7 @@ import { get_all_attacks } from "../../api/attack_functions";
 
 import { images } from "../../constants";
 
-const Stats = () => {
+const StatsGuest = () => {
   const [attacks, setAttacks] = useState([]);
   const [error, setError] = useState(null);
   const [attackingAttacks, setAttackingAttacks] = useState([]);
@@ -26,6 +26,9 @@ const Stats = () => {
         console.log("All attacks:", result);
 
         // Filter attacks based on the attacking_team and defending_team
+
+        console.log("Team No:", teamNo);
+
         const filteredAttackingAttacks = result.filter(
           (attack) => attack.attacking_team === teamNo
         );
@@ -126,4 +129,4 @@ const Stats = () => {
   );
 };
 
-export default Stats;
+export default StatsGuest;

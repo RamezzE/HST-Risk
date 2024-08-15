@@ -11,6 +11,8 @@ import attack_router from "./routes/attack.js";
 import warzone_router from "./routes/warzone.js";
 import user_router from "./routes/user.js";
 
+import Warzone from "./models/warzone.js";
+
 const app = express();
 
 dotenv.config({ path: "./.env" });
@@ -20,16 +22,18 @@ app.set("port", process.env.PORT);
 app.set("host", process.env.HOST);
 
 // Session configuration with MongoDB store
-app.use(session({
-  secret: 'idk_whats_this',
-  resave: true,
-  saveUninitialized: true,
-  // cookie: { secure: process.env.ENV === 'production' }, // secure: true in production
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI, // The MongoDB connection string
-    collectionName: 'sessions', // Collection to store sessions
+app.use(
+  session({
+    secret: "idk_whats_this",
+    resave: true,
+    saveUninitialized: true,
+    // cookie: { secure: process.env.ENV === 'production' }, // secure: true in production
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI, // The MongoDB connection string
+      collectionName: "sessions", // Collection to store sessions
+    }),
   })
-}));
+);
 
 app.use(express.json());
 
