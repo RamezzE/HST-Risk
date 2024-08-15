@@ -1,14 +1,7 @@
 import { Router } from 'express';
 var router = Router();
 
-import AdminController from '../controllers/admin_controller.js';
-
-router.use(function (req, res, next) {
-//   if (req.session.userType)
-//     return res.redirect('/');
-  
-  next();
-});
+import AdminController from './../controllers/admin_controller.js';
 
 router.get("/", AdminController.get_admins);
 router.get("/:name", AdminController.get_admin_by_name);

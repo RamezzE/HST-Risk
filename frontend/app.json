@@ -1,11 +1,11 @@
 {
   "expo": {
     "name": "HST Risk",
-    "slug": "HST Risk",
+    "slug": "HST-Risk",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "HST Risk",
+    "scheme": "hst-risk",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -40,7 +40,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "0ecced42-df07-4e84-8212-7bd7d3ab75ba"
+        "projectId": "7bab2e49-e685-455a-8fde-6b0c21911c4c"
       }
     }
   }

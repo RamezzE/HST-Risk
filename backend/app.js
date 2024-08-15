@@ -11,8 +11,6 @@ import attack_router from "./routes/attack.js";
 import warzone_router from "./routes/warzone.js";
 import user_router from "./routes/user.js";
 
-import Warzone from "./models/warzone.js";
-
 const app = express();
 
 dotenv.config({ path: "./.env" });
@@ -51,12 +49,13 @@ mongooseConnectionPromise
   });
 
 app.get("/", (req, res, next) => {
-  res.send("Server is up and running");
+  res.send("Server is up and running. HST");
 });
 
 app.use("/users", user_router);
 app.use("/admins", admin_router);
 app.use("/teams", team_router);
+
 app.use("/countries", country_router);
 app.use("/attacks", attack_router);
 app.use("/warzones", warzone_router);

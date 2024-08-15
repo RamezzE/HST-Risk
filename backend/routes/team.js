@@ -1,7 +1,7 @@
 import { Router } from 'express';
 var router = Router();
 
-import TeamController from '../controllers/team_controller.js';
+import TeamController from './../controllers/team_controller.js';
 
 router.use(function (req, res, next) {
 //   if (req.session.userType)
