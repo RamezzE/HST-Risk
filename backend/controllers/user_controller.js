@@ -27,8 +27,16 @@ class UserController {
             response.errorMsg = "Invalid Credentials";
             return res.json(response);
           }
+          console.log("Team Found");
+          console.log(team._id);
           req.session.user = { id: team._id, mode: "team" };
-          req.session.save();
+          req.session.save((err) => {
+            if (err) {
+              console.error("Session save error:", err);
+            } else {
+              console.log("Session saved successfully");
+            }
+          });
           console.log("Session Created");
           console.log(req.session);
           response.success = true;
@@ -49,7 +57,13 @@ class UserController {
           return res.json(response);
         }
         req.session.user = { id: admin._id, mode: "admin" };
-        req.session.save();
+        req.session.save((err) => {
+          if (err) {
+            console.error("Session save error:", err);
+          } else {
+            console.log("Session saved successfully");
+          }
+        });
         console.log("Session Created");
         console.log(req.session.user);
         response.success = true;
@@ -68,8 +82,13 @@ class UserController {
           return res.json(response);
         }
         req.session.user = { id: superAdmin._id, mode: "super_admin" };
-        req.session.save();
-        console.log("Session Created");
+        req.session.save((err) => {
+          if (err) {
+            console.error("Session save error:", err);
+          } else {
+            console.log("Session saved successfully");
+          }
+        });
         console.log(req.session.user);
         response.success = true;
         response.superAdmin = superAdmin;
@@ -84,9 +103,23 @@ class UserController {
   }
 
   static async logout(req, res) {
-    console.log("Logging out");
-    console.log(req.session);
-    req.session.destroy((err) => {});
+    try {
+      if (!req.session.user) {
+        console.log("Session Does Not Exist");
+        console.log(req.session);
+        return res.json({ success: false, errorMsg: "No session to destroy" });
+      }
+      console.log("Session Exists");
+      console.log(req.session);
+
+      req.session.destroy((err) => {});
+
+      return res.json({ success: true });
+    } catch (error) {
+      console.log(error);
+      return res.json({ success: false, errorMsg: "Failed to destroy session" });
+    }
+
   }
 
   static async is_logged_in(req, res) {

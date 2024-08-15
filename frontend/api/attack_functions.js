@@ -91,3 +91,17 @@ export const set_attack_result = async (attack_id, result) => {
   }
 }
 
+export const delete_attack = async (attack_id) => {
+  try {
+    const response = await axios.delete(`${serverIP}`, {
+      attack_id,
+    });
+    
+    return response.data;
+  } catch (error) {
+    return {
+      errorMsg: error.response?.data || "API: Error deleting attack",
+    };
+  }
+}
+

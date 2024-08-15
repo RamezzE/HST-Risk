@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 const warzoneSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        unique: true,
+        required: true,
     },
     number: {
         type: Number,

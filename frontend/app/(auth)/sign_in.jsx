@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ImageBackground , ScrollView, Alert } from "react-native";
+import { View, Text, ImageBackground, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
@@ -39,6 +39,53 @@ const SignIn = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      if (!isSubmitting)
+        return;
+      
+      try {
+        const response = await login(
+          form.username.trim(),
+          form.password.trim()
+        );
+
+        if (!response.success) {
+          Alert.alert("Error", response.errorMsg);
+          return;
+        }
+
+        if (response.team != "") {
+          setTeamNo(form.username);
+          setName(response.team.name);
+          router.replace("/home");
+          return;
+        }
+
+        if (response.admin != "") {
+          setName(form.username);
+          router.replace("/admin_home");
+          return;
+        }
+
+        if (response.superAdmin != "") {
+          setName(form.username);
+          router.replace("/dashboard");
+          return;
+        }
+
+        Alert.alert("Error", response.errorMsg);
+      } catch (error) {
+        Alert.alert("Error", "Cannot sign in");
+        console.log(error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    checkLoginStatus();
+  }, [isSubmitting]);
+
   const submit = async () => {
     var result = validateSignIn(form.username, form.password);
 
@@ -48,41 +95,6 @@ const SignIn = () => {
     }
 
     setIsSubmitting(true);
-
-    try {
-      const response = await login(form.username.trim(), form.password.trim());
-
-      if (!response.success) {
-        Alert.alert("Error", response.errorMsg);
-        return;
-      }
-
-      if (response.team != "") {
-        setTeamNo(form.username);
-        setName(response.team.name);
-        router.replace("/home");
-        return;
-      }
-
-      if (response.admin != "") {
-        setName(form.username);
-        router.replace("/admin_home");
-        return;
-      }
-
-      if (response.superAdmin != "") {
-        setName(form.username);
-        router.replace("/dashboard");
-        return;
-      }
-
-      Alert.alert("Error", response.errorMsg);
-    } catch (error) {
-      Alert.alert("Error", "Cannot sign in");
-      console.log(error);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (
@@ -90,12 +102,17 @@ const SignIn = () => {
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
-        className='min-h-[100vh]'
+        className="min-h-[100vh]"
       >
-      <ScrollView>
-        <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
-        <BackButton style="w-[20vw] mb-4" color="#4B320C" size={32} onPress={() => router.replace("/")} />
-        <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
+        <ScrollView>
+          <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
+            <BackButton
+              style="w-[20vw] mb-4"
+              color="#4B320C"
+              size={32}
+              onPress={() => router.replace("/")}
+            />
+            <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
               Sign In
             </Text>
 
@@ -120,8 +137,8 @@ const SignIn = () => {
               textStyles={"text-3xl"}
               isLoading={isSubmitting}
             />
-        </View>
-      </ScrollView>
+          </View>
+        </ScrollView>
       </ImageBackground>
     </SafeAreaView>
   );

@@ -293,7 +293,7 @@ class AttackController {
           return res.json(result);
         });
 
-      var warzone = await Warzone.findById(attack.warzone_id);
+      const warzone = await Warzone.findById(attack.warzone_id);
 
       const warIndex = warzone.wars.findIndex((war) => war.name === attack.war);
 
@@ -331,6 +331,65 @@ class AttackController {
       result.errorMsg = "Server: Error setting attack result";
       return res.json(result);
     }
+  }
+  static async delete_attack(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { attack_id } = req.body;
+
+    try {
+      const attack = await Attack.findById(attack_id);
+
+      if (!attack) {
+        result.errorMsg = "Attack not found";
+        return res.json(result);
+      }
+
+      const warzone = await Warzone.findById(attack.warzone_id);
+
+      const warIndex = warzone.wars.findIndex((war) => war.name === attack.war);
+
+      Attack.deleteOne({ _id: attack_id })
+        .then(() => {
+          console.log("Attack deleted successfully.");
+        })
+        .catch((e) => {
+          console.log("Error deleting attack:", e);
+          result.errorMsg = "Error deleting attack";
+          return res.json(result);
+        });
+
+      if (warIndex !== -1) {
+        warzone.wars[warIndex].available = true;
+
+        await warzone
+          .save()
+          .then(() => {
+            console.log(`${attack.war.name} is now marked as available.`);
+          })
+          .catch((e) => {
+            console.log("Error saving warzone:", e);
+            result.errorMsg = "Error saving warzone";
+            return res.json(result);
+          });
+
+        console.log(`${attack.war.name} is now marked as available.`);
+
+        result.success = true;
+        return res.json(result);
+      } else {
+        console.log("War not found in the warzone.");
+      }
+    }
+    catch (error) {
+      console.error("Server: Error deleting attack:", error);
+      result.errorMsg = "Server: Error deleting attack";
+      return res.json(result);
+    }
+
   }
 }
 

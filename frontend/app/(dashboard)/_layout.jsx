@@ -1,5 +1,5 @@
 import { View, Text, Image } from "react-native";
-import { Tabs, Redirect } from "expo-router";
+import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
 import { icons } from "../../constants";
@@ -28,26 +28,41 @@ const TabsLayout = () => {
       <Tabs
         screenOptions = {{
           tabBarShowLabel : false,
-          tabBarActiveTintColor : '#FFA001',
-          tabBarInactiveTintColor : '#CDCDE0',
+          tabBarActiveTintColor: "#FFF",
+          tabBarInactiveTintColor: "#BBB",
           tabBarStyle: {
-            backgroundColor : '#161622',
+            backgroundColor: "#201402",
             borderTopWidth: 1,
-            borderTopColor : '#232533',
+            borderTopColor: "#000",
             height: 84,
-          }
+          },
         }}
       >
         <Tabs.Screen
           name="dashboard"
           options={{
-            title: "Dashboard",
+            title: "Home",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.home}
+                icon={icons.dashboard}
                 color={color}
-                name="Dashboard"
+                name="Home"
+                focused={focused}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="dashboard_attacks"
+          options={{
+            title: "Attacks",
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.swords}
+                color={color}
+                name="Attacks"
                 focused={focused}
               />
             ),
@@ -60,7 +75,7 @@ const TabsLayout = () => {
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.home}
+                icon={icons.teams}
                 color={color}
                 name="Teams"
                 focused={focused}
@@ -75,7 +90,7 @@ const TabsLayout = () => {
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.home}
+                icon={icons.countries}
                 color={color}
                 name="Countries"
                 focused={focused}
@@ -90,7 +105,7 @@ const TabsLayout = () => {
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.home}
+                icon={icons.whistle}
                 color={color}
                 name="Admins"
                 focused={focused}
@@ -98,8 +113,9 @@ const TabsLayout = () => {
             ),
           }}
         />
+        
       </Tabs>
-      <StatusBar backgroundColor="#161622" style="light" />
+      <StatusBar backgroundColor="#000" style="light" />
     </>
   );
 };

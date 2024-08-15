@@ -11,5 +11,6 @@ router.post('/attack', AttackController.attack);
 router.post('/check', AttackController.attack_check);
 router.post('/set_result', AttackController.set_attack_result);
 
+router.delete('/', AttackController.delete_attack);
 
 export default router;

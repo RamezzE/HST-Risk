@@ -1,4 +1,3 @@
-import { View, Text } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
@@ -37,7 +36,7 @@ const FormsLayout = () => {
           }}
         />
       </Stack>
-      <StatusBar backgroundColor="#161622" style="light" />
+      <StatusBar backgroundColor="#000" style="light" />
     </>
   );
 };

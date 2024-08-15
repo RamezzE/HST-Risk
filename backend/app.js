@@ -2,6 +2,7 @@ import express from "express";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import mongooseConnectionPromise from "./db.js";
 
 import admin_router from "./routes/admin.js";
@@ -13,6 +14,20 @@ import user_router from "./routes/user.js";
 
 const app = express();
 
+app.use(cookieParser());
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'idk_what_to_put_here',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 1000 * 60 * 60 * 24
+  },
+  store: new MongoStore({ mongoUrl: process.env.MONGO_URI })
+}));
+
 dotenv.config({ path: "./.env" });
 
 app.set("env", process.env.ENV);
@@ -20,18 +35,7 @@ app.set("port", process.env.PORT);
 app.set("host", process.env.HOST);
 
 // Session configuration with MongoDB store
-app.use(
-  session({
-    secret: "idk_whats_this",
-    resave: true,
-    saveUninitialized: true,
-    // cookie: { secure: process.env.ENV === 'production' }, // secure: true in production
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI, // The MongoDB connection string
-      collectionName: "sessions", // Collection to store sessions
-    }),
-  })
-);
+
 
 app.use(express.json());
 
