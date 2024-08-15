@@ -1,5 +1,30 @@
 import Team from "../models/team.js";
-import { MongoClient } from "mongodb";
+
+const getTeamColor = (teamNo) => {
+  if (teamNo === "1") {
+    return "#0000FF"; // Blue
+  } else if (teamNo === "2") {
+    return "#FF0000"; // Red
+  } else if (teamNo === "3") {
+    return "#00FF00"; // Green
+  } else if (teamNo === "4") {
+    return "#FFFF00"; // Yellow
+  } else if (teamNo === "5") {
+    return "#800080"; // Purple
+  } else if (teamNo === "6") {
+    return "#8B4513"; // Brown
+  } else if (teamNo === "7") {
+    return "#00FFFF"; // Cyan
+  } else if (teamNo === "8") {
+    return "#FFC0CB"; // Pink
+  } else if (teamNo === "9") {
+    return "#808080"; // Gray
+  } else if (teamNo === "10") {
+    return "#FFA500"; // Orange
+  } else {
+    return "#FFFFFF"; // White (default)
+  }
+};
 
 class TeamController {
   static async add_team(req, res) {
@@ -17,9 +42,12 @@ class TeamController {
       return res.json(result);
     }
 
+    const color = getTeamColor(teamNo);
+
     const newTeam = new Team({
       number: teamNo,
       name: teamName,
+      color: color,
       password: password,
     });
 

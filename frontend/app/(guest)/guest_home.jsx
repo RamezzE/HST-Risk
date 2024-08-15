@@ -1,5 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Alert, ScrollView, ImageBackground } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import {
+  View,
+  Text,
+  Alert,
+  ScrollView,
+  ImageBackground,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
@@ -10,15 +18,12 @@ import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
 import { router } from "expo-router";
 
-import { useContext } from "react";
-
 import { GlobalContext } from "../../context/GlobalProvider";
 
 import countries from "../../constants/countries";
 import BackButton from "../../components/BackButton";
 
 import CountryConnections from "../../constants/country_connections";
-
 import { images } from "../../constants";
 
 const Home = () => {
@@ -27,38 +32,42 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [teams, setTeams] = useState([]);
   const [attacks, setAttacks] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
+
+  const fetchData = async () => {
+    setError(null);
+    setZones(countries);
+    setIsRefreshing(true);
+    
+    try {
+      const result = await get_country_mappings();
+      setCountryMappings(result);
+
+      const attacksResult = await get_all_attacks();
+      setAttacks(attacksResult);
+    } catch (err) {
+      console.log(err);
+      setError("Failed to fetch country mappings");
+    }
+
+    try {
+      const teamsResult = await get_all_teams();
+      setTeams(teamsResult);
+    } catch (err) {
+      console.log(err);
+      setError("Failed to fetch teams data");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setError(null);
-      setZones(countries);
-
-      try {
-        const result = await get_country_mappings();
-
-        setCountryMappings(result);
-
-        const attacksResult = await get_all_attacks();
-        setAttacks(attacksResult);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to fetch country mappings");
-      }
-
-      try {
-        const teamsResult = await get_all_teams();
-        setTeams(teamsResult);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to fetch teams data");
-      }
-    };
-
+   
     fetchData();
 
     const interval = setInterval(fetchData, 30000);
-
     return () => clearInterval(interval);
+    
   }, []);
 
   const { Logout } = useContext(GlobalContext);
@@ -99,22 +108,42 @@ const Home = () => {
     }
   };
 
+  if (isRefreshing) {
+    return (
+      <SafeAreaView className="flex-1 bg-primary">
+        <ImageBackground
+          source={images.background}
+          style={{ flex: 1, resizeMode: "cover" }}
+        >
+          <View className="flex-1 justify-center items-center">
+            <ActivityIndicator size="25" color="#000" />
+          </View>
+        </ImageBackground>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-primary">
       <ImageBackground
         source={images.background}
         style={{ flex: 1, resizeMode: "cover" }}
       >
-        <ScrollView>
+        <ScrollView
+          // refreshControl={
+          //   <RefreshControl
+          //     refreshing={isRefreshing}
+          //     onRefresh={() => fetchData()}
+          //     tintColor="#000" 
+          //   />
+          // }
+        >
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
             <BackButton
               style="w-[20vw] mb-4"
               size={32}
               onPress={() => logoutFunc()}
             />
-            {/* <Text className="text-white text-center text-2xl p-3">
-              World Map
-            </Text> */}
             <View
               style={{
                 flex: 1,
@@ -133,11 +162,10 @@ const Home = () => {
                   longitudeDelta: 180,
                 }}
                 mapType="satellite"
-                // mapType="terrain"
                 rotateEnabled={false}
                 pitchEnabled={false}
               >
-                {zones.map((zone, index) => (
+                {zones.map((zone) => (
                   <MapZone
                     key={zone.name}
                     points={zone.points}
@@ -153,9 +181,7 @@ const Home = () => {
                     startPoint={points.point1}
                     endPoint={points.point2}
                     color="#FFF"
-                    thickness={1.5}
-                    // dashLength={25}
-                    dashGap={2}
+                    thickness={3}
                   />
                 ))}
               </MapView>

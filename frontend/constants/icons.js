@@ -1,36 +1,19 @@
-import bookmark from "../assets/icons/bookmark.png";
-import home from "../assets/icons/home.png";
-import plus from "../assets/icons/plus.png";
-import profile from "../assets/icons/profile.png";
-import leftArrow from "../assets/icons/left-arrow.png";
-import menu from "../assets/icons/menu.png";
-import search from "../assets/icons/search.png";
-import upload from "../assets/icons/upload.png";
-import rightArrow from "../assets/icons/right-arrow.png";
-import logout from "../assets/icons/logout.png";
-import eyeHide from "../assets/icons/eye-hide.png";
-import eye from "../assets/icons/eye.png";
-import play from "../assets/icons/play.png";
-
 import globe from "../assets/icons/globe.png";
 import sword from "../assets/icons/sword.png";
+import swords from "../assets/icons/swords.png";
 import stats from "../assets/icons/stats.png";
+import whistle from "../assets/icons/whistle.png";
+import dashboard from "../assets/icons/dashboard.png";
+import teams from "../assets/icons/teams.png";
+import countries from "../assets/icons/countries.png";
 
 export default {
-  play,
-  bookmark,
-  home,
-  plus,
-  profile,
-  leftArrow,
-  menu,
-  search,
-  upload,
-  rightArrow,
-  logout,
-  eyeHide,
-  eye,
   globe,
   sword,
+  swords,
   stats,
+  whistle,
+  dashboard,
+  teams,
+  countries,
 };

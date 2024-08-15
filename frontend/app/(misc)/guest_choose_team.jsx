@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
-import { View, Text, ImageBackground, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  ImageBackground,
+  ScrollView,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
@@ -15,21 +22,48 @@ import { get_all_teams } from "../../api/team_functions";
 const GuestChooseTeam = () => {
   const { setTeamNo } = useContext(GlobalContext);
   const [teams, setTeams] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(true);
+
+  const fetchData = async () => {
+    setIsRefreshing(true);
+
+    try {
+      const result = await get_all_teams();
+      if (result.errorMsg) {
+        console.log(result.errorMsg);
+      } else {
+        setTeams(result);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    get_all_teams().then((data) => {
-      if (data.errorMsg) {
-        console.log(data.errorMsg);
-      } else {
-        setTeams(data);
-      }
-    });
+    fetchData();
   }, []);
 
   const handleTeamSelection = (teamNo) => {
     setTeamNo(teamNo);
     router.replace("/guest_home");
   };
+
+  if (isRefreshing) {
+    return (
+      <SafeAreaView className="flex-1 bg-primary">
+        <ImageBackground
+          source={images.background}
+          style={{ flex: 1, resizeMode: "cover" }}
+        >
+          <View className="flex-1 justify-center items-center">
+            <ActivityIndicator size="25" color="#000" />
+          </View>
+        </ImageBackground>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -38,7 +72,16 @@ const GuestChooseTeam = () => {
         style={{ resizeMode: "cover" }}
         className="min-h-[100vh]"
       >
-        <ScrollView>
+        <ScrollView
+          scrollEnabled={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => fetchData()}
+              tintColor="#000"
+            />
+          }
+        >
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-start">
             <BackButton
               style="w-[20vw] mb-4"
@@ -46,7 +89,7 @@ const GuestChooseTeam = () => {
               size={32}
               onPress={() => router.replace("/")}
             />
-            <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
+            <Text className="text-5xl mt-10 py-2 text-center font-montez text-black">
               Choose your team
             </Text>
             {teams.map((team) => (

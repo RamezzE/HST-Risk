@@ -22,69 +22,72 @@ export default function App() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        if (isLoggedIn) {
-          console.log("isLoggedIn");
-          if (userMode === "team") {
-            router.push("/home");
-            console.log("Team");
-            return;
-          }
-  
-          if (userMode === "admin") {
-            router.push("/admin_home");
-            console.log("Admin");
-            return;
-          }
-  
-          if (userMode === "super_admin") {
-            router.push("/dashboard");
-            console.log("Super Admin");
-            return;
-          }
-        }
-  
-        const response = await is_logged_in();
-  
-        if (!response.success) {
-          console.log("Not success");
-          router.push("/sign_in");
-          return;
-        }
-  
-        if (response.team !== "") {
-          setIsLoggedIn(true);
-          setTeamNo(response.team.number);
-          setName(response.team.name);
-          setUserMode("team");
+  const checkLoginStatus = async () => {
+    if (!isSubmitting) {
+      return;
+    }
+    try {
+      if (isLoggedIn) {
+        console.log("isLoggedIn");
+        if (userMode === "team") {
           router.push("/home");
+          console.log("Team");
           return;
         }
-  
-        if (response.admin !== "") {
-          setIsLoggedIn(true);
-          setName(response.admin.name);
-          setUserMode("admin");
+
+        if (userMode === "admin") {
           router.push("/admin_home");
+          console.log("Admin");
           return;
         }
-  
-        if (response.superAdmin !== "") {
-          setIsLoggedIn(true);
-          setName(response.superAdmin.name);
-          setUserMode("super_admin");
+
+        if (userMode === "super_admin") {
           router.push("/dashboard");
+          console.log("Super Admin");
           return;
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsSubmitting(false);
       }
-    };
-  
+
+      const response = await is_logged_in();
+
+      if (!response.success) {
+        console.log("Not success");
+        router.push("/sign_in");
+        return;
+      }
+
+      if (response.team !== "") {
+        setIsLoggedIn(true);
+        setTeamNo(response.team.number);
+        setName(response.team.name);
+        setUserMode("team");
+        router.push("/home");
+        return;
+      }
+
+      if (response.admin !== "") {
+        setIsLoggedIn(true);
+        setName(response.admin.name);
+        setUserMode("admin");
+        router.push("/admin_home");
+        return;
+      }
+
+      if (response.superAdmin !== "") {
+        setIsLoggedIn(true);
+        setName(response.superAdmin.name);
+        setUserMode("super_admin");
+        router.push("/dashboard");
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
     if (isSubmitting) {
       checkLoginStatus();
     }
@@ -95,7 +98,6 @@ export default function App() {
   };
 
   const guestLogin = () => {
-    setTeamNo("");
     setName("Guest");
     router.push("/guest_choose_team");
   };
@@ -140,7 +142,7 @@ export default function App() {
             </View>
 
             <View>
-              <Image source={images.wood_home} className= "h-48" resizeMode="contain"/>
+              {/* <Image source={images.wood_home} className= "h-48" resizeMode="contain"/> */}
             </View>
           </View>
         </View>

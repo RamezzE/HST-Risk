@@ -1,4 +1,12 @@
-import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Alert,
+  ImageBackground,
+  RefreshControl,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useEffect, useContext } from "react";
 
@@ -17,15 +25,28 @@ import { images } from "../../constants";
 const Warzone = () => {
   const [warzones, setWarzones] = useState([]);
   const { attackData, setAttackData } = useContext(GlobalContext);
+  const [isRefreshing, setIsRefreshing] = useState(true);
 
-  useEffect(() => {
-    get_warzones().then((data) => {
+  
+  const fetchData = async () => {
+    try {
+      const data = await get_warzones();
       if (data.errorMsg) {
         console.log(data.errorMsg);
       } else {
         setWarzones(data);
       }
-    });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    
+    fetchData();
+    
   }, []);
 
   const handlePress = async (warzone) => {
@@ -69,6 +90,22 @@ const Warzone = () => {
     }
   };
 
+  if (isRefreshing) {
+    return (
+      <SafeAreaView className="flex-1 bg-primary">
+        <ImageBackground
+          source={images.background}
+          style={{ flex: 1, resizeMode: "cover" }}
+        >
+          <View className="flex-1 justify-center items-center">
+            <ActivityIndicator size="25" color="#000" />
+          </View>
+        </ImageBackground>
+      </SafeAreaView>
+    );
+  }
+
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ImageBackground
@@ -76,10 +113,23 @@ const Warzone = () => {
         style={{ resizeMode: "cover" }}
         className="min-h-[100vh]"
       >
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => fetchData()}
+              tintColor="#000"
+            />
+          }
+        >
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
-            <BackButton style="w-[20vw]" color="black" size={32} onPress={() => router.dismiss(1)} />
-          <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
+            <BackButton
+              style="w-[20vw]"
+              color="black"
+              size={32}
+              onPress={() => router.dismiss(1)}
+            />
+            <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
               Choose your warzone
             </Text>
             <Text className="text-3xl mt-2 py-1 text-center font-montez text-black ">
@@ -92,14 +142,18 @@ const Warzone = () => {
                   style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
                   key={warzone._id}
                 >
-                  <Text className="text-black font-montez text-4xl">{warzone.name}</Text>
+                  <Text className="text-black font-montez text-4xl">
+                    {warzone.name}
+                  </Text>
 
                   {warzone.wars.map((war) => (
                     <View
                       className="p-1 flex flex-wrap flex-row justify-evenly align-center"
                       key={war.name}
                     >
-                      <Text className="text-black font-montez text-2xl">{war.name}</Text>
+                      <Text className="text-black font-montez text-2xl">
+                        {war.name}
+                      </Text>
                     </View>
                   ))}
                   <CustomButton

@@ -38,7 +38,8 @@ const TabsLayout = () => {
           tabBarActiveTintColor: "#FFF",
           tabBarInactiveTintColor: "#BBB",
           tabBarStyle: {
-            backgroundColor: "#4b320c",
+            // backgroundColor: "#4b320c",
+            backgroundColor: "#201402",
             borderTopWidth: 1,
             borderTopColor: "#000",
             height: 84,
@@ -78,13 +79,13 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="team_attacks"
           options={{
-            title: "Stats",
+            title: "Team Attacks",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.stats}
+                icon={icons.swords}
                 color={color}
-                name="Stats"
+                name="Team Attacks"
                 focused={focused}
               />
             ),

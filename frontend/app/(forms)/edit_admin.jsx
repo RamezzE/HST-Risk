@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
+import { View, Text, ScrollView, Alert, ImageBackground, ActivityIndicator, RefreshControl } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -41,70 +41,16 @@ const EditAdmin = () => {
   const [wars, setWars] = useState([]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await get_wars();
-        if (response) {
-          setWars(response);
-        } else {
-          Alert.alert("Error", response.errorMsg);
-        }
-      } catch (error) {
-        Alert.alert("Error", "Failed to fetch data");
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const deleteAdmin = async () => {
-    Alert.alert(
-      "Delete Admin",
-      `Are you sure you want to delete admin ${local.name}?`,
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          onPress: async () => {
-            setIsSubmitting(true);
-
-            try {
-              const response = await delete_admin(local.name);
-
-              if (!response.success) {
-                Alert.alert("Error", response.errorMsg);
-                return;
-              }
-
-              Alert.alert("Success", "Admin deleted successfully");
-
-              router.push("/admins");
-            } catch (error) {
-              Alert.alert("Error", "Error deleting admin");
-              console.log(error);
-            } finally {
-              setIsSubmitting(false);
-            }
-          },
-        },
-      ]
-    );
-  };
-
+  const [isRefreshing, setIsRefreshing] = useState(true);
   const submit = async () => {
+    setIsSubmitting(true);
+
     var result = validateEditAdmin(form.name, form.password, form.war);
 
     if (!result.success) {
       Alert.alert("Error", result.errorMsg);
       return;
     }
-
-    setIsSubmitting(true);
 
     try {
       const response = await update_admin(
@@ -121,7 +67,7 @@ const EditAdmin = () => {
 
       Alert.alert("Success", "Admin updated successfully");
 
-      router.push("/admins");
+      router.replace("/admins");
     } catch (error) {
       Alert.alert("Error", "Failed to update admin");
       console.log(error);
@@ -130,6 +76,80 @@ const EditAdmin = () => {
     }
   };
 
+  const deleteAdmin = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const response = await delete_admin(local.name);
+
+      if (!response.success) {
+        Alert.alert("Error", response.errorMsg);
+        return;
+      }
+
+      Alert.alert("Success", "Admin deleted successfully");
+
+      router.dismiss(1);
+    } catch (error) {
+      Alert.alert("Error", "Error deleting admin");
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await get_wars();
+      if (response) {
+        setWars(response);
+      } else {
+        Alert.alert("Error", response.errorMsg);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch data");
+    }
+    finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const deleteAdminAlert = async () => {
+    Alert.alert(
+      "Delete Admin",
+      `Are you sure you want to delete admin ${local.name}?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => {deleteAdmin()},
+        },
+      ]
+    );
+  };
+
+  if (isRefreshing) {
+    return (
+      <SafeAreaView className="flex-1 bg-primary">
+        <ImageBackground
+          source={images.background}
+          style={{ flex: 1, resizeMode: "cover" }}
+        >
+          <View className="flex-1 justify-center items-center">
+            <ActivityIndicator size="25" color="#000" />
+          </View>
+        </ImageBackground>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ImageBackground
@@ -137,55 +157,68 @@ const EditAdmin = () => {
         style={{ resizeMode: "cover" }}
         className="min-h-[100vh]"
       >
-      <ScrollView>
-        <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-          <BackButton style="w-[20vw]" color="black" size={32} onPress={()=> router.dismiss(1)} />
-          <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => fetchData()}
+              tintColor="#000"
+            />
+          }
+        >
+          <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+            <BackButton
+              style="w-[20vw]"
+              color="black"
+              size={32}
+              onPress={() => router.dismiss(1)}
+            />
+            <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
               Edit Admin
             </Text>
-          <FormField
-            title="Admin Name"
-            value={form.name}
-            otherStyles="mt-7"
-            handleChangeText={(e) => setForm({ ...form, name: e })}
-            // editable={false}
-          />
+            <FormField
+              title="Admin Name"
+              value={form.name}
+              otherStyles="mt-7"
+              handleChangeText={(e) => setForm({ ...form, name: e })}
+              // editable={false}
+            />
 
-          <FormField
-            title="Password"
-            value={form.password}
-            handleChangeText={(e) => setForm({ ...form, password: e })}
-            otherStyles="mt-7"
-          />
+            <FormField
+              title="Password"
+              value={form.password}
+              handleChangeText={(e) => setForm({ ...form, password: e })}
+              otherStyles="mt-7"
+            />
 
-          <DropDownField
-            title="Assigned War"
-            value={form.war}
-            placeholder="Select War"
-            items={wars.map((war) => ({
-              label: `${war.name}`,
-              value: war.name,
-            }))}
-            handleChange={(e) => setForm({ ...form, war: e })}
-            otherStyles="mt-7"
-          />
+            <DropDownField
+              title="Assigned War"
+              value={form.war}
+              placeholder="Select War"
+              items={wars.map((war) => ({
+                label: `${war.name}`,
+                value: war.name,
+              }))}
+              handleChange={(e) => setForm({ ...form, war: e })}
+              otherStyles="mt-7"
+            />
 
-          <CustomButton
-            title="Update Admin"
-            handlePress={submit}
-            containerStyles="mt-7 p-3 bg-green-800"
-            textStyles={"text-3xl"}
-            isLoading={isSubmitting}
-          />
-          <CustomButton
-            title="Delete Admin"
-            handlePress={() => deleteAdmin()}
-            containerStyles="mt-7 p-3 bg-red-800"
-            textStyles={"text-3xl"}
-            isLoading={isSubmitting}
-          />
-        </View>
-      </ScrollView>
+            <CustomButton
+              title="Update Admin"
+              handlePress={() => submit()}
+              containerStyles="mt-7 p-3 bg-green-800"
+              textStyles={"text-3xl"}
+              isLoading={isSubmitting}
+            />
+            <CustomButton
+              title="Delete Admin"
+              handlePress={() => deleteAdminAlert()}
+              containerStyles="mt-7 p-3 bg-red-800"
+              textStyles={"text-3xl"}
+              isLoading={isSubmitting}
+            />
+          </View>
+        </ScrollView>
       </ImageBackground>
     </SafeAreaView>
   );

@@ -1,4 +1,12 @@
-import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Alert,
+  ImageBackground,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
@@ -10,7 +18,7 @@ import { useEffect, useState, useContext } from "react";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
-import { attack_check } from "../../api/attack_functions";
+import { attack_check, get_all_attacks } from "../../api/attack_functions";
 
 import { images } from "../../constants";
 
@@ -37,6 +45,8 @@ const Attack = () => {
   const [otherZones, setOtherZones] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
+  const [attacks, setAttacks] = useState([]);
 
   const [form, setForm] = useState({
     teamNo: teamNo,
@@ -68,21 +78,6 @@ const Attack = () => {
 
     setInitialArea([avgLat, avgLong]);
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setError(null);
-
-      try {
-        const result1 = await get_countries_by_team(parseInt(teamNo));
-        setMyZones(result1.countries);
-      } catch (err) {
-        setError("Failed to fetch data");
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const validateAttack = (zone_1, zone_2) => {
     var result = {
@@ -121,29 +116,48 @@ const Attack = () => {
     changeMapPreview(zone);
   };
 
+  const fetchData = async () => {
+    setError(null);
+    setZones(countries);
+    setIsRefreshing(true);
+
+    try {
+      const result = await get_country_mappings();
+      setCountryMappings(result);
+    } catch (err) {
+      console.log(err);
+      setError("Failed to fetch country mappings");
+    }
+
+    try {
+      const result1 = await get_countries_by_team(parseInt(teamNo));
+      setMyZones(result1.countries);
+    } catch (err) {
+      console.log(err);
+      setError("Failed to fetch your team's countries");
+    }
+
+    try {
+      const attacksResult = await get_all_attacks();
+      setAttacks(attacksResult);
+    }
+    catch (err) {
+      console.log(err);
+      setError("Failed to fetch attacks data");
+    }
+
+    try {
+      const teamsResult = await get_all_teams();
+      setTeams(teamsResult);
+    } catch (err) {
+      console.log(err);
+      setError("Failed to fetch teams data");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setError(null);
-      setZones(countries);
-
-      try {
-        const result = await get_country_mappings();
-        setCountryMappings(result);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to fetch country mappings");
-      }
-
-      try {
-        const teamsResult = await get_all_teams();
-        setTeams(teamsResult);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to fetch teams data");
-      }
-    };
-
-    // Fetch zones and teams initially
     fetchData();
 
     // const interval = setInterval(fetchData, 60000);
@@ -199,13 +213,57 @@ const Attack = () => {
     }
   };
 
+  const onMarkerPress = (zone) => {
+    try {
+      const country = countryMappings.find((c) => c.name === zone.name);
+      const team = country
+        ? teams.find((t) => t.number === country.teamNo)
+        : null;
+      const attack = attacks.find((a) => a.defending_zone === zone.name);
+
+      Alert.alert(
+        zone.name,
+        `Owned by: Team ${team.number}\n${
+          attack
+            ? `Under attack by: Team ${attack.attacking_team}`
+            : "Not under attack"
+        }`
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (isRefreshing) {
+    return (
+      <SafeAreaView className="flex-1 bg-primary">
+        <ImageBackground
+          source={images.background}
+          style={{ flex: 1, resizeMode: "cover" }}
+        >
+          <View className="flex-1 justify-center items-center">
+            <ActivityIndicator size="25" color="#000" />
+          </View>
+        </ImageBackground>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ImageBackground
         source={images.background}
         style={{ flex: 1, resizeMode: "cover" }}
       >
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => fetchData()}
+              tintColor="#000"
+            />
+          }
+        >
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
             <View className="flex flex-col mb-6">
               <Text className="font-montez text-center text-4xl py-5">
@@ -265,6 +323,7 @@ const Attack = () => {
                   points={zone.points}
                   color={getTeamColor(zone.name)}
                   label={zone.name}
+                  onMarkerPress={() => onMarkerPress(zone)}
                 />
               ))}
 
@@ -274,7 +333,7 @@ const Attack = () => {
                   startPoint={points.point1}
                   endPoint={points.point2}
                   color="#FFF"
-                  thickness={1.5}
+                  thickness={2}
                   // dashLength={25}
                   dashGap={2}
                 />

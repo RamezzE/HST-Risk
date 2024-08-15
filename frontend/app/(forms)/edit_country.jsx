@@ -32,7 +32,7 @@ const EditCountry = () => {
         Alert.alert("Error", result.errorMsg);
       } else {
         Alert.alert("Success", "Country updated successfully");
-        router.push("/countries");
+        router.dismiss(1);
       }
     } catch (error) {
       Alert.alert("Error", "Failed to update country");

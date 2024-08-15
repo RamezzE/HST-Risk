@@ -1,4 +1,11 @@
-import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Alert,
+  ImageBackground,
+  RefreshControl,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import CustomButton from "../../components/CustomButton";
@@ -15,7 +22,7 @@ import {
 import { router } from "expo-router";
 
 import BackButton from "../../components/BackButton";
-
+import Loader from "../../components/Loader";
 import { images } from "../../constants";
 
 const AdminHome = () => {
@@ -26,8 +33,12 @@ const AdminHome = () => {
     attacking_team: "",
     defending_team: "",
   });
+  const [isRefreshing, setIsRefreshing] = useState(true);
 
   const fetchData = async () => {
+
+    try {
+
     const admin = await get_admin_by_name(name);
     setWar(admin.admin.war);
     const response = await get_attacks_by_war(admin.admin.war);
@@ -47,6 +58,12 @@ const AdminHome = () => {
         defending_team: "",
       });
     }
+  } catch (error) {
+    console.log(error)
+  }
+  finally {
+    setIsRefreshing(false);
+  }
   };
 
   useEffect(() => {
@@ -73,6 +90,19 @@ const AdminHome = () => {
     }
   };
 
+  if (isRefreshing) {
+    return (
+      <SafeAreaView className="flex-1 bg-primary">
+        <ImageBackground
+          source={images.background}
+          style={{ flex: 1, resizeMode: "cover" }}
+        >
+          <Loader />
+        </ImageBackground>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ImageBackground
@@ -80,7 +110,16 @@ const AdminHome = () => {
         style={{ resizeMode: "cover" }}
         className="min-h-[100vh]"
       >
-        <ScrollView>
+        <ScrollView
+          scrollEnabled={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => fetchData()}
+              tintColor="#000"
+            />
+          }
+        >
           <View className="w-full min-h-[100vh] px-4 py-5 flex flex-col justify-between">
             <View>
               <BackButton
@@ -105,9 +144,6 @@ const AdminHome = () => {
             >
               {currentAttack._id ? (
                 <>
-                  {/* <Text className="font-montez text-white text-4xl p-5">
-                    Attack in progress:
-                  </Text> */}
                   <Text className="font-montez text-white text-4xl px-5 py-2 text-center">
                     Attacking Team: {currentAttack.attacking_team}
                   </Text>
@@ -127,22 +163,22 @@ const AdminHome = () => {
                 {response.attacks.length > 0 && (
                   <View className="w-full">
                     <View className="flex flex-row">
-                    <CustomButton
-                      title="Attack Won"
-                      textStyles={"text-3xl"}
-                      containerStyles="w-1/2 mr-1 bg-green-500 p-3"
-                      handlePress={() => {
-                        setAttackResult("true");
-                      }}
-                    />
-                    <CustomButton
-                      title="Defence Won"
-                      textStyles={"text-3xl"}
-                      containerStyles="w-1/2 ml-1 bg-red-500 p-3"
-                      handlePress={() => {
-                        setAttackResult("false");
-                      }}
-                    />
+                      <CustomButton
+                        title="Attack Won"
+                        textStyles={"text-3xl"}
+                        containerStyles="w-1/2 mr-1 bg-green-500 p-3"
+                        handlePress={() => {
+                          setAttackResult("true");
+                        }}
+                      />
+                      <CustomButton
+                        title="Defence Won"
+                        textStyles={"text-3xl"}
+                        containerStyles="w-1/2 ml-1 bg-red-500 p-3"
+                        handlePress={() => {
+                          setAttackResult("false");
+                        }}
+                      />
                     </View>
                     <CustomButton
                       title="Cancel Attack"
@@ -151,7 +187,6 @@ const AdminHome = () => {
                       onPress={() => {}}
                     />
                   </View>
-                  
                 )}
               </View>
             </View>
