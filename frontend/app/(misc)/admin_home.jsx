@@ -6,7 +6,7 @@ import {
   ImageBackground,
   RefreshControl,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CustomButton from "../../components/CustomButton";
 
@@ -65,7 +65,7 @@ const AdminHome = () => {
     setIsRefreshing(false);
   }
   };
-
+  
   useEffect(() => {
     fetchData();
   }, []);
@@ -90,21 +90,23 @@ const AdminHome = () => {
     }
   };
 
+  const insets = useSafeAreaInsets()
+
   if (isRefreshing) {
     return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
           <Loader />
         </ImageBackground>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -193,7 +195,7 @@ const AdminHome = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

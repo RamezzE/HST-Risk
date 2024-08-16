@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { images } from "../../constants";
 import { get_admins } from "../../api/admin_functions";
@@ -22,6 +22,8 @@ const Admins = () => {
   const [admins, setAdmins] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
+
+  const insets = useSafeAreaInsets();
 
   const fetchData = async () => {
     setError(null);
@@ -73,19 +75,19 @@ const Admins = () => {
 
   if (isRefreshing) {
     return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
           <Loader />
         </ImageBackground>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -136,7 +138,7 @@ const Admins = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

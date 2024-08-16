@@ -2,12 +2,9 @@ import React, { useEffect } from "react";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { GlobalProvider } from "../context/GlobalProvider";
-import { ImageBackground, StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
