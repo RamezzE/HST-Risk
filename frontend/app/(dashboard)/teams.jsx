@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { get_all_teams } from "../../api/team_functions";
 
 import { images } from "../../constants";
@@ -22,6 +22,7 @@ const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
+  const insets = useSafeAreaInsets();
 
   const router = useRouter();
 
@@ -71,7 +72,7 @@ const Teams = () => {
 
   if (isRefreshing) {
     return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -80,12 +81,12 @@ const Teams = () => {
             <ActivityIndicator size="25" color="#000" />
           </View>
         </ImageBackground>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -132,7 +133,7 @@ const Teams = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

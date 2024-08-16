@@ -8,7 +8,7 @@ import {
 import FormField from "../../components/FormField";
 import { useEffect, useState } from "react";
 import CustomButton from "../../components/CustomButton";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
 import { add_team } from "../../api/team_functions";
@@ -87,8 +87,10 @@ const AddTeam = () => {
     }
   };
 
+  const insets = useSafeAreaInsets()
+
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -138,7 +140,7 @@ const AddTeam = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

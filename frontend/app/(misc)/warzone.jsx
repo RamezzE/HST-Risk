@@ -7,7 +7,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreInsets } from "react-native-safe-area-context";
 import React, { useState, useEffect, useContext } from "react";
 
 import CustomButton from "../../components/CustomButton";
@@ -90,9 +90,11 @@ const Warzone = () => {
     }
   };
 
+  const insets = useSafeAreaInsets()
+
   if (isRefreshing) {
     return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -101,13 +103,13 @@ const Warzone = () => {
             <ActivityIndicator size="25" color="#000" />
           </View>
         </ImageBackground>
-      </SafeAreaView>
+      </View>
     );
   }
 
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -168,7 +170,7 @@ const Warzone = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

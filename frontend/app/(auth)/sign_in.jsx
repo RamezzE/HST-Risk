@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ImageBackground, ScrollView, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
@@ -97,8 +97,10 @@ const SignIn = () => {
     setIsSubmitting(true);
   };
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -140,7 +142,7 @@ const SignIn = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

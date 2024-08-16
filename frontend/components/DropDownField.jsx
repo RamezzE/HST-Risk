@@ -34,9 +34,9 @@ const DropdownField = ({
         <RNPickerSelect
           onValueChange={handleChange}
           items={items}
-          value={value}
+          // value={value}
           style={pickerSelectStyles}
-          placeholder={{ label: placeholder, value: null }}
+          placeholder={{}}
           placeholderTextColor="#F2E9D0"
           // Icon={() => {
           //   return <Icon name="arrow-drop-down" size={24} color="white" />;

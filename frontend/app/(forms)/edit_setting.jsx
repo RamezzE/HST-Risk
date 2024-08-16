@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import DropDownField from "../../components/DropDownField";
 
@@ -45,7 +45,7 @@ const EditSetting = () => {
   }, []);
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -101,7 +101,7 @@ const EditSetting = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

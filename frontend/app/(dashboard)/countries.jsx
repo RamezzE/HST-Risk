@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import BackButton from "../../components/BackButton";
 
@@ -23,6 +23,8 @@ const Countries = () => {
   const [countries, setCountries] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
+
+  const insets = useSafeAreaInsets();
 
   const fetchData = async () => {
     setError(null);
@@ -77,7 +79,7 @@ const Countries = () => {
 
   if (isRefreshing) {
     return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -86,12 +88,12 @@ const Countries = () => {
             <ActivityIndicator size="25" color="#000" />
           </View>
         </ImageBackground>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -140,7 +142,7 @@ const Countries = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

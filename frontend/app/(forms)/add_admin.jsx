@@ -9,7 +9,7 @@ import {
 import FormField from "../../components/FormField";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
 import { get_wars } from "../../api/warzone_functions";
@@ -100,21 +100,23 @@ const AddAdmin = () => {
     fetchData();
   }, []);
 
+  const insets = useSafeAreaInsets()
+
   if (isRefreshing) {
     return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
           <Loader />
         </ImageBackground>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -168,7 +170,7 @@ const AddAdmin = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

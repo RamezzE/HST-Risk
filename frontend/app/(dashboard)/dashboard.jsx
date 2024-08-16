@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { logout } from "../../api/user_functions";
 import { get_settings } from "../../api/settings_functions";
@@ -24,6 +24,8 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [settings, setSettings] = useState([]);
+
+  const insets = useSafeAreaInsets();
 
   const logoutFunc = async () => {
     try {
@@ -91,7 +93,7 @@ const Dashboard = () => {
 
   if (isRefreshing) {
     return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -100,12 +102,12 @@ const Dashboard = () => {
             <ActivityIndicator size="25" color="#000" />
           </View>
         </ImageBackground>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -178,7 +180,7 @@ const Dashboard = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

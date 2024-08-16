@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { images } from "../../constants";
 import { get_all_attacks } from "../../api/attack_functions";
@@ -23,6 +23,8 @@ const DashboardAttacks = () => {
   const [attacks, setAttacks] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
+
+  const insets = useSafeAreaInsets();
 
   const fetchData = async () => {
     setError(null);
@@ -105,19 +107,19 @@ const DashboardAttacks = () => {
 
   if (isRefreshing) {
     return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
           <Loader />
         </ImageBackground>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
     <ImageBackground
       source={images.background}
       style={{ resizeMode: "cover" }}
@@ -166,7 +168,7 @@ const DashboardAttacks = () => {
         </View>
       </ScrollView>
     </ImageBackground>
-  </SafeAreaView>
+  </View>
   );
 };
 

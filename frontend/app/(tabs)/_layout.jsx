@@ -1,11 +1,9 @@
 import { View, Text, Image } from "react-native";
-import { Tabs, Redirect } from "expo-router";
+import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { Platform } from 'react-native';
 
 import { icons } from "../../constants";
-
-import { useContext } from "react";
-import { GlobalContext } from "../../context/GlobalProvider";
 
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
@@ -14,8 +12,8 @@ const TabIcon = ({ icon, color, name, focused }) => {
         source={icon}
         resizeMode="contain"
         tintColor={color}
-        className="w-6 h-6"
-      />
+        className = {Platform.OS === 'ios' ? 'w-6 h-6 mt-2' : 'w-6 h-6 '}
+        />
       <Text
         className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
         style={{ color: color }}
@@ -27,7 +25,6 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 const TabsLayout = () => {
-  const { teamNo } = useContext(GlobalContext);
 
   return (
     <>
@@ -42,7 +39,7 @@ const TabsLayout = () => {
             backgroundColor: "#201402",
             borderTopWidth: 1,
             borderTopColor: "#000",
-            height: '12%',
+            height: Platform.OS === 'ios' ? '12%' : '10%',
           },
         }}
       >
