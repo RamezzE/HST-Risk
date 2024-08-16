@@ -1,14 +1,18 @@
 import mongoose from "mongoose";
 
-const superAdminSchema = new mongoose.Schema(
+const settingsSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
       unique: true,
     },
-    password: {
+    value: {
       type: String,
+      required: true,
+    },
+    options: {
+      type: [String],
       required: true,
     },
   },
@@ -17,6 +21,6 @@ const superAdminSchema = new mongoose.Schema(
   }
 );
 
-const SuperAdmin = mongoose.model("Super Admin", superAdminSchema);
+const Settings = mongoose.model("Setting", settingsSchema);
 
-export default SuperAdmin;
+export default Settings;

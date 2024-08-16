@@ -2,11 +2,15 @@ import axios from "axios";
 
 import config from "./config";
 
-serverIP = config.serverIP + "/users";
+// Create an apiClient instance with a global 10-second timeout
+const apiClient = axios.create({
+  baseURL: config.serverIP + "/users",
+  timeout: 10000, // 10 seconds timeout
+});
 
 export const login = async (username, password) => {
   try {
-    const response = await axios.post(`${serverIP}/login`, {
+    const response = await apiClient.post(`/login`, {
       username,
       password,
     });
@@ -19,7 +23,7 @@ export const login = async (username, password) => {
 
 export const logout = async () => {
   try {
-    const response = await axios.get(`${serverIP}/logout`);
+    const response = await apiClient.get(`/logout`);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -29,7 +33,7 @@ export const logout = async () => {
 
 export const is_logged_in = async () => {
   try {
-    const response = await axios.get(`${serverIP}/is_logged_in`);
+    const response = await apiClient.get(`/is_logged_in`);
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "API: Could not check login status" };

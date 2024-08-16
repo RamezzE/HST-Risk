@@ -4,7 +4,6 @@ import {
   Text,
   FlatList,
   ImageBackground,
-  ActivityIndicator,
   RefreshControl,
   ScrollView,
   LogBox,
@@ -17,6 +16,7 @@ import { images } from "../../constants";
 import { get_admins } from "../../api/admin_functions";
 
 import BackButton from "../../components/BackButton";
+import Loader from "../../components/Loader";
 
 const Admins = () => {
   const [admins, setAdmins] = useState([]);
@@ -78,9 +78,7 @@ const Admins = () => {
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="25" color="#000" />
-          </View>
+          <Loader />
         </ImageBackground>
       </SafeAreaView>
     );
@@ -103,7 +101,7 @@ const Admins = () => {
             />
           }
         >
-          <View className="w-full justify-center min-h-[82.5vh] max-h-[90vh] p-4  ">
+          <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4  ">
             <BackButton style="w-[20vw]" color="black" size={32} path="/" />
 
             <Text className="text-6xl text-center font-montez py-2">

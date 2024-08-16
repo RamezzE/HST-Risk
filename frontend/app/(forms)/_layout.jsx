@@ -35,6 +35,12 @@ const FormsLayout = () => {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="edit_setting"
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack>
       <StatusBar backgroundColor="#000" style="light" />
     </>

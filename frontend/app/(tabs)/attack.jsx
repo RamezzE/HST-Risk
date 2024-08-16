@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
 
@@ -47,6 +47,8 @@ const Attack = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
   const [attacks, setAttacks] = useState([]);
+
+  const insets = useSafeAreaInsets();
 
   const [form, setForm] = useState({
     teamNo: teamNo,
@@ -140,8 +142,7 @@ const Attack = () => {
     try {
       const attacksResult = await get_all_attacks();
       setAttacks(attacksResult);
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err);
       setError("Failed to fetch attacks data");
     }
@@ -236,7 +237,14 @@ const Attack = () => {
 
   if (isRefreshing) {
     return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <View
+        className="flex-1 bg-black"
+        style={{
+          paddingTop: insets.top,
+          paddingRight: insets.right,
+          paddingLeft: insets.left,
+        }}
+      >
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -245,12 +253,19 @@ const Attack = () => {
             <ActivityIndicator size="25" color="#000" />
           </View>
         </ImageBackground>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <View
+      className="bg-black h-full"
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
+    >
       <ImageBackground
         source={images.background}
         style={{ flex: 1, resizeMode: "cover" }}
@@ -264,8 +279,8 @@ const Attack = () => {
             />
           }
         >
-          <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
-            <View className="flex flex-col mb-6">
+          <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
+          <View className="flex flex-col mb-6">
               <Text className="font-montez text-center text-4xl py-5">
                 Welcome, {name} -- Team {teamNo}
               </Text>
@@ -352,7 +367,7 @@ const Attack = () => {
           </View>
         </ScrollView>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 
