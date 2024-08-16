@@ -3,12 +3,9 @@ import {
   View,
   Text,
   Alert,
-  ScrollView,
   ImageBackground,
-  ActivityIndicator,
-  RefreshControl,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
 import DottedLine from "../../components/DottedLine";
@@ -26,6 +23,8 @@ import BackButton from "../../components/BackButton";
 import CountryConnections from "../../constants/country_connections";
 import { images } from "../../constants";
 
+import Loader from "../../components/Loader";
+
 const Home = () => {
   const [zones, setZones] = useState([]);
   const [countryMappings, setCountryMappings] = useState([]);
@@ -34,11 +33,12 @@ const Home = () => {
   const [attacks, setAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
 
+  const insets = useSafeAreaInsets();
+
   const fetchData = async () => {
     setError(null);
     setZones(countries);
-    setIsRefreshing(true);
-    
+
     try {
       const result = await get_country_mappings();
       setCountryMappings(result);
@@ -62,12 +62,12 @@ const Home = () => {
   };
 
   useEffect(() => {
-   
+    setIsRefreshing(true);
+
     fetchData();
 
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-    
   }, []);
 
   const { Logout } = useContext(GlobalContext);
@@ -108,38 +108,42 @@ const Home = () => {
     }
   };
 
+
   if (isRefreshing) {
     return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <View className="flex-1 bg-black"
+      style= {{
+        paddingTop: insets.top,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+      }}>
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="25" color="#000" />
-          </View>
+          <Loader />
         </ImageBackground>
-      </SafeAreaView>
+      </View>
     );
   }
 
+
   return (
-    <SafeAreaView className="flex-1 bg-primary">
+    <View
+      className="flex-1 bg-black"
+      style={{
+        paddingTop: insets.top,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+      }}
+    >
       <ImageBackground
         source={images.background}
         style={{ flex: 1, resizeMode: "cover" }}
       >
-        <ScrollView
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={isRefreshing}
-          //     onRefresh={() => fetchData()}
-          //     tintColor="#000" 
-          //   />
-          // }
-        >
-          <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
-            <BackButton
+        
+        <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
+        <BackButton
               style="w-[20vw] mb-4"
               size={32}
               onPress={() => logoutFunc()}
@@ -193,9 +197,9 @@ const Home = () => {
               </Text>
             )}
           </View>
-        </ScrollView>
+        
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 };
 

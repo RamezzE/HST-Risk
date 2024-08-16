@@ -1,6 +1,6 @@
-import { ScrollView, Text, View, Image, ImageBackground } from "react-native";
+import { Text, View, Image, ImageBackground } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import CustomButton from "../components/CustomButton";
 
@@ -9,6 +9,7 @@ import { GlobalContext } from "../context/GlobalProvider";
 import { is_logged_in } from "../api/user_functions";
 
 import { images } from "../constants";
+
 
 export default function App() {
   const {
@@ -21,6 +22,7 @@ export default function App() {
   } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const checkLoginStatus = async () => {
     if (!isSubmitting) {
@@ -103,7 +105,9 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView className=" h-full ">
+    <View className=" h-full bg-black"
+    style={{paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}}
+    >
       <ImageBackground
         source={images.background}
         style={{ flex: 1, resizeMode: "cover" }}
@@ -148,6 +152,6 @@ export default function App() {
         </View>
         <StatusBar backgroundColor="#000" style="light" />
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 }

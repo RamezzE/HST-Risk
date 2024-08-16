@@ -4,6 +4,11 @@ import { useFonts } from "expo-font";
 import { GlobalProvider } from "../context/GlobalProvider";
 import { ImageBackground, StyleSheet, View } from "react-native";
 
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
@@ -18,8 +23,6 @@ const RootLayout = () => {
     "Montez-Regular": require("../assets/fonts/Montez-Regular.ttf"),
   });
 
-  
-
   useEffect(() => {
     if (error) throw error;
 
@@ -33,27 +36,29 @@ const RootLayout = () => {
   }
 
   return (
-    <GlobalProvider>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(dashboard)" options={{ headerShown: false }} />
-            <Stack.Screen name="(forms)" options={{ headerShown: false }} />
-            <Stack.Screen name="(guest)" options={{ headerShown: false }} />
-            <Stack.Screen name="(misc)" options={{ headerShown: false }} />
-          </Stack>
-    </GlobalProvider>
+    <SafeAreaProvider>
+      <GlobalProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(dashboard)" options={{ headerShown: false }} />
+          <Stack.Screen name="(forms)" options={{ headerShown: false }} />
+          <Stack.Screen name="(guest)" options={{ headerShown: false }} />
+          <Stack.Screen name="(misc)" options={{ headerShown: false }} />
+        </Stack>
+      </GlobalProvider>
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
   background: {
-    flex: 1, 
+    flex: 1,
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(1, 1, 1, 0.1)', 
+    backgroundColor: "rgba(1, 1, 1, 0.1)",
   },
 });
 

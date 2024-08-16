@@ -1,12 +1,15 @@
 import axios from "axios";
-
 import config from "./config";
 
-const serverIP = config.serverIP + "/teams"
+// Create an Axios instance with a global 10-second timeout
+const apiClient = axios.create({
+  baseURL: config.serverIP + "/teams",
+  timeout: 10000, // 10 seconds timeout
+});
 
 export const add_team = async (teamNo, teamName, password) => {
   try {
-    const response = await axios.put(`${serverIP}`, {
+    const response = await apiClient.put('/', {
       teamNo,
       teamName,
       password,
@@ -20,8 +23,8 @@ export const add_team = async (teamNo, teamName, password) => {
 
 export const update_team = async (teamNo, teamName, password) => {
   try {
-    const response = await axios.post(
-      `${serverIP}/update/${teamNo}`,
+    const response = await apiClient.post(
+      `/update/${teamNo}`,
       {
         teamName,
         password,
@@ -36,9 +39,7 @@ export const update_team = async (teamNo, teamName, password) => {
 
 export const delete_team = async (teamNo) => {
   try {
-    const response = await axios.delete(
-      `${serverIP}/${teamNo}`
-    );
+    const response = await apiClient.delete(`/${teamNo}`);
 
     return response.data;
   } catch (error) {
@@ -48,7 +49,7 @@ export const delete_team = async (teamNo) => {
 
 export const get_all_teams = async () => {
   try {
-    const response = await axios.get(`${serverIP}`);
+    const response = await apiClient.get('/');
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "API: Error fetching teams" };
@@ -57,7 +58,7 @@ export const get_all_teams = async () => {
 
 export const get_team = async (teamNo) => {
   try {
-    const response = await axios.get(`${serverIP}/${teamNo}`);
+    const response = await apiClient.get(`/${teamNo}`);
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "API: Error fetching team" };

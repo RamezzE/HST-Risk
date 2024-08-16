@@ -5,6 +5,7 @@ const teamSchema = new mongoose.Schema({
     number: {
         type: Number,
         required: true,
+        unique: true
     },
     name: {
         type: String,

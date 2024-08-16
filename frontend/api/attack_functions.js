@@ -1,12 +1,14 @@
 import axios from "axios";
-
 import config from "./config";
 
-const serverIP = config.serverIP + "/attacks";
+const apiClient = axios.create({
+  baseURL: config.serverIP + "/attacks",
+  timeout: 10000, // 10 seconds timeout
+});
 
 export const attack_check = async (zone_1, team_1, zone_2, team_2) => {
   try {
-    const response = await axios.post(`${serverIP}/check`, {
+    const response = await apiClient.post('/check', {
       zone_1,
       team_1,
       zone_2,
@@ -24,7 +26,7 @@ export const attack_check = async (zone_1, team_1, zone_2, team_2) => {
 
 export const attack = async (zone_1, team_1, zone_2, team_2, warzone_id, war) => {
   try {
-    const response = await axios.post(`${serverIP}/attack`, {
+    const response = await apiClient.post('/attack', {
       zone_1,
       team_1,
       zone_2,
@@ -43,7 +45,7 @@ export const attack = async (zone_1, team_1, zone_2, team_2, warzone_id, war) =>
 
 export const get_all_attacks = async () => {
   try {
-    const response = await axios.get(`${serverIP}`);
+    const response = await apiClient.get('/');
     return response.data;
   } catch (error) {
     return {
@@ -54,7 +56,7 @@ export const get_all_attacks = async () => {
 
 export const get_attacks_on_zone = async (zone) => {
   try {
-    const response = await axios.get(`${serverIP}/zones/${zone}`);
+    const response = await apiClient.get(`/zones/${zone}`);
 
     return response.data;
   } catch (error) {
@@ -66,7 +68,7 @@ export const get_attacks_on_zone = async (zone) => {
 
 export const get_attacks_by_war = async (war) => {
   try {
-    const response = await axios.get(`${serverIP}/wars/${war}`);
+    const response = await apiClient.get(`/wars/${war}`);
 
     return response.data;
   } catch (error) {
@@ -78,7 +80,7 @@ export const get_attacks_by_war = async (war) => {
 
 export const set_attack_result = async (attack_id, result) => {
   try {
-    const response = await axios.post(`${serverIP}/set_result`, {
+    const response = await apiClient.post('/set_result', {
       attack_id,
       winnerTeam: result,
     });
@@ -93,8 +95,8 @@ export const set_attack_result = async (attack_id, result) => {
 
 export const delete_attack = async (attack_id) => {
   try {
-    const response = await axios.delete(`${serverIP}`, {
-      attack_id,
+    const response = await apiClient.delete('/', {
+      data: { attack_id } // Ensures the attack_id is sent in the request body
     });
     
     return response.data;
@@ -104,4 +106,3 @@ export const delete_attack = async (attack_id) => {
     };
   }
 }
-

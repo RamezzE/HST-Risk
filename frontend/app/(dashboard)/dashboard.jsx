@@ -14,6 +14,7 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { logout } from "../../api/user_functions";
+import { get_settings } from "../../api/settings_functions";
 
 import BackButton from "../../components/BackButton";
 
@@ -22,6 +23,7 @@ import { images } from "../../constants";
 const Dashboard = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
+  const [settings, setSettings] = useState([]);
 
   const logoutFunc = async () => {
     try {
@@ -30,11 +32,9 @@ const Dashboard = () => {
       } else {
         setError(result.errorMsg);
       }
-    }
-    catch (err) {
+    } catch (err) {
       setError("Failed to logout");
-    }
-    finally {
+    } finally {
       router.navigate("/");
     }
   };
@@ -44,6 +44,15 @@ const Dashboard = () => {
     setIsRefreshing(true);
 
     try {
+      const result = await get_settings();
+
+      console.log(result);
+
+      if (result.errorMsg) {
+        setError(result.errorMsg);
+      } else {
+        setSettings(result);
+      }
     } catch (err) {
     } finally {
       setIsRefreshing(false);
@@ -54,6 +63,31 @@ const Dashboard = () => {
     fetchData();
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, []);
+
+  const renderItem = ({ item }) => {
+    return (
+      <View
+        className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+        style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
+      >
+        <View className="flex flex-col ">
+          <Text className="text-4xl font-montez">
+            {item.name}
+          </Text>
+          <Text className="text-3xl font-montez">
+            Value: {item.value}
+          </Text>
+        </View>
+
+        <CustomButton
+          title="Edit"
+          handlePress={() => {}}
+          containerStyles="w-1/4 h-2/3 mt-2"
+          textStyles="text-2xl"
+        />
+      </View>
+    );
+  };
 
   if (isRefreshing) {
     return (
@@ -87,7 +121,7 @@ const Dashboard = () => {
             />
           }
         >
-          <View className="w-full justify-center min-h-[82.5vh] max-h-[90vh] p-4  ">
+          <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4">
             <BackButton
               style="w-[20vw]"
               color="black"
@@ -106,7 +140,40 @@ const Dashboard = () => {
                 {error}
               </Text>
             ) : (
-              <></>
+              <>
+                {/* <CustomButton
+                  title="Start Game"
+                  onPress={() => {
+                    logoutFunc();
+                  }}
+                  containerStyles={"mb-5 p-3"}
+                  textStyles={"text-2xl"}
+                /> */}
+
+                <View className="flex flex-col justify-start w-full">
+                  <Text className="font-montez text-4xl text-left ">
+                    Settings
+                  </Text>
+
+                  <FlatList
+                    data={settings}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={renderItem}
+                    ListEmptyComponent={
+                      <Text className="text-5xl text-black text-center font-montez p-5">
+                        No attacks Found
+                      </Text>
+                    }
+                  />
+                </View>
+
+                <CustomButton
+                  title="Logout"
+                  onPress={() => {
+                    logoutFunc();
+                  }}
+                />
+              </>
             )}
           </View>
         </ScrollView>

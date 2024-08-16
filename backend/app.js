@@ -11,22 +11,27 @@ import team_router from "./routes/team.js";
 import attack_router from "./routes/attack.js";
 import warzone_router from "./routes/warzone.js";
 import user_router from "./routes/user.js";
+import settings_router from "./routes/settings.js";
+
+import Settings from "./models/setting.js";
 
 const app = express();
 
 app.use(cookieParser());
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'idk_what_to_put_here',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 1000 * 60 * 60 * 24
-  },
-  store: new MongoStore({ mongoUrl: process.env.MONGO_URI })
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "idk_what_to_put_here",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+    store: new MongoStore({ mongoUrl: process.env.MONGO_URI }),
+  })
+);
 
 dotenv.config({ path: "./.env" });
 
@@ -35,7 +40,6 @@ app.set("port", process.env.PORT);
 app.set("host", process.env.HOST);
 
 // Session configuration with MongoDB store
-
 
 app.use(express.json());
 
@@ -52,14 +56,32 @@ mongooseConnectionPromise
     console.error("Error connecting to MongoDB:", err);
   });
 
+const insertSettings = async () => {
+  try {
+    const settings = [
+      { name: "Game Status", value: "Active", options: ["Active", "Paused", "Ended"] },
+      { name: "Initial Money", value: "1000", options: [] },
+      { name: "Attack Cost", value: "50", options: [] },
+    ];
+
+    const result = await Settings.insertMany(settings);
+    console.log("Settings inserted:", result);
+
+  } catch (error) {
+    console.error("Error inserting settings:", error);
+  }
+};
+
 app.get("/", (req, res, next) => {
   res.send("Server is up and running. HST");
+
+  // insertSettings();
 });
 
 app.use("/users", user_router);
 app.use("/admins", admin_router);
 app.use("/teams", team_router);
-
 app.use("/countries", country_router);
 app.use("/attacks", attack_router);
 app.use("/warzones", warzone_router);
+app.use("/settings", settings_router);
