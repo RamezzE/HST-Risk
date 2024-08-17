@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   LogBox,
   RefreshControl,
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -44,6 +45,12 @@ const Teams = () => {
       setIsRefreshing(false);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   useEffect(() => {
     fetchData();

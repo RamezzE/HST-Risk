@@ -78,6 +78,8 @@ app.get("/", (req, res, next) => {
   // insertSettings();
 });
 
+
+
 app.use("/users", user_router);
 app.use("/admins", admin_router);
 app.use("/countries", country_router);

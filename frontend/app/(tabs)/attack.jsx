@@ -164,7 +164,7 @@ const Attack = () => {
     setZones(countries);
 
     fetchData();
-
+    
     const interval = setInterval(fetchData, 30000);
 
     // Clear interval on component unmount
