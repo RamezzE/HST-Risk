@@ -106,3 +106,16 @@ export const delete_attack = async (attack_id) => {
     };
   }
 }
+
+export const get_attack_expiry_time = async (attack_id) => {
+
+  try {
+    const response = await apiClient.get(`/expiry/${attack_id}`);
+
+    return response.data;
+  } catch (error) {
+    return {
+      errorMsg: error.response?.data || "API: Error getting attack expiry time",
+    };
+  }
+}

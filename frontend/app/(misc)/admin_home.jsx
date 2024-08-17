@@ -1,3 +1,4 @@
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -7,22 +8,17 @@ import {
   RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 import CustomButton from "../../components/CustomButton";
-
-import { useState, useEffect, useContext } from "react";
-
 import { GlobalContext } from "../../context/GlobalProvider";
-
 import { get_admin_by_name } from "../../api/admin_functions";
 import {
   get_attacks_by_war,
   set_attack_result,
 } from "../../api/attack_functions";
 import { router } from "expo-router";
-
 import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
+import Timer from "../../components/Timer";
 import { images } from "../../constants";
 
 const AdminHome = () => {
@@ -30,44 +26,60 @@ const AdminHome = () => {
   const [war, setWar] = useState("");
   const [response, setResponse] = useState({ attacks: [] });
   const [currentAttack, setCurrentAttack] = useState({
+    _id: "",
     attacking_team: "",
     defending_team: "",
+    attacking_zone: "",
+    defending_zone: "",
+    createdAt: "",
+    expiryTime: "",
   });
   const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchData = async () => {
-
+    console.log("Fetching data");
     try {
+      const admin = await get_admin_by_name(name);
+      setWar(admin.admin.war);
+      const response = await get_attacks_by_war(admin.admin.war);
 
-    const admin = await get_admin_by_name(name);
-    setWar(admin.admin.war);
-    const response = await get_attacks_by_war(admin.admin.war);
+      if (response.attacks.length > 0) {
+        setResponse(response);
+        const attack = response.attacks[0];
 
-    if (response.attacks.length > 0) {
-      setResponse(response);
-      setCurrentAttack({
-        _id: response.attacks[0]._id,
-        attacking_team: response.attacks[0].attacking_team,
-        defending_team: response.attacks[0].defending_team,
-      });
-    } else {
-      setResponse(response);
-      setCurrentAttack({
-        _id: "",
-        attacking_team: "",
-        defending_team: "",
-      });
+        setCurrentAttack({
+          _id: attack._id,
+          attacking_team: attack.attacking_team,
+          defending_team: attack.defending_team,
+          attacking_zone: attack.attacking_zone,
+          defending_zone: attack.defending_zone,
+          createdAt: attack.createdAt,
+          expiryTime: attack.expiryTime,
+        });
+      } else {
+        setResponse(response);
+        setCurrentAttack({
+          _id: "",
+          attacking_team: "",
+          attacking_zone: "",
+          defending_team: "",
+          defending_zone: "",
+          createdAt: "",
+          expiryTime: "",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsRefreshing(false);
     }
-  } catch (error) {
-    console.log(error)
-  }
-  finally {
-    setIsRefreshing(false);
-  }
   };
-  
+
   useEffect(() => {
     fetchData();
+    const interval = setInterval(fetchData, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const logoutFunc = () => {
@@ -75,26 +87,64 @@ const AdminHome = () => {
     router.replace("/");
   };
 
-  const setAttackResult = async (attackWon) => {
-    let team;
-    if (attackWon == "true") team = currentAttack.attacking_team;
-    else if (attackWon == "false") team = currentAttack.defending_team;
+  const setAttackResultAlert = (attackWon) => {
+    const team =
+      attackWon === "true" ? currentAttack.attacking_team : currentAttack.defending_team;
+  
+    Alert.alert(
+      "Confirm",
+      `Are you SURE that team ${team} won?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          onPress: async () => {setAttackResult(attackWon)},
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+  
 
-    const response = await set_attack_result(currentAttack._id, team);
-    if (response.success) {
-      Alert.alert("Attack Result Set");
-      fetchData();
-    } else {
-      Alert.alert("Error", response.errorMsg);
-      fetchData();
+  const setAttackResult = async (attackWon) => {
+    setIsSubmitting(true);
+
+    try {
+      let team;
+      if (attackWon === "true") team = currentAttack.attacking_team;
+      else if (attackWon === "false") team = currentAttack.defending_team;
+
+      const response = await set_attack_result(currentAttack._id, team);
+      if (response.success) {
+        Alert.alert("Success", "Attack result set successfully");
+        fetchData();
+      } else {
+        Alert.alert("Error", response.errorMsg);
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Failed to set attack result");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const insets = useSafeAreaInsets()
+  const insets = useSafeAreaInsets();
 
   if (isRefreshing) {
     return (
-      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingRight: insets.right,
+          paddingLeft: insets.left,
+        }}
+        className="flex-1 bg-black"
+      >
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -106,7 +156,14 @@ const AdminHome = () => {
   }
 
   return (
-    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
+      className="bg-black h-full"
+    >
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -117,7 +174,10 @@ const AdminHome = () => {
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => fetchData()}
+              onRefresh={() => {
+                setIsRefreshing(true);
+                fetchData();
+              }}
               tintColor="#000"
             />
           }
@@ -140,20 +200,35 @@ const AdminHome = () => {
             </View>
 
             <View
-              className="border-2 border-black rounded-md p-2"
-              style={{ backgroundColor: "rgba(75, 50, 12, 0.75)" }} // Transparent background
+              className="rounded-md px-2 mt-3 flex flex-1 flex-col justify-between"
+              style={{ backgroundColor: "rgba(32, 20, 2, 0.6)" }} // Transparent background
             >
               {currentAttack._id ? (
-                <>
-                  <Text className="font-montez text-white text-4xl px-5 py-2 text-center">
-                    Attacking Team: {currentAttack.attacking_team}
-                  </Text>
-                  <Text className="font-montez text-white text-4xl px-5 py-2 text-center">
-                    Defending Team: {currentAttack.defending_team}
-                  </Text>
-                </>
+                <View className="h-full flex flex-col justify-between py-4">
+                  <View>
+                    <Text className="font-montez text-white text-4xl px-5 py-2 text-left">
+                      Attack:
+                    </Text>
+                    <Text className="font-montez text-white text-4xl px-5 py-2 text-left">
+                      Team {currentAttack.attacking_team},{" "}
+                      {currentAttack.attacking_zone}
+                    </Text>
+                    <Text></Text>
+                    <Text className="font-montez text-white text-4xl px-5 py-2 text-left">
+                      Defence:
+                    </Text>
+                    <Text className="font-montez text-white text-4xl px-5 py-2 text-left">
+                      Team {currentAttack.defending_team},{" "}
+                      {currentAttack.defending_zone}
+                    </Text>
+                  </View>
+                  <Timer
+                    attack_id={currentAttack._id}
+                    textStyles={"text-4xl text-white text-center"}
+                  />
+                </View>
               ) : (
-                <Text className="font-montez text-white text-4xl p-5">
+                <Text className="font-montez text-white text-4xl p-5 text-center ">
                   No current attack
                 </Text>
               )}
@@ -167,25 +242,28 @@ const AdminHome = () => {
                       <CustomButton
                         title="Attack Won"
                         textStyles={"text-3xl"}
-                        containerStyles="w-1/2 mr-1 bg-green-500 p-3"
-                        handlePress={() => {
-                          setAttackResult("true");
-                        }}
+                        containerStyles="w-1/2 mr-1 bg-green-800 p-3"
+                        handlePress={() =>
+                          setAttackResultAlert("true")
+                        }
+                        isLoading={isSubmitting}
                       />
                       <CustomButton
                         title="Defence Won"
                         textStyles={"text-3xl"}
-                        containerStyles="w-1/2 ml-1 bg-red-500 p-3"
-                        handlePress={() => {
-                          setAttackResult("false");
-                        }}
+                        containerStyles="w-1/2 ml-1 bg-red-700 p-3"
+                        handlePress={() =>
+                          setAttackResultAlert("false")
+                        }
+                        isLoading={isSubmitting}
                       />
                     </View>
                     <CustomButton
                       title="Cancel Attack"
                       containerStyles="mt-5 p-3"
                       textStyles={"text-3xl"}
-                      onPress={() => {}}
+                      handlePress={() => {}}
+                      isLoading={isSubmitting}
                     />
                   </View>
                 )}

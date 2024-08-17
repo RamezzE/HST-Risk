@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Alert,
   LogBox,
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -19,6 +20,7 @@ import { get_all_attacks } from "../../api/attack_functions";
 import { delete_attack } from "../../api/attack_functions";
 
 import Loader from "../../components/Loader";
+import Timer from "../../components/Timer";
 
 const DashboardAttacks = () => {
   const [attacks, setAttacks] = useState([]);
@@ -47,6 +49,12 @@ const DashboardAttacks = () => {
       setIsRefreshing(false);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   useEffect(() => {
     fetchData();
@@ -95,6 +103,7 @@ const DashboardAttacks = () => {
           {item.attacking_zone} vs {item.defending_zone}
         </Text>
         <Text className="text-2xl font-montez">War: {item.war}</Text>
+        <Timer attack_id = {item._id} />
       </View>
 
       <CustomButton

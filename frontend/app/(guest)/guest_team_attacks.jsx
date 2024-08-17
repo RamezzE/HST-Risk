@@ -5,6 +5,9 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
+
+import moment from "moment";
+
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect, useState, useContext } from "react";
 
@@ -13,6 +16,7 @@ import { get_all_attacks } from "../../api/attack_functions";
 
 import { images } from "../../constants";
 import Loader from "../../components/Loader";
+import Timer from "../../components/Timer";
 
 const TeamAttacks = () => {
   const [error, setError] = useState(null);
@@ -23,6 +27,26 @@ const TeamAttacks = () => {
   const { teamNo } = useContext(GlobalContext);
 
   const insets = useSafeAreaInsets();
+
+  const getCountdown = (createdAt) => {
+    // Add 5 minutes (300 seconds) to the createdAt time
+    const endTime = moment(createdAt).add(5, "minutes");
+
+    // Calculate the remaining time until the endTime
+    const remainingTime = moment.duration(endTime.diff(moment()));
+
+    // Check if the countdown has expired
+    if (remainingTime.asMilliseconds() <= 0) {
+      return "Countdown expired";
+    }
+
+    // Extract minutes and seconds from the remaining time
+    const minutes = Math.floor(remainingTime.asMinutes());
+    const seconds = Math.floor(remainingTime.seconds());
+
+    // Format the time as MM:SS
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
 
   const fetchData = async () => {
     setError(null);
@@ -95,10 +119,10 @@ const TeamAttacks = () => {
             />
           }
         >
-      <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-start">
-          <View className="flex flex-col mb-6">
+          <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-start">
+            <View className="flex flex-col mb-6">
               <Text className="font-montez text-center text-5xl py-5">
-          Team {teamNo} Attacks
+                Team {teamNo} Attacks
               </Text>
             </View>
             {error ? (
@@ -125,6 +149,7 @@ const TeamAttacks = () => {
                         <Text className="text-black text-2xl font-montez">
                           {attack.war}
                         </Text>
+                        <Timer attack_id={attack._id} />
                       </View>
                     </View>
                   ))}
@@ -141,12 +166,13 @@ const TeamAttacks = () => {
                     >
                       <View className="p-2">
                         <Text className="text-black text-3xl font-montez">
-                          {attack.attacking_zone} ({attack.attacking_team}) → {" "}
+                          {attack.attacking_zone} ({attack.attacking_team}) →{" "}
                           {attack.defending_zone} ({attack.defending_team})
                         </Text>
                         <Text className="text-black text-2xl font-montez">
                           {attack.war}
                         </Text>
+                        <Timer createdAt={attack.createdAt} timerDuration={5} />
                       </View>
                     </View>
                   ))}

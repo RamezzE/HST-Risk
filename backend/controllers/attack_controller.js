@@ -332,6 +332,7 @@ class AttackController {
       return res.json(result);
     }
   }
+
   static async delete_attack(req, res) {
     const result = {
       success: false,
@@ -391,6 +392,54 @@ class AttackController {
     }
 
   }
-}
+
+  static async get_attack_expiry_time(req, res) {
+    const result = {
+      success: false,
+      createdAt: "",
+      expiryTime: "",
+      currentTime: "",
+      timerExpired: "",
+      errorMsg: "",
+    };
+  
+    const { attack_id } = req.params;
+  
+    if (!attack_id) {
+      result.errorMsg = "No attack ID provided";
+      return res.json(result);
+    }
+  
+    try {
+
+      console.log("Attack ID:", attack_id);
+
+      const attack = await Attack.findById(attack_id);
+  
+      if (!attack) {
+        result.errorMsg = "Attack not found";
+        return res.json(result);
+      }
+  
+      const attackTime = new Date(attack.createdAt);
+      const currentTime = new Date(); // Get the current server time
+      const attackExpiryTime = new Date(attackTime.getTime() + 300000); // Add 5 minutes to attack time
+  
+      result.success = true;
+      result.createdAt = attackTime.toISOString();
+      result.expiryTime = attackExpiryTime.toISOString();
+      result.currentTime = currentTime.toISOString(); // Include current server time in the response
+  
+      return res.json(result);
+  
+    } catch (error) {
+      console.error("Server: Error getting attack expiry time:", error);
+      result.errorMsg = "Server: Error getting attack expiry time";
+      return res.json(result);
+    }
+  }
+  
+  
+}  
 
 export default AttackController;
