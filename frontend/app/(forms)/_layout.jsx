@@ -6,12 +6,6 @@ const FormsLayout = () => {
     <>
       <Stack>
         <Stack.Screen
-          name="add_team"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
           name="add_admin"
           options={{
             headerShown: false,
@@ -25,6 +19,12 @@ const FormsLayout = () => {
         />
         <Stack.Screen
           name="edit_team"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="edit_subteam"
           options={{
             headerShown: false,
           }}

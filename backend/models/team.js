@@ -11,12 +11,12 @@ const teamSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    password: {
+    color: {
         type: String,
         required: true
     },
-    color: {
-        type: String,
+    balance: {
+        type: Number,
         required: true
     },
 }, {

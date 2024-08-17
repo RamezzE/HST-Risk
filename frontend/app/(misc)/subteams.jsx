@@ -12,13 +12,15 @@ import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { get_all_teams } from "../../api/team_functions";
+import { get_all_subteams } from "../../api/team_functions";
 
 import { images } from "../../constants";
 
 import Loader from "../../components/Loader";
 
-const Teams = () => {
+import BackButton from "../../components/BackButton";
+
+const SubTeams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
@@ -30,7 +32,7 @@ const Teams = () => {
     setError(null);
     setIsRefreshing(true);
     try {
-      const result = await get_all_teams();
+      const result = await get_all_subteams();
       console.log(result);
       if (result.success === false) {
         setError(result.errorMsg);
@@ -63,14 +65,13 @@ const Teams = () => {
       style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
     >
       <View className="flex flex-col ">
-        <Text className="text-4xl font-montez">{item.name}</Text>
-        <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
-        <Text className="text-2xl font-montez">Balance: {item.balance}</Text>
+        <Text className="text-3xl font-montez">Team {item.username}</Text>
+        <Text className="text-3xl font-montez">{item.name}</Text>
       </View>
 
       <CustomButton
         title="Edit"
-        handlePress={() => router.navigate(`/edit_team?teamNo=${item.number}`)}
+        handlePress={() => router.navigate(`/edit_subteam?username=${item.username}&password=${item.password}`)}
         containerStyles="w-1/4 h-2/3 mt-2 "
         textStyles="text-2xl"
       />
@@ -122,18 +123,15 @@ const Teams = () => {
           }
         >
           <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4  ">
+            <BackButton 
+                style="w-[20vw]"
+                size={32}
+                onPress={() => router.navigate('/teams')}
+            />
             <Text className="text-6xl text-center font-montez py-2 mt-7">
-              Teams
+              Subteams
             </Text>
 
-            <View className="flex flex-row justify-between">
-              <CustomButton
-                title="View Subteams"
-                handlePress={() => router.navigate("/subteams")}
-                containerStyles="w-[45%] my-2 p-3"
-                textStyles={"text-2xl"}
-              />
-            </View>
             {error ? (
               <Text style={{ color: "white", textAlign: "center" }}>
                 {error}
@@ -145,7 +143,7 @@ const Teams = () => {
                 renderItem={renderItem}
                 ListEmptyComponent={
                   <Text className="text-5xl text-black text-center font-montez p-5">
-                    No Teams Found
+                    No Subteams Found
                   </Text>
                 }
               />
@@ -157,4 +155,4 @@ const Teams = () => {
   );
 };
 
-export default Teams;
+export default SubTeams;

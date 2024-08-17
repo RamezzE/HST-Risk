@@ -24,6 +24,12 @@ const MiscLayout = () => {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="subteams"
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack>
       <StatusBar backgroundColor="#000" style="light" />
     </>

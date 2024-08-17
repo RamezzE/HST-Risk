@@ -1,6 +1,6 @@
 import Admin from "../models/admin.js";
 import SuperAdmin from "../models/super_admin.js";
-import Team from "../models/team.js";
+import SubTeam from "../models/subteam.js";
 
 function isNumberString(value) {
   return /^\d+$/.test(value);
@@ -10,7 +10,7 @@ class UserController {
   static async login(req, res) {
     const response = {
       success: false,
-      team: "",
+      subteam: "",
       admin: "",
       superAdmin: "",
       errorMsg: "",
@@ -18,34 +18,32 @@ class UserController {
 
     const { username, password } = req.body;
 
-    if (isNumberString(username)) {
-      try {
-        const team = await Team.findOne({ number: username });
+    try {
+      const subteam = await SubTeam.findOne({ username: username });
 
-        if (team != null) {
-          if (team.password !== password) {
-            response.errorMsg = "Invalid Credentials";
-            return res.json(response);
-          }
-          console.log("Team Found");
-          console.log(team._id);
-          req.session.user = { id: team._id, mode: "team" };
-          req.session.save((err) => {
-            if (err) {
-              console.error("Session save error:", err);
-            } else {
-              console.log("Session saved successfully");
-            }
-          });
-          console.log("Session Created");
-          console.log(req.session);
-          response.success = true;
-          response.team = team;
+      if (subteam != null) {
+        if (subteam.password !== password) {
+          response.errorMsg = "Invalid Credentials";
           return res.json(response);
         }
-      } catch (error) {
-        console.log(error);
+        console.log("Subteam Found");
+        console.log(subteam._id);
+        req.session.user = { id: subteam._id, mode: "subteam" };
+        req.session.save((err) => {
+          if (err) {
+            console.error("Session save error:", err);
+          } else {
+            console.log("Session saved successfully");
+          }
+        });
+        console.log("Session Created");
+        console.log(req.session);
+        response.success = true;
+        response.subteam = subteam;
+        return res.json(response);
       }
+    } catch (error) {
+      console.log(error);
     }
 
     try {
@@ -117,15 +115,17 @@ class UserController {
       return res.json({ success: true });
     } catch (error) {
       console.log(error);
-      return res.json({ success: false, errorMsg: "Failed to destroy session" });
+      return res.json({
+        success: false,
+        errorMsg: "Failed to destroy session",
+      });
     }
-
   }
 
   static async is_logged_in(req, res) {
     const response = {
       success: false,
-      team: "",
+      subteam: "",
       admin: "",
       superAdmin: "",
       errorMsg: "",
@@ -142,12 +142,12 @@ class UserController {
     console.log(req.session);
     const { id, mode } = req.session.user;
 
-    if (mode == "team") {
-      const team = await Team.findById(id);
+    if (mode == "subteam") {
+      const subteam = await SubTeam.findById(id);
 
-      if (team) {
+      if (subteam) {
         response.success = true;
-        response.team = team;
+        response.subteam = subteam;
         return res.json(response);
       }
     } else if (mode == "admin") {

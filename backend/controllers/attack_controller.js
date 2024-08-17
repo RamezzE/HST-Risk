@@ -4,6 +4,8 @@ import Attack from "../models/attack.js";
 import Country from "../models/country.js";
 import Warzone from "../models/warzone.js";
 import Settings from "../models/setting.js";
+import SubTeam from "../models/subteam.js";
+import Team from "../models/team.js";
 
 const client = new MongoClient(process.env.MONGO_URI, {});
 
@@ -19,7 +21,7 @@ class AttackController {
       errorMsg: "",
     };
 
-    const { zone_1, team_1, zone_2, team_2 } = req.body;
+    const { zone_1, team_1, subteam_1, zone_2, team_2 } = req.body;
 
     const attacking_country = await Country.findOne({ name: zone_1 });
     const defending_country = await Country.findOne({ name: zone_2 });
@@ -60,6 +62,99 @@ class AttackController {
       return res.json(result);
     }
 
+    try {
+      const cooldown = await Settings.findOne({ name: "Attack Cooldown" });
+      if (!cooldown) {
+        result.errorMsg = "Server: Attack cooldown setting not found";
+        return res.json(result);
+      }
+
+      const username = team_1.toString() + subteam_1.toString();
+      const subteam = await SubTeam.findOne({ username: username });
+
+      if (!subteam) {
+        result.errorMsg = "Subteam not found";
+        return res.json(result);
+      }
+
+      const cooldown_start_time = subteam.cooldown_start_time;
+
+      // Get the current server time
+      const currentTime = new Date();
+
+      // Calculate the difference between the current time and the cooldown start time
+      const diff = currentTime - cooldown_start_time;
+
+      if (diff < cooldown.value) {
+        const remainingTime = cooldown.value - diff;
+        const minutes = Math.floor(remainingTime / 60000);
+        const seconds = Math.floor((remainingTime % 60000) / 1000);
+      
+        let timeMessage = "";
+        if (minutes > 0) {
+          timeMessage += `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+        }
+      
+        if (seconds > 0) {
+          if (minutes > 0) {
+            timeMessage += " and ";
+          }
+          timeMessage += `${seconds} second${seconds !== 1 ? 's' : ''}`;
+        }
+      
+        result.errorMsg = `Attack cooldown not over yet\nRemaining: ${timeMessage}`;
+        return res.json(result);
+      }
+
+      const canAttack = await AttackController.check_if_subteam_can_attack(subteam.number, subteam.letter);
+
+      if (!canAttack.success) {
+        result.errorMsg = canAttack.errorMsg;
+        return res.json(result);
+      }
+
+      const canAttackCountry = await AttackController.check_country_if_involved_in_attack(zone_1);
+      const canDefendCountry = await AttackController.check_country_if_involved_in_attack(zone_2);
+
+      if (!canAttackCountry.success) {
+        result.errorMsg = canAttackCountry.errorMsg;
+        return res.json(result);
+      }
+
+      if (!canDefendCountry.success) {
+        result.errorMsg = canDefendCountry.errorMsg;
+        return res.json(result);
+      }
+
+      const attack_cost = await Settings.findOne({ name: "Attack Cost" });
+
+      if (!attack_cost) {
+        result.errorMsg = "Server: Attack cost setting not found";
+        return res.json(result);
+      }
+
+      const attacking_team = await Team.findOne({ number: team_1 });
+
+      if (!attacking_team) {
+        result.errorMsg = "Attacking team not found";
+        return res.json(result);
+      }
+
+      if (attacking_team.balance < attack_cost.value) {
+        result.errorMsg = "Insufficient balance\nYou cannot afford the attack cost of " + attack_cost.value;
+        return res.json(result);
+      }
+
+
+
+
+
+    } catch (error) {
+      console.error("Server: Error checking attack cooldown:", error);
+      result.errorMsg = "Server: Error checking attack cooldown";
+      return res.json(result);
+    }
+
     result.success = true;
     return res.json(result);
   }
@@ -70,7 +165,9 @@ class AttackController {
       errorMsg: "",
     };
 
-    const { zone_1, team_1, zone_2, team_2, warzone_id, war } = req.body;
+    const attack_cost = await Settings.findOne({ name: "Attack Cost" });
+
+    const { zone_1, team_1, subteam_1, zone_2, team_2, warzone_id, war } = req.body;
 
     const attacking_country = await Country.findOne({ name: zone_1 });
     const defending_country = await Country.findOne({ name: zone_2 });
@@ -78,17 +175,17 @@ class AttackController {
     const real_team_1 = attacking_country.teamNo;
     const real_team_2 = defending_country.teamNo;
 
-    if (team_1 !== real_team_1) {
+    if (team_1.toString() !== real_team_1.toString()) {
       result.errorMsg = `You do not own ${zone_1}`;
       return res.json(result);
     }
 
-    if (team_1 === real_team_2) {
+    if (team_1.toString() === real_team_2.toString()) {
       result.errorMsg = "You cannot attack your own zone";
       return res.json(result);
     }
 
-    if (team_2 !== real_team_2) {
+    if (team_2.toString() !== real_team_2.toString()) {
       result.errorMsg = `Defending team changed from ${team_2} to ${real_team_2}. Please recheck if you want to proceed`;
       return res.json(result);
     }
@@ -112,14 +209,105 @@ class AttackController {
     }
 
     try {
+      const cooldown = await Settings.findOne({ name: "Attack Cooldown" });
+      if (!cooldown) {
+        result.errorMsg = "Server: Attack cooldown setting not found";
+        return res.json(result);
+      }
+
+      const username = team_1.toString() + subteam_1.toString();
+      const subteam = await SubTeam.findOne({ username: username });
+
+      if (!subteam) {
+        result.errorMsg = "Subteam not found";
+        return res.json(result);
+      }
+
+      const cooldown_start_time = subteam.cooldown_start_time;
+
+      // Get the current server time
+      const currentTime = new Date();
+
+      // Calculate the difference between the current time and the cooldown start time
+      const diff = currentTime - cooldown_start_time;
+
+      if (diff < cooldown.value) {
+        const remainingTime = cooldown.value - diff;
+        const minutes = Math.floor(remainingTime / 60000);
+        const seconds = Math.floor((remainingTime % 60000) / 1000);
+      
+        let timeMessage = "";
+        if (minutes > 0) {
+          timeMessage += `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+        }
+      
+        if (seconds > 0) {
+          if (minutes > 0) {
+            timeMessage += " and ";
+          }
+          timeMessage += `${seconds} second${seconds !== 1 ? 's' : ''}`;
+        }
+      
+        result.errorMsg = `Attack cooldown not over yet\nRemaining: ${timeMessage}`;
+        return res.json(result);
+      }
+
+      const canAttack = await AttackController.check_if_subteam_can_attack(subteam.number, subteam.letter);
+
+      if (!canAttack.success) {
+        result.errorMsg = canAttack.errorMsg;
+        return res.json(result);
+      }
+
+      const canAttackCountry = await AttackController.check_country_if_involved_in_attack(zone_1);
+      const canDefendCountry = await AttackController.check_country_if_involved_in_attack(zone_2);
+
+      if (!canAttackCountry.success) {
+        result.errorMsg = canAttackCountry.errorMsg;
+        return res.json(result);
+      }
+
+      if (!canDefendCountry.success) {
+        result.errorMsg = canDefendCountry.errorMsg;
+        return res.json(result);
+      }
+
+
+      if (!attack_cost) {
+        result.errorMsg = "Server: Attack cost setting not found";
+        return res.json(result);
+      }
+
+      const attacking_team = await Team.findOne({ number: team_1 });
+
+      if (!attacking_team) {
+        result.errorMsg = "Attacking team not found";
+        return res.json(result);
+      }
+
+      if (attacking_team.balance < attack_cost.value) {
+        result.errorMsg = "Insufficient balance\nYou cannot afford the attack cost of " + attack_cost.value;
+        return res.json(result);
+      }
+
+    } catch (error) {
+      console.error("Server: Error checking attack cooldown:", error);
+      result.errorMsg = "Server: Error checking attack cooldown";
+      return res.json(result);
+    }
+
+    try {
       const attack = new Attack({
         attacking_zone: zone_1,
         attacking_team: team_1,
+        attacking_subteam: subteam_1,
         defending_zone: zone_2,
         defending_team: real_team_2,
         warzone_id: warzone_id,
         war: war,
       });
+
+      const attacking_team = await Team.findOne({ number: team_1 });
 
       let chosenWar = war;
 
@@ -149,6 +337,11 @@ class AttackController {
             } else {
               console.log("Warzone not found.");
             }
+
+            // Deduct the attack cost from the attacking team's balance
+            attacking_team.balance -= attack_cost.value;
+            await attacking_team.save();
+
           } catch (error) {
             console.error("Error updating war availability:", error);
           }
@@ -163,6 +356,63 @@ class AttackController {
       console.error("Server: Error making attack:", error);
       result.errorMsg = "Server: Error making attack";
       return res.json(result);
+    }
+  }
+
+  static async check_if_subteam_can_attack(team, subteam) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    try {
+      const attacks = await Attack.find({ attacking_team: team, attacking_subteam: subteam });
+
+      if (attacks.length === 0) {
+        result.success = true;
+        return result;
+      }
+
+      console.log("Attacks:", attacks);
+
+      if (attacks.length > 0) {
+        result.errorMsg = `You are already attacking ${attacks[0].defending_zone}`;
+        return result;
+      }
+
+    } catch (error) {
+      console.error("Server: Error checking if subteam can attack:", error);
+      result.errorMsg = "Server: Error checking if subteam can attack";
+      return result;
+    }
+
+  }
+
+  static async check_country_if_involved_in_attack(zone) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    try {
+      const attacks = await Attack.find({
+        $or: [{ attacking_zone: zone }, { defending_zone: zone }],
+      });
+
+      if (attacks.length === 0) {
+        result.success = true;
+        return result;
+      }
+
+      if (attacks.length > 0) {
+        result.errorMsg = `${zone} is already involved in an attack`;
+        return result;
+      }
+
+    } catch (error) {
+      console.error("Server: Error checking if country is involved in attack:", error);
+      result.errorMsg = "Server: Error checking if country is involved in attack";
+      return result;
     }
   }
 
@@ -183,7 +433,7 @@ class AttackController {
 
       if (attack) {
         result.duplicate = true;
-        result.errorMsg = "You have the same attack in progress";
+        result.errorMsg = `Your team is already attacking ${zone_2}`;
         return result;
       }
 
@@ -195,32 +445,6 @@ class AttackController {
       return result;
     } finally {
       await client.close();
-    }
-  }
-
-  static async get_attacks_on_zone(req, res) {
-    const result = {
-      success: false,
-      attack: "",
-      errorMsg: "",
-    };
-
-    const { zone } = req.params;
-
-    try {
-      const response = await Attack.findOne({
-        defending_zone: zone,
-      });
-      result.attack = response;
-
-      result.success = true;
-
-      return res.json(result);
-    } catch (error) {
-      console.error("Server: Error getting attacks by zone:", error);
-      result.success = false;
-      result.errorMsg = "Server: Error getting attacks by zone";
-      return res.json(result);
     }
   }
 
@@ -385,13 +609,11 @@ class AttackController {
       } else {
         console.log("War not found in the warzone.");
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Server: Error deleting attack:", error);
       result.errorMsg = "Server: Error deleting attack";
       return res.json(result);
     }
-
   }
 
   static async get_attack_expiry_time(req, res) {
@@ -403,60 +625,57 @@ class AttackController {
       timerExpired: "",
       errorMsg: "",
     };
-  
+
     const { attack_id } = req.params;
-  
+
     if (!attack_id) {
       result.errorMsg = "No attack ID provided";
       return res.json(result);
     }
-  
-    try {
 
+    try {
       console.log("Attack ID:", attack_id);
 
       const attack = await Attack.findById(attack_id);
 
       const arr = {
         timerDuration: 5,
-      }
+      };
 
       try {
-        arr.timerDuration = await Settings.findOne({ name: "Disqualify Timer" });
-      }
-      catch(error) {
+        arr.timerDuration = await Settings.findOne({
+          name: "Disqualify Timer",
+        });
+      } catch (error) {
         console.error("Error getting timer duration:", error);
       }
-  
+
       if (!attack) {
         result.errorMsg = "Attack not found";
         return res.json(result);
       }
-  
+
       const attackTime = new Date(attack.createdAt);
       const currentTime = new Date(); // Get the current server time
 
       // to number
 
       const minutes = parseInt(arr.timerDuration.value, 10) * 60000;
-      
+
       const attackExpiryTime = new Date(attackTime.getTime() + minutes); // Add 5 minutes to attack time
-  
+
       result.success = true;
       result.createdAt = attackTime.toISOString();
       result.expiryTime = attackExpiryTime.toISOString();
       result.currentTime = currentTime.toISOString(); // Include current server time in the response
-  
+
       return res.json(result);
-  
     } catch (error) {
       console.error("Server: Error getting attack expiry time:", error);
       result.errorMsg = "Server: Error getting attack expiry time";
       return res.json(result);
     }
   }
-  
-  
-}  
+}
 
 export default AttackController;

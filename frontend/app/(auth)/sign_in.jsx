@@ -35,7 +35,7 @@ const SignIn = () => {
     password: "",
   });
 
-  const { setName, setTeamNo } = useContext(GlobalContext);
+  const { setName, setTeamNo, setSubteam } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -55,9 +55,10 @@ const SignIn = () => {
           return;
         }
 
-        if (response.team != "") {
-          setTeamNo(form.username);
-          setName(response.team.name);
+        if (response.subteam != "") {
+          setTeamNo(response.subteam.number);
+          setName(response.subteam.name);
+          setSubteam(response.subteam.letter);
           router.replace("/home");
           return;
         }
@@ -69,7 +70,7 @@ const SignIn = () => {
         }
 
         if (response.superAdmin != "") {
-          setName(form.username);
+          console.log("Super admin");
           router.replace("/dashboard");
           return;
         }

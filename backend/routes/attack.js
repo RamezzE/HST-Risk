@@ -21,7 +21,6 @@ const checkGameStatus = async (req, res, next) => {
 
 // Define routes without middleware
 router.get("/", AttackController.get_attacks);
-router.get("/zones/:zone", AttackController.get_attacks_on_zone);
 router.get("/wars/:war", AttackController.get_attacks_by_war);
 router.get("/expiry/:attack_id", AttackController.get_attack_expiry_time);
 router.delete("/", AttackController.delete_attack);

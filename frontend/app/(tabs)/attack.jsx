@@ -28,7 +28,7 @@ import {
   get_country_mappings,
 } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
-
+import { get_settings } from "../../api/settings_functions";
 import countries from "../../constants/countries";
 
 import MapZone from "../../components/MapZone";
@@ -36,7 +36,7 @@ import CountryConnections from "../../constants/country_connections";
 import DottedLine from "../../components/DottedLine";
 
 const Attack = () => {
-  const { name, teamNo, setAttackData } = useContext(GlobalContext);
+  const { name, teamNo, subteam } = useContext(GlobalContext);
 
   const [countryMappings, setCountryMappings] = useState([]);
   const [initialArea, setInitialArea] = useState([30, 30]);
@@ -49,6 +49,7 @@ const Attack = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [attacks, setAttacks] = useState([]);
+  const [attackCost, setAttackCost] = useState(0);
 
   const insets = useSafeAreaInsets();
 
@@ -150,6 +151,18 @@ const Attack = () => {
     }
 
     try {
+      const settingsResult = await get_settings();
+      const attackCost = settingsResult.find(
+        (setting) => setting.name === "Attack Cost"
+      );
+      setAttackCost(attackCost.value);
+    }
+    catch (err) {
+      console.log(err);
+      setError("Failed to fetch settings data");
+    }
+
+    try {
       const teamsResult = await get_all_teams();
       setTeams(teamsResult);
     } catch (err) {
@@ -164,8 +177,8 @@ const Attack = () => {
     setZones(countries);
 
     fetchData();
-    
-    const interval = setInterval(fetchData, 30000);
+
+    const interval = setInterval(fetchData, 60000);
 
     // Clear interval on component unmount
     return () => clearInterval(interval);
@@ -189,7 +202,7 @@ const Attack = () => {
       console.log("Attacking", zone_1, team_1);
       console.log("Defending: ", zone_2, team_2);
 
-      const response = await attack_check(zone_1, team_1, zone_2, team_2);
+      const response = await attack_check(zone_1, team_1, subteam, zone_2, team_2);
 
       if (!response.success) {
         Alert.alert("Attack Failed", response.errorMsg);
@@ -197,16 +210,9 @@ const Attack = () => {
       }
 
       console.log("Response", response);
-      setAttackData({
-        attacking_zone: zone_1,
-        attacking_team: team_1,
-        defending_zone: zone_2,
-        defending_team: team_2,
-        war: "",
-      });
 
       setForm({ your_zone: "", other_zone: "" });
-      router.navigate("/warzone");
+      router.navigate(`/warzone?attacking_zone=${zone_1}&defending_zone=${zone_2}&attacking_team=${team_1}&defending_team=${team_2}&attacking_subteam=${subteam}`);
     } catch (error) {
       Alert.alert(
         "Attack Failed",
@@ -275,7 +281,7 @@ const Attack = () => {
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => { 
+              onRefresh={() => {
                 setIsRefreshing(true);
                 fetchData();
               }}
@@ -284,10 +290,19 @@ const Attack = () => {
           }
         >
           <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
-          <View className="flex flex-col mb-6">
+            <View className="flex flex-col mb-6">
               <Text className="font-montez text-center text-5xl py-5">
                 {name}, Team {teamNo}
+                {subteam}
               </Text>
+
+              <View className="flex flex-row justify-between mb-4">
+                <Text className="font-montez text-2xl">
+                  Team money:{" "}
+                  {teams.find((t) => t.number === parseInt(teamNo)).balance}
+                </Text>
+                <Text className="font-montez text-2xl">Attack cost: {attackCost}</Text>
+              </View>
 
               {!Array.isArray(myZones) || myZones.length === 0 ? (
                 <View></View>

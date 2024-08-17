@@ -6,11 +6,12 @@ const apiClient = axios.create({
   timeout: 10000, // 10 seconds timeout
 });
 
-export const attack_check = async (zone_1, team_1, zone_2, team_2) => {
+export const attack_check = async (zone_1, team_1, subteam_1, zone_2, team_2) => {
   try {
     const response = await apiClient.post('/check', {
       zone_1,
       team_1,
+      subteam_1,
       zone_2,
       team_2,
     });
@@ -24,11 +25,12 @@ export const attack_check = async (zone_1, team_1, zone_2, team_2) => {
   }
 };
 
-export const attack = async (zone_1, team_1, zone_2, team_2, warzone_id, war) => {
+export const attack = async (zone_1, team_1, subteam_1, zone_2, team_2, warzone_id, war) => {
   try {
     const response = await apiClient.post('/attack', {
       zone_1,
       team_1,
+      subteam_1,
       zone_2,
       team_2,
       warzone_id,
@@ -54,17 +56,6 @@ export const get_all_attacks = async () => {
   }
 };
 
-export const get_attacks_on_zone = async (zone) => {
-  try {
-    const response = await apiClient.get(`/zones/${zone}`);
-
-    return response.data;
-  } catch (error) {
-    return {
-      errorMsg: error.response?.data || "API: Error getting attacks on zone",
-    };
-  }
-};
 
 export const get_attacks_by_war = async (war) => {
   try {

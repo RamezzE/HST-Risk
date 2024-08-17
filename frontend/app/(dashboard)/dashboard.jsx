@@ -7,23 +7,33 @@ import {
   ScrollView,
   LogBox,
   RefreshControl,
+  Alert
 } from "react-native";
+
 import CustomButton from "../../components/CustomButton";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { logout } from "../../api/user_functions";
 import { get_settings } from "../../api/settings_functions";
 import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
 import { images } from "../../constants";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
+
+import { useContext } from "react";
+
+import { GlobalContext } from "../../context/GlobalProvider";
+
+import { create_teams } from "../../api/team_functions";
 
 const Dashboard = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [settings, setSettings] = useState([]);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const insets = useSafeAreaInsets();
+
+  const { setIsLoggedIn } = useContext(GlobalContext);
 
   const logoutFunc = async () => {
     try {
@@ -38,6 +48,7 @@ const Dashboard = () => {
     } catch (err) {
       setError("Failed to logout");
     } finally {
+      setIsLoggedIn(false);
       router.navigate("/");
     }
   };
@@ -60,6 +71,34 @@ const Dashboard = () => {
       setIsRefreshing(false);
     }
   };
+
+  const createNewGame = async () => {
+    
+    setIsSubmitting(true);    
+
+    const filteredSettings = settings.filter(setting =>
+      setting.name === "No of Teams" || setting.name === "No of Subteams"
+    );
+
+    const noOfTeams = filteredSettings.find(setting => setting.name === "No of Teams").value;
+    const noOfSubteams = filteredSettings.find(setting => setting.name === "No of Subteams").value;
+
+    try {
+      const result = await create_teams(noOfTeams, noOfSubteams);
+
+      if (result.success) {
+        Alert.alert("Success", "New Game Created Successfully");
+        router.navigate("/teams")
+      } else {
+        Alert.alert("Error", result.errorMsg);
+      }
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+}
 
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
@@ -86,7 +125,9 @@ const Dashboard = () => {
           title="Edit"
           handlePress={() => {
             const jsonData = JSON.stringify(item.options);
-            router.navigate(`/edit_setting?name=${item.name}&value=${item.value}&options=${jsonData}`);
+            router.navigate(
+              `/edit_setting?name=${item.name}&value=${item.value}&options=${jsonData}`
+            );
           }}
           containerStyles="w-1/4 h-2/3 mt-2"
           textStyles="text-2xl"
@@ -97,7 +138,14 @@ const Dashboard = () => {
 
   if (isRefreshing) {
     return (
-      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left }} className="flex-1 bg-black">
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingRight: insets.right,
+          paddingLeft: insets.left,
+        }}
+        className="flex-1 bg-black"
+      >
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -109,7 +157,14 @@ const Dashboard = () => {
   }
 
   return (
-    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left }} className="bg-black h-full">
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
+      className="bg-black h-full"
+    >
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -134,25 +189,35 @@ const Dashboard = () => {
               }}
             />
 
-            <Text className="text-6xl text-center font-montez py-2">Dashboard</Text>
+            <Text className="text-6xl text-center font-montez py-2">
+              Dashboard
+            </Text>
+            
+            
+            <CustomButton
+              title="New Game"
+              handlePress={() => {createNewGame()}}
+              containerStyles="w-[45%] mt-2 mb-6 p-3"
+              textStyles={"text-2xl"}
+              isLoading={isSubmitting}
+            />
 
+            <Text className="font-montez text-4xl text-left mb-3">Settings</Text>
             {error ? (
-              <Text style={{ color: "white", textAlign: "center" }}>{error}</Text>
+              <Text style={{ color: "white", textAlign: "center" }}>
+                {error}
+              </Text>
             ) : (
-              <>
-                <View className="flex flex-col justify-start w-full">
-                  <Text className="font-montez text-4xl text-left">Settings</Text>
-
-                  <FlatList
-                    data={settings}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={renderItem}
-                    ListEmptyComponent={
-                      <Text className="text-5xl text-black text-center font-montez p-5">No attacks Found</Text>
-                    }
-                  />
-                </View>
-              </>
+              <FlatList
+                data={settings}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderItem}
+                ListEmptyComponent={
+                  <Text className="text-5xl text-black text-center font-montez p-5">
+                    No attacks Found
+                  </Text>
+                }
+              />
             )}
           </View>
         </ScrollView>

@@ -59,7 +59,7 @@ mongooseConnectionPromise
 const insertSettings = async () => {
   try {
     const settings = [
-      { name: "Disqualify Timer (mins)", value: "3", options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"] },
+      { name: "No of Teams", value: "5", options: ["2", "3", "4", "5", "6", "7", "8", "9", "10"] },
     ];
     
     const result = await Settings.insertMany(settings);
@@ -73,10 +73,8 @@ const insertSettings = async () => {
 app.get("/", (req, res, next) => {
   res.send("Server is up and running. HST");
 
-  insertSettings();
+  // insertSettings();
 });
-
-
 
 app.use("/users", user_router);
 app.use("/admins", admin_router);

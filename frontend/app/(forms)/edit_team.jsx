@@ -5,7 +5,7 @@ import CustomButton from "../../components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 
-import { get_team, update_team, delete_team } from "../../api/team_functions";
+import { get_team, update_team } from "../../api/team_functions";
 
 import BackButton from "../../components/BackButton";
 
@@ -13,13 +13,13 @@ import Loader from "../../components/Loader";
 
 import { images } from "../../constants";
 
-const validateEditTeam = (teamName, password) => {
+const validateEditTeam = (teamName) => {
   var result = {
     success: false,
     errorMsg: "",
   };
 
-  if (!teamName || !password) {
+  if (!teamName) {
     result.errorMsg = "Please fill in all the fields";
     return result;
   }
@@ -35,7 +35,6 @@ const EditTeam = () => {
   const [form, setForm] = useState({
     teamNo: teamNo,
     teamName: "",
-    password: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,12 +45,9 @@ const EditTeam = () => {
     try {
       const response = await get_team(teamNo);
 
-      console.log("Team Data:", response); // Log the team data
-
       if (response.team) {
         setForm({
           teamName: response.team.name,
-          password: response.team.password,
         });
       } else {
         Alert.alert("Error", response.errorMsg);
@@ -79,7 +75,6 @@ const EditTeam = () => {
       const response = await update_team(
         local.teamNo.trim(),
         form.teamName.trim(),
-        form.password.trim()
       );
 
       if (!response.success) {
@@ -98,48 +93,9 @@ const EditTeam = () => {
     }
   };
 
-  const deleteTeam = async () => {
-    setIsSubmitting(true);
-
-    try {
-      const response = await delete_team(teamNo);
-
-      if (!response.success) {
-        Alert.alert("Error", response.errorMsg);
-        return;
-      }
-
-      Alert.alert("Success", "Team deleted successfully");
-
-      router.navigate('/teams');
-    } catch (error) {
-      Alert.alert("Error", "Error deleting team");
-      console.log(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   useEffect(() => {
     fetchData();
   }, []);
-
-  const deleteTeamAlert = async () => {
-    Alert.alert(
-      "Delete Team",
-      `Are you sure you want to delete team ${teamNo}?`,
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          onPress: () => {deleteTeam()},
-        },
-      ]
-    );
-  };
 
   const insets = useSafeAreaInsets()
 
@@ -168,7 +124,7 @@ const EditTeam = () => {
             <BackButton
               style="w-[20vw]"
               size={32}
-              onPress={() => router.dismiss(1)}
+              onPress={() => router.navigate('/teams')}
             />
             <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
               Edit Team
@@ -198,13 +154,6 @@ const EditTeam = () => {
               title="Update Team"
               handlePress={() => submit()}
               containerStyles="mt-7 p-3 bg-green-800"
-              textStyles={"text-3xl"}
-              isLoading={isSubmitting}
-            />
-            <CustomButton
-              title="Delete Team"
-              handlePress={()=> {deleteTeamAlert()}}
-              containerStyles="mt-7 p-3 bg-red-800"
               textStyles={"text-3xl"}
               isLoading={isSubmitting}
             />

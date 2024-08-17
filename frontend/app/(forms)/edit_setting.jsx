@@ -70,7 +70,7 @@ const EditSetting = () => {
               style="w-[20vw] mb-4"
               size={32}
               onPress={() => {
-                router.dismiss(1);
+                router.navigate('/dashboard');
               }}
             />
             <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">

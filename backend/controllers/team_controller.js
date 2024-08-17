@@ -1,4 +1,6 @@
 import Team from "../models/team.js";
+import Settings from "../models/setting.js";
+import SubTeam from "../models/subteam.js";
 
 const getTeamColor = (teamNo) => {
   if (teamNo === "1") {
@@ -26,7 +28,99 @@ const getTeamColor = (teamNo) => {
   }
 };
 
+const getTeamName = (teamNo) => {
+  if (teamNo === "1") {
+    return "Zeus";
+  } else if (teamNo === "2") {
+    return "Poseidon";
+  } else if (teamNo === "3") {
+    return "Athena";
+  } else if (teamNo === "4") {
+    return "Apollo";
+  } else if (teamNo === "5") {
+    return "Artemis";
+  } else if (teamNo === "6") {
+    return "Hermes";
+  } else if (teamNo === "7") {
+    return "Demeter";
+  } else if (teamNo === "8") {
+    return "Ares";
+  } else if (teamNo === "9") {
+    return "Hephaestus";
+  } else if (teamNo === "10") {
+    return "Hera";
+  } else {
+    return "Unknown";
+  }
+};
+
+const generatePassword = () => {
+  return Math.random().toString(36).slice(-8);
+};
+
 class TeamController {
+  static async create_teams(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { numTeams, numSubTeams } = req.body;
+
+    if (numTeams < 2 || numTeams > 10 || numSubTeams < 1 || numSubTeams > 10) {
+      result.errorMsg = "Invalid number of teams";
+      return res.json(result);
+    }
+
+    let teams = [];
+    let subTeams = [];
+
+    try {
+      await Team.deleteMany({});
+      await SubTeam.deleteMany({});
+
+      for (let i = 1; i <= numTeams; i++) {
+        const teamNo = i.toString();
+        const teamName = getTeamName(teamNo);
+        const color = getTeamColor(teamNo);
+
+        const initialMoney = await Settings.findOne({ name: "Initial Money" });
+
+        const team = new Team({
+          number: teamNo,
+          name: teamName,
+          color: color,
+          balance: initialMoney.value,
+        });
+
+        teams.push(team);
+
+        for (let j = 0; j < numSubTeams; j++) {
+          const subTeam = new SubTeam({
+            number: i.toString(),
+            name: teamName,
+            letter: String.fromCharCode(65 + j),
+            username: i.toString() + String.fromCharCode(65 + j),
+            password: generatePassword(),
+          });
+
+          subTeams.push(subTeam);
+        }
+      }
+
+      await Team.insertMany(teams);
+
+      await SubTeam.insertMany(subTeams);
+
+      result.success = true;
+      return res.json(result);
+    } catch (error) {
+      console.error("Error creating teams:", error);
+      result.errorMsg = "Error creating teams";
+      return res.json(result);
+    }
+  }
+
   static async add_team(req, res) {
     const result = {
       success: false,
@@ -69,7 +163,7 @@ class TeamController {
     };
 
     const { number } = req.params;
-    const { teamName, password } = req.body;
+    const { teamName } = req.body;
 
     try {
       const team = await Team.findOne({ number });
@@ -80,7 +174,6 @@ class TeamController {
       }
 
       team.name = teamName;
-      team.password = password;
 
       await team.save();
 
@@ -126,6 +219,45 @@ class TeamController {
       return res.json(teams);
     } catch (error) {
       return res.json({});
+    }
+  }
+
+  static async get_all_subteams(req, res) {
+    try {
+      const subteams = await SubTeam.find();
+      return res.json(subteams);
+    } catch (error) {
+      return res.json({});
+    }
+  }
+
+  static async update_subteam(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { username, password } = req.body;
+
+    try {
+      const subteam = await SubTeam.findOne({ username });
+
+      if (!subteam) {
+        result.errorMsg = `Subteam ${username} not found`;
+        return res.json(result);
+      }
+
+      subteam.password = password;
+
+      await subteam.save();
+
+      result.success = true;
+      return res.json(result);
+    } catch (error) {
+      result.success = false;
+      result.errorMsg = "Error updating subteam";
+      console.error("Error updating subteam:", error);
+      return res.json(result);
     }
   }
 

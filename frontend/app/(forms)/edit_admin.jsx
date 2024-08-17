@@ -172,7 +172,7 @@ const EditAdmin = () => {
             <BackButton
               style="w-[20vw]"
               size={32}
-              onPress={() => router.dismiss(1)}
+              onPress={() => router.navigate('/admins')}
             />
             <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
               Edit Admin

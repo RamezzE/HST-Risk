@@ -6,8 +6,6 @@ import {
   RefreshControl,
 } from "react-native";
 
-import moment from "moment";
-
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect, useState, useContext } from "react";
 
@@ -24,7 +22,7 @@ const TeamAttacks = () => {
   const [defendingAttacks, setDefendingAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
 
-  const { teamNo } = useContext(GlobalContext);
+  const { teamNo, subteam } = useContext(GlobalContext);
 
   const insets = useSafeAreaInsets();
 
@@ -128,8 +126,8 @@ const TeamAttacks = () => {
                     >
                       <View className="p-2">
                         <Text className="text-black text-3xl font-montez">
-                          {attack.attacking_zone} ({attack.attacking_team}) →{" "}
-                          {attack.defending_zone} ({attack.defending_team})
+                          {attack.attacking_zone} ({attack.attacking_team}{attack.attacking_subteam}) →{" "}
+                          {attack.defending_zone} ({attack.defending_team}{attack.defending_subteam})
                         </Text>
                         <Text className="text-black text-2xl font-montez">
                           {attack.war}
@@ -151,13 +149,13 @@ const TeamAttacks = () => {
                     >
                       <View className="p-2">
                         <Text className="text-black text-3xl font-montez">
-                          {attack.attacking_zone} ({attack.attacking_team}) →{" "}
-                          {attack.defending_zone} ({attack.defending_team})
+                          {attack.attacking_zone} ({attack.attacking_team}{attack.attacking_subteam}) →{" "}
+                          {attack.defending_zone} ({attack.defending_team}{attack.defending_subteam})
                         </Text>
                         <Text className="text-black text-2xl font-montez">
                           {attack.war}
                         </Text>
-                        <Timer createdAt={attack.createdAt} timerDuration={5} />
+                        <Timer attack_id={attack._id} />
                       </View>
                     </View>
                   ))}

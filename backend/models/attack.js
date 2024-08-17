@@ -9,13 +9,21 @@ const attackSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    attacking_subteam: {
+        type: String,
+        required: true
+    },
     defending_zone: {
         type: String,
         required: true
     },
     defending_team: {
         type: String,
-        required: true
+        required: true,
+    },
+    defending_subteam: {
+        type: String,
+        default: ""
     },
     warzone_id: {
         type: String,

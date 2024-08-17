@@ -1,35 +1,24 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  Alert,
-  ImageBackground,
-} from "react-native";
+import React, { useState } from "react";
+import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
 import FormField from "../../components/FormField";
-import { useEffect, useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
-import { add_team } from "../../api/team_functions";
-
-import { images } from "../../constants";
+import { update_subteam } from "../../api/team_functions";
 
 import BackButton from "../../components/BackButton";
 
-const validateAddTeam = (teamNo, teamName, password) => {
+import { images } from "../../constants";
+
+const validateEditTeam = (password) => {
   var result = {
     success: false,
     errorMsg: "",
   };
 
-  if (!teamNo || !teamName || !password) {
+  if (!password) {
     result.errorMsg = "Please fill in all the fields";
-    return result;
-  }
-
-  if (isNaN(teamNo)) {
-    result.errorMsg = "Team number must be a number";
     return result;
   }
 
@@ -37,60 +26,59 @@ const validateAddTeam = (teamNo, teamName, password) => {
   return result;
 };
 
-const AddTeam = () => {
+const EditTeam = () => {
+  const local = useLocalSearchParams();
+
   const [form, setForm] = useState({
-    teamNo: "",
-    teamName: "",
-    password: "",
+    username: local.username || "",
+    password: local.password || "",
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async () => {
     setIsSubmitting(true);
 
-    var result = validateAddTeam(form.teamNo, form.teamName, form.password);
+    var result = validateEditTeam(form.password);
 
     if (!result.success) {
       Alert.alert("Error", result.errorMsg);
-      console.log(result.errorMsg);
-      setIsSubmitting(false);
       return;
     }
 
     try {
-      const response = await add_team(
-        form.teamNo.trim(),
-        form.teamName.trim(),
+      const response = await update_subteam(
+        local.username.trim(),
         form.password.trim()
       );
 
       if (!response.success) {
         Alert.alert("Error", response.errorMsg);
-        console.log(response);
         return;
       }
 
-      Alert.alert("Success", "Team added successfully");
+      Alert.alert("Success", "Subteam updated successfully");
 
-      setForm({
-        teamNo: "",
-        teamName: "",
-        password: "",
-      });
-
-      router.navigate('/teams');
+      router.navigate("/subteams");
     } catch (error) {
-      Alert.alert("Error", "Error adding team");
+      Alert.alert("Error", "Error updating team");
       console.log(error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const insets = useSafeAreaInsets()
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
+      className="bg-black h-full"
+    >
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -101,23 +89,17 @@ const AddTeam = () => {
             <BackButton
               style="w-[20vw]"
               size={32}
-              onPress={() => router.dismiss(1)}
+              onPress={() => router.navigate('/subteams')}
             />
             <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
-              Add Team
+              Edit Subteam
             </Text>
-            <FormField
-              title="Team Number"
-              value={form.teamNo}
-              handleChangeText={(e) => setForm({ ...form, teamNo: e })}
-              otherStyles="mt-7"
-            />
 
             <FormField
-              title="Team Name"
-              value={form.teamName}
-              handleChangeText={(e) => setForm({ ...form, teamName: e })}
+              title="Subteam"
+              value={form.username}
               otherStyles="mt-7"
+              editable={false}
             />
 
             <FormField
@@ -125,14 +107,13 @@ const AddTeam = () => {
               value={form.password}
               handleChangeText={(e) => setForm({ ...form, password: e })}
               otherStyles="mt-7"
+              textStyles="font-plight"
             />
 
             <CustomButton
-              title="Add Team"
-              handlePress={() => {
-                submit();
-              }}
-              containerStyles="mt-7 p-3"
+              title="Update Subteam"
+              handlePress={() => submit()}
+              containerStyles="mt-7 p-3 bg-green-800"
               textStyles={"text-3xl"}
               isLoading={isSubmitting}
             />
@@ -143,4 +124,4 @@ const AddTeam = () => {
   );
 };
 
-export default AddTeam;
+export default EditTeam;

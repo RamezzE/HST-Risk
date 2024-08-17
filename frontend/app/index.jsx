@@ -19,6 +19,7 @@ export default function App() {
     isLoggedIn,
     userMode,
     setUserMode,
+    setSubteam,
   } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +32,7 @@ export default function App() {
     try {
       if (isLoggedIn) {
         console.log("isLoggedIn");
-        if (userMode === "team") {
+        if (userMode === "subteam") {
           router.navigate("/home");
           console.log("Team");
           return;
@@ -58,11 +59,12 @@ export default function App() {
         return;
       }
 
-      if (response.team !== "") {
+      if (response.subteam !== "") {
         setIsLoggedIn(true);
-        setTeamNo(response.team.number);
-        setName(response.team.name);
-        setUserMode("team");
+        setTeamNo(response.subteam.number);
+        setSubteam(response.subteam.letter);
+        setName(response.subteam.name);
+        setUserMode("subteam");
         router.navigate("/home");
         return;
       }

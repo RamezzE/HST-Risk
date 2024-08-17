@@ -12,7 +12,7 @@ import React, { useState, useEffect, useContext } from "react";
 import CustomButton from "../../components/CustomButton";
 import { GlobalContext } from "../../context/GlobalProvider";
 
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 import { get_warzones } from "../../api/warzone_functions";
 import { attack } from "../../api/attack_functions";
@@ -23,8 +23,12 @@ import Loader from "../../components/Loader";
 import { images } from "../../constants";
 
 const Warzone = () => {
+
+  const local = useLocalSearchParams();
+
+
+
   const [warzones, setWarzones] = useState([]);
-  const { attackData, setAttackData } = useContext(GlobalContext);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const insets = useSafeAreaInsets()
 
@@ -66,10 +70,11 @@ const Warzone = () => {
 
     try {
       const response = await attack(
-        attackData.attacking_zone,
-        attackData.attacking_team,
-        attackData.defending_zone,
-        attackData.defending_team,
+        local.attacking_zone,
+        local.attacking_team,
+        local.attacking_subteam,
+        local.defending_zone,
+        local.defending_team,
         warzone._id,
         randomWar.name
       );
@@ -77,9 +82,9 @@ const Warzone = () => {
       if (!response.errorMsg) {
         Alert.alert(
           `${warzone.name}`,
-          `You are assigned ${randomWar.name}\n\nAttacking from: ${attackData.attacking_zone} - Team ${attackData.attacking_team}\nDefending Side: ${attackData.defending_zone} - Team ${attackData.defending_team}\n\nProceed to the warzone\n\nGood luck!`
+          `You are assigned ${randomWar.name}\n\nAttacking from: ${local.attacking_zone} - Team ${local.attacking_team}${local.attacking_subteam}\nDefending Side: ${local.defending_zone} - Team ${local.defending_team}\n\nProceed to the warzone\n\nGood luck!`
         );
-
+        
         // Navigate to the home screen or any other route
         router.replace("/team_attacks");
       } else {
@@ -126,7 +131,7 @@ const Warzone = () => {
             <BackButton
               style="w-[20vw]"
               size={32}
-              onPress={() => router.dismiss(1)}
+              onPress={() => router.navigate('/attack')}
             />
             <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
               Choose your warzone
