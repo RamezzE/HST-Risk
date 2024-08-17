@@ -63,7 +63,7 @@ const Countries = () => {
       <CustomButton
         title="Edit"
         handlePress={() =>
-          router.push(
+          router.navigate(
             `/edit_country?countryName=${item.name.trim()}&teamNo=${
               item.teamNo
             }`

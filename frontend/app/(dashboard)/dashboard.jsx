@@ -84,7 +84,7 @@ const Dashboard = () => {
           title="Edit"
           handlePress={() => {
             const jsonData = JSON.stringify(item.options);
-            router.push(`/edit_setting?name=${item.name}&value=${item.value}&options=${jsonData}`);
+            router.navigate(`/edit_setting?name=${item.name}&value=${item.value}&options=${jsonData}`);
           }}
           containerStyles="w-1/4 h-2/3 mt-2"
           textStyles="text-2xl"

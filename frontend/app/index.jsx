@@ -32,19 +32,19 @@ export default function App() {
       if (isLoggedIn) {
         console.log("isLoggedIn");
         if (userMode === "team") {
-          router.push("/home");
+          router.navigate("/home");
           console.log("Team");
           return;
         }
 
         if (userMode === "admin") {
-          router.push("/admin_home");
+          router.navigate("/admin_home");
           console.log("Admin");
           return;
         }
 
         if (userMode === "super_admin") {
-          router.push("/dashboard");
+          router.navigate("/dashboard");
           console.log("Super Admin");
           return;
         }
@@ -54,7 +54,7 @@ export default function App() {
 
       if (!response.success) {
         console.log("Not success");
-        router.push("/sign_in");
+        router.navigate("/sign_in");
         return;
       }
 
@@ -63,7 +63,7 @@ export default function App() {
         setTeamNo(response.team.number);
         setName(response.team.name);
         setUserMode("team");
-        router.push("/home");
+        router.navigate("/home");
         return;
       }
 
@@ -71,7 +71,7 @@ export default function App() {
         setIsLoggedIn(true);
         setName(response.admin.name);
         setUserMode("admin");
-        router.push("/admin_home");
+        router.navigate("/admin_home");
         return;
       }
 
@@ -79,7 +79,7 @@ export default function App() {
         setIsLoggedIn(true);
         setName(response.superAdmin.name);
         setUserMode("super_admin");
-        router.push("/dashboard");
+        router.navigate("/dashboard");
         return;
       }
     } catch (error) {
@@ -101,7 +101,7 @@ export default function App() {
 
   const guestLogin = () => {
     setName("Guest");
-    router.push("/guest_choose_team");
+    router.navigate("/guest_choose_team");
   };
 
   return (
@@ -122,9 +122,7 @@ export default function App() {
                 <Text className="text-5xl text-black font-montez p-2 text-center">
                   Camp Domination
                 </Text>
-                <Text className="text-black text-2xl text-center font-montez mt-3 ">
-                  by Helio Sports Team
-                </Text>
+
               </View>
 
               <View className="w-full flex flex-row justify-evenly text- items-center">
@@ -146,8 +144,11 @@ export default function App() {
             </View>
 
             <View>
-              {/* <Image source={images.wood_home} className= "h-48" resizeMode="contain"/> */}
+              <Image source={images.papyrus_globe} className= "h-48" resizeMode="contain"/>
             </View>
+            <Text className="text-black text-2xl text-center font-montez mt-3 ">
+                  by Helio Sports Team
+                </Text>
           </View>
         </View>
         <StatusBar backgroundColor="#000" style="light" />

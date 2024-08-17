@@ -62,7 +62,7 @@ const Teams = () => {
 
       <CustomButton
         title="Edit"
-        handlePress={() => router.push(`/edit_team?teamNo=${item.number}`)}
+        handlePress={() => router.navigate(`/edit_team?teamNo=${item.number}`)}
         containerStyles="w-1/4 h-2/3 mt-2 "
         textStyles="text-2xl"
       />
@@ -106,7 +106,7 @@ const Teams = () => {
 
             <CustomButton
               title="Add Team"
-              handlePress={() => router.push("/add_team")}
+              handlePress={() => router.navigate("/add_team")}
               containerStyles="w-1/2 my-2 p-3"
               textStyles={"text-2xl"}
             />

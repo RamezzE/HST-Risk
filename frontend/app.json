@@ -4,7 +4,7 @@
     "slug": "HST-Risk",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/papyrus_globe_no_background.png",
     "scheme": "hst-risk",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -26,7 +26,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/papyrus_globe_no_background.png"
     },
     "plugins": [
       "expo-router",

@@ -32,13 +32,13 @@ const Home = () => {
   const [teams, setTeams] = useState([]);
   const [attacks, setAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
-
   const insets = useSafeAreaInsets();
 
   const fetchData = async () => {
     setError(null);
     setZones(countries);
-
+    console.log("Fetching data");
+    
     try {
       const result = await get_country_mappings();
       setCountryMappings(result);
@@ -62,10 +62,9 @@ const Home = () => {
   };
 
   useEffect(() => {
-    setIsRefreshing(true);
 
     fetchData();
-
+    
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
