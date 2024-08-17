@@ -5,47 +5,60 @@ import CustomButton from "../../components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import DropDownField from "../../components/DropDownField";
-
 import BackButton from "../../components/BackButton";
-
 import { images } from "../../constants";
 
-const EditSetting = () => {
-  const local = useLocalSearchParams();
+import { update_setting } from "../../api/settings_functions";
 
+const EditSetting = () => {
+  const insets = useSafeAreaInsets();
+  const local = useLocalSearchParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+
+  console.log(local);
+
+  // Ensure options is an array
   const [form, setForm] = useState({
-    name: local.name,
-    value: local.value,
-    options: local.options,
+    name: local.name || '',
+    value: local.value || '',
+    options: local.options ? JSON.parse(decodeURIComponent(local.options)) : [],
   });
 
   const submit = async () => {
     try {
-      
-      
+      setIsSubmitting(true);
+      const result = await update_setting(form.name, form.value);
+
+      if (result.errorMsg) {
+        Alert.alert('Error', result.errorMsg);
+      } else {
+        Alert.alert('Success', 'Setting updated successfully');
+        router.navigate('/dashboard');
+      }
     } catch (error) {
-      
+      console.error(error);
+      Alert.alert('Error', 'Could not update setting');
+    }
+    finally {
+      setIsSubmitting(false);
     }
   };
 
-  const [teams, setTeams] = useState([]);
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await get_all_teams();
-        setTeams(response);
-      } catch (error) {
-        Alert.alert("Error", "Failed to fetch data");
-        console.log(error);
-      }
-    };
-
-    fetchData();
+    // fetchData();
   }, []);
 
   return (
-    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
+      className="bg-black h-full"
+    >
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -55,48 +68,50 @@ const EditSetting = () => {
           <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
             <BackButton
               style="w-[20vw] mb-4"
-              color="black"
               size={32}
               onPress={() => {
                 router.dismiss(1);
               }}
             />
             <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
-              Edit Country
+              Edit Setting
             </Text>
+
             <FormField
-              title="Country Name"
-              value={form.countryName}
+              title="Setting Name"
+              value={form.name}
               otherStyles="mt-7"
               editable={false}
             />
 
-            <DropDownField
-              title="Owned by Team"
-              value={form.teamNo}
-              placeholder="Select Team"
-              items={teams.map((team) => ({
-                label: `Team ${team.number} - ${team.name}`,
-                value: team.number.toString(),
-              }))}
-              // items={[]}
-              handleChange={(e) => setForm({ ...form, teamNo: e })}
+            <FormField
+              title="Setting Value"
+              value={form.value}
+              handleChangeText={(e) => setForm({ ...form, value: e })}
               otherStyles="mt-7"
+              editable={form.options.length === 0}
             />
 
-            {/* <FormField
-            title="Team Owned"
-            value={form.teamNo}
-            handleChangeText={(e) => setForm({ ...form, teamName: e })}
-            otherStyles="mt-7"
-          /> */}
+            {form.options.length > 0 && (
+              <DropDownField
+                title="Value Options"
+                value={form.value}
+                placeholder="Select Value"
+                items={form.options.map((option) => ({
+                  label: `${option}`,
+                  value: `${option}`,
+                }))}
+                handleChange={(e) => setForm({ ...form, value: e })}
+                otherStyles="mt-7"
+              />
+            )}
 
             <CustomButton
-              title="Update Country"
+              title="Update Setting"
               handlePress={submit}
-            containerStyles="mt-7 p-3 bg-green-800"
-              textStyles={"text-3xl"}
-              // isLoading={isSubmitting}
+              containerStyles="mt-7 p-3 bg-green-800"
+              textStyles="text-3xl"
+              isLoading={isSubmitting}
             />
           </View>
         </ScrollView>

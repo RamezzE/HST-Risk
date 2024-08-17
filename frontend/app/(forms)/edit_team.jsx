@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, Alert, ImageBackground, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,6 +8,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { get_team, update_team, delete_team } from "../../api/team_functions";
 
 import BackButton from "../../components/BackButton";
+
+import Loader from "../../components/Loader";
 
 import { images } from "../../constants";
 
@@ -87,7 +89,7 @@ const EditTeam = () => {
 
       Alert.alert("Success", "Team updated successfully");
 
-      router.replace("/teams");
+      router.navigate("/teams");
     } catch (error) {
       Alert.alert("Error", "Error updating team xx");
       console.log(error);
@@ -109,7 +111,7 @@ const EditTeam = () => {
 
       Alert.alert("Success", "Team deleted successfully");
 
-      router.dismiss(1);
+      router.navigate('/teams');
     } catch (error) {
       Alert.alert("Error", "Error deleting team");
       console.log(error);
@@ -148,9 +150,7 @@ const EditTeam = () => {
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="25" color="#000" />
-          </View>
+          <Loader />
         </ImageBackground>
       </View>
     );
@@ -167,7 +167,6 @@ const EditTeam = () => {
           <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
             <BackButton
               style="w-[20vw]"
-              color="black"
               size={32}
               onPress={() => router.dismiss(1)}
             />

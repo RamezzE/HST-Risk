@@ -80,8 +80,9 @@ app.get("/", (req, res, next) => {
 
 app.use("/users", user_router);
 app.use("/admins", admin_router);
-app.use("/teams", team_router);
 app.use("/countries", country_router);
-app.use("/attacks", attack_router);
+app.use("/teams", team_router);
 app.use("/warzones", warzone_router);
 app.use("/settings", settings_router);
+
+app.use("/attacks", attack_router);

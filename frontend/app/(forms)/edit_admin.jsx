@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, Alert, ImageBackground, ActivityIndicator, RefreshControl } from "react-native";
+import { View, Text, ScrollView, Alert, ImageBackground, RefreshControl } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,6 +11,8 @@ import { get_wars } from "../../api/warzone_functions";
 import { update_admin, delete_admin } from "../../api/admin_functions";
 
 import BackButton from "../../components/BackButton";
+
+import Loader from "../../components/Loader";
 
 import { images } from "../../constants";
 
@@ -67,7 +69,7 @@ const EditAdmin = () => {
 
       Alert.alert("Success", "Admin updated successfully");
 
-      router.replace("/admins");
+      router.navigate("/admins");
     } catch (error) {
       Alert.alert("Error", "Failed to update admin");
       console.log(error);
@@ -89,7 +91,7 @@ const EditAdmin = () => {
 
       Alert.alert("Success", "Admin deleted successfully");
 
-      router.dismiss(1);
+      router.navigate('/admins');
     } catch (error) {
       Alert.alert("Error", "Error deleting admin");
       console.log(error);
@@ -144,9 +146,7 @@ const EditAdmin = () => {
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="25" color="#000" />
-          </View>
+          <Loader />
         </ImageBackground>
       </View>
     );
@@ -171,7 +171,6 @@ const EditAdmin = () => {
           <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
             <BackButton
               style="w-[20vw]"
-              color="black"
               size={32}
               onPress={() => router.dismiss(1)}
             />

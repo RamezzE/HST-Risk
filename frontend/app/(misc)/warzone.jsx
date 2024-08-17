@@ -5,9 +5,8 @@ import {
   Alert,
   ImageBackground,
   RefreshControl,
-  ActivityIndicator,
 } from "react-native";
-import { useSafeAreInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React, { useState, useEffect, useContext } from "react";
 
 import CustomButton from "../../components/CustomButton";
@@ -19,6 +18,7 @@ import { get_warzones } from "../../api/warzone_functions";
 import { attack } from "../../api/attack_functions";
 
 import BackButton from "../../components/BackButton";
+import Loader from "../../components/Loader";
 
 import { images } from "../../constants";
 
@@ -26,6 +26,7 @@ const Warzone = () => {
   const [warzones, setWarzones] = useState([]);
   const { attackData, setAttackData } = useContext(GlobalContext);
   const [isRefreshing, setIsRefreshing] = useState(true);
+  const insets = useSafeAreaInsets()
 
   
   const fetchData = async () => {
@@ -90,7 +91,6 @@ const Warzone = () => {
     }
   };
 
-  const insets = useSafeAreaInsets()
 
   if (isRefreshing) {
     return (
@@ -99,9 +99,7 @@ const Warzone = () => {
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="25" color="#000" />
-          </View>
+          <Loader />
         </ImageBackground>
       </View>
     );
@@ -127,7 +125,6 @@ const Warzone = () => {
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
             <BackButton
               style="w-[20vw]"
-              color="black"
               size={32}
               onPress={() => router.dismiss(1)}
             />

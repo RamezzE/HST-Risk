@@ -4,7 +4,6 @@ import {
   Text,
   ImageBackground,
   ScrollView,
-  ActivityIndicator,
   RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,6 +15,8 @@ import { GlobalContext } from "../../context/GlobalProvider";
 import { images } from "../../constants";
 
 import BackButton from "../../components/BackButton";
+
+import Loader from "../../components/Loader";
 
 import { get_all_teams } from "../../api/team_functions";
 
@@ -59,9 +60,7 @@ const GuestChooseTeam = () => {
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="25" color="#000" />
-          </View>
+          <Loader />
         </ImageBackground>
       </View>
     );
@@ -87,7 +86,6 @@ const GuestChooseTeam = () => {
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-start">
             <BackButton
               style="w-[20vw] mb-4"
-              color="#4B320C"
               size={32}
               onPress={() => router.replace("/")}
             />

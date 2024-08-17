@@ -1,7 +1,13 @@
-import React from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import React, { createRef, useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableWithoutFeedback,
+} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import Icon from 'react-native-vector-icons/MaterialIcons'; // or any other icon set you prefer
+
 
 const DropdownField = ({
   title,
@@ -12,38 +18,46 @@ const DropdownField = ({
   otherStyles,
   ...props
 }) => {
+  const pickerRef = useRef(null);
+
+  const openPicker = () => {
+    console.log("Opening picker");
+    console.log(pickerRef.current);
+    pickerRef.current.togglePicker(false); // This will open the picker programmatically
+  };
+
   return (
     <View className={`space-y-2 ${otherStyles}`}>
       <Text className="font-montez text-black text-3xl">{title}</Text>
 
-      <View 
-      className="w-full h-16 px-4 bg- rounded-md focus:border-secondary flex flex-row items-center"
-      style={{ backgroundColor: 'rgba(75, 50, 12, 0.5)' }} // Transparent background
-
+      <View
+        className="w-full h-16 px-4 bg- rounded-md focus:border-secondary flex flex-row items-center"
+        style={{ backgroundColor: "rgba(75, 50, 12, 0.5)" }} // Transparent background
       >
-        <TextInput
-          className="flex-1 text-white font-montez text-2xl"
-          value={value}
-          placeholder={placeholder}
-          placeholderTextColor="#F2E9D0"
-          // onChangeText={handleChange}
-          editable={false}
-          {...props}
-        />
+        <TouchableWithoutFeedback onPress={openPicker}>
+          <View style={{ flex: 1 }}>
+            <TextInput
+              className="text-white font-montez text-2xl"
+              value={value}
+              placeholder={placeholder}
+              placeholderTextColor="#F2E9D0"
+              editable={false} // Disable editing
+              pointerEvents="none" // Disable any touch events on the TextInput
+              {...props}
+            />
+          </View>
+        </TouchableWithoutFeedback>
 
         <RNPickerSelect
+          ref={pickerRef} // Attach ref to the RNPickerSelect
           onValueChange={handleChange}
           items={items}
-          // value={value}
+          value={value}
           style={pickerSelectStyles}
           placeholder={{}}
           placeholderTextColor="#F2E9D0"
-          // Icon={() => {
-          //   return <Icon name="arrow-drop-down" size={24} color="white" />;
-          // }}
           {...props}
         />
-
       </View>
     </View>
   );
@@ -55,7 +69,7 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     color: "white",
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30,
     flex: 1,
     fontFamily: "Poppins-SemiBold",
   },
@@ -64,12 +78,11 @@ const pickerSelectStyles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     color: "white",
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30,
     flex: 1,
     fontFamily: "Poppins-SemiBold",
   },
   placeholder: {
-    // color: '#7B7B8B',
     color: "#fff",
     fontSize: 16,
     fontFamily: "Poppins-SemiBold",

@@ -12,22 +12,9 @@ const BackButton = ({ color = 'black', size = 24, style = '', onPress }) => {
 
   return (
     <TouchableOpacity onPress={handlePress} className={style}>
-      {/* <FontAwesome name="long-arrow-left" size={size} color={color} />  */}
-      <FontAwesome 
-        name="sign-out" 
-        size={size} 
-        color={color} 
-        // style={styles.flippedIcon}  // Apply the flip style
-      />
-
+      <FontAwesome name="long-arrow-left" size={size} color={color} /> 
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  flippedIcon: {
-    transform: [{ scaleX: -1 }],  // Horizontal flip
-  },
-});
 
 export default BackButton;
