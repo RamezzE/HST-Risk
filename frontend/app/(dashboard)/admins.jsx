@@ -104,15 +104,14 @@ const Admins = () => {
           }
         >
           <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4  ">
-            <BackButton style="w-[20vw]" color="black" size={32} path="/" />
 
-            <Text className="text-6xl text-center font-montez py-2">
+          <Text className="text-6xl text-center font-montez py-2 mt-7">
               Admins
             </Text>
 
             <CustomButton
               title="Add Admin"
-              handlePress={() => router.push("/add_admin")}
+              handlePress={() => router.replace("/add_admin")}
               containerStyles="w-1/2 my-2 p-3"
               textStyles={"text-2xl"}
             />

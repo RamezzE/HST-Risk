@@ -15,3 +15,12 @@ export const get_settings = async () => {
     return { errorMsg: error.response?.data || "Error fetching settings" };
   }
 };
+
+export const update_setting = async (name, value) => {
+  try {
+    const response = await apiClient.put(`/${name}`, { value });
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "Error updating setting" };
+  }
+}

@@ -6,6 +6,7 @@ import {
   ImageBackground,
   RefreshControl,
   ScrollView,
+  Alert,
   LogBox,
 } from "react-native";
 import CustomButton from "../../components/CustomButton";
@@ -15,7 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import { get_all_attacks } from "../../api/attack_functions";
 
-import BackButton from "../../components/BackButton";
+import { delete_attack } from "../../api/attack_functions";
 
 import Loader from "../../components/Loader";
 
@@ -52,7 +53,7 @@ const DashboardAttacks = () => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, []);
 
-  const deleteAttack = async () => {
+  const deleteAttack = async (id) => {
     const result = await delete_attack(id);
     if (result.success) {
       Alert.alert("Success", "Attack deleted successfully");
@@ -135,17 +136,9 @@ const DashboardAttacks = () => {
           />
         }
       >
-        <View className="w-full justify-center min-h-[82.5vh] max-h-[90vh] p-4  ">
-          <BackButton
-            style="w-[20vw]"
-            color="black"
-            size={32}
-            onPress={() => {
-              router.replace("/");
-            }}
-          />
+        <View className="w-full justify-center min-h-[82.5vh] max-h-[90vh] p-4 ">
 
-          <Text className="text-6xl text-center font-montez py-2">
+          <Text className="text-6xl text-center font-montez py-2 mt-7">
             Attacks
           </Text>
 

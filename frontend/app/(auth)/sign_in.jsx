@@ -110,7 +110,6 @@ const SignIn = () => {
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
             <BackButton
               style="w-[20vw] mb-4"
-              color="#4B320C"
               size={32}
               onPress={() => router.replace("/")}
             />

@@ -78,7 +78,7 @@ const AddTeam = () => {
         password: "",
       });
 
-      router.dismiss(1);
+      router.navigate('/teams');
     } catch (error) {
       Alert.alert("Error", "Error adding team");
       console.log(error);
@@ -100,7 +100,6 @@ const AddTeam = () => {
           <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
             <BackButton
               style="w-[20vw]"
-              color="black"
               size={32}
               onPress={() => router.dismiss(1)}
             />

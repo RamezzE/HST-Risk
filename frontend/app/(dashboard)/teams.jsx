@@ -4,7 +4,6 @@ import {
   Text,
   FlatList,
   ImageBackground,
-  ActivityIndicator,
   ScrollView,
   LogBox,
   RefreshControl,
@@ -16,7 +15,7 @@ import { get_all_teams } from "../../api/team_functions";
 
 import { images } from "../../constants";
 
-import BackButton from "../../components/BackButton";
+import Loader from "../../components/Loader";
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
@@ -77,9 +76,7 @@ const Teams = () => {
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="25" color="#000" />
-          </View>
+          <Loader />
         </ImageBackground>
       </View>
     );
@@ -103,9 +100,9 @@ const Teams = () => {
           }
         >
           <View className="w-full justify-center min-h-[82.5vh] max-h-[90vh] p-4  ">
-            <BackButton style="w-[20vw]" color="black" size={32} path="/" />
 
-            <Text className="text-6xl text-center font-montez py-2">Teams</Text>
+          <Text className="text-6xl text-center font-montez py-2 mt-7">
+          Teams</Text>
 
             <CustomButton
               title="Add Team"

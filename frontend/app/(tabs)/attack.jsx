@@ -4,7 +4,6 @@ import {
   ScrollView,
   Alert,
   ImageBackground,
-  ActivityIndicator,
   RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,7 +11,7 @@ import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
 
 import MapView from "react-native-maps";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 
 import { useEffect, useState, useContext } from "react";
 
@@ -21,6 +20,8 @@ import { GlobalContext } from "../../context/GlobalProvider";
 import { attack_check, get_all_attacks } from "../../api/attack_functions";
 
 import { images } from "../../constants";
+
+import Loader from "../../components/Loader";
 
 import {
   get_countries_by_team,
@@ -162,10 +163,10 @@ const Attack = () => {
     fetchData();
 
     // const interval = setInterval(fetchData, 60000);
-    const interval = setInterval(fetchData, 30000);
+    // const interval = setInterval(fetchData, 30000);
 
     // Clear interval on component unmount
-    return () => clearInterval(interval);
+    // return () => clearInterval(interval);
   }, []);
 
   const attack_func = async (zone_1, team_1, zone_2) => {
@@ -249,9 +250,7 @@ const Attack = () => {
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
         >
-          <View className="flex-1 justify-center items-center">
-            <ActivityIndicator size="25" color="#000" />
-          </View>
+          <Loader />
         </ImageBackground>
       </View>
     );
@@ -281,8 +280,8 @@ const Attack = () => {
         >
           <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
           <View className="flex flex-col mb-6">
-              <Text className="font-montez text-center text-4xl py-5">
-                Welcome, {name} -- Team {teamNo}
+              <Text className="font-montez text-center text-5xl py-5">
+                {name}, Team {teamNo}
               </Text>
 
               {!Array.isArray(myZones) || myZones.length === 0 ? (

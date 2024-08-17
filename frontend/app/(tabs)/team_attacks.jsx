@@ -95,13 +95,10 @@ const TeamAttacks = () => {
             />
           }
         >
-          <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
-          <View className="py-4 mb-2">
-              <Text className="text-5xl py-1 text-center font-montez text-black">
-                Team Attacks
-              </Text>
-              <Text className="text-3xl  text-center font-montez text-black">
-                Team {teamNo}
+      <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-start">
+          <View className="flex flex-col mb-6">
+              <Text className="font-montez text-center text-5xl py-5">
+          Team {teamNo} Attacks
               </Text>
             </View>
             {error ? (
@@ -111,7 +108,7 @@ const TeamAttacks = () => {
             ) : (
               <View style={{ backgroundColor: "rgb(75,50,12,1)" }}>
                 <Text className="text-red-800 font-montez text-4xl p-2 mb-2">
-                  Ongoing Attacks (Team {teamNo})
+                  Ongoing Attacks
                 </Text>
                 <View className="mb-4">
                   {attackingAttacks.map((attack, index) => (
@@ -125,12 +122,15 @@ const TeamAttacks = () => {
                           {attack.attacking_zone} ({attack.attacking_team}) →{" "}
                           {attack.defending_zone} ({attack.defending_team})
                         </Text>
+                        <Text className="text-black text-2xl font-montez">
+                          {attack.war}
+                        </Text>
                       </View>
                     </View>
                   ))}
                 </View>
                 <Text className="text-green-800 text-4xl font-montez p-2 mb-2">
-                  Ongoing Defence (Team {teamNo})
+                  Ongoing Defence
                 </Text>
                 <View className="mb-4">
                   {defendingAttacks.map((attack, index) => (
@@ -143,6 +143,9 @@ const TeamAttacks = () => {
                         <Text className="text-black text-3xl font-montez">
                           {attack.attacking_zone} ({attack.attacking_team}) →{" "}
                           {attack.defending_zone} ({attack.defending_team})
+                        </Text>
+                        <Text className="text-black text-2xl font-montez">
+                          {attack.war}
                         </Text>
                       </View>
                     </View>

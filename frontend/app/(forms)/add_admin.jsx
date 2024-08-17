@@ -126,7 +126,6 @@ const AddAdmin = () => {
           <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
             <BackButton
               style="w-[20vw]"
-              color="black"
               size={32}
               onPress={() => router.dismiss(1)}
             />

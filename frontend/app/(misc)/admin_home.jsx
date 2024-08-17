@@ -126,7 +126,6 @@ const AdminHome = () => {
             <View>
               <BackButton
                 style="w-[20vw] mb-6"
-                color="#4B320C"
                 size={32}
                 onPress={() => logoutFunc()}
               />
