@@ -59,11 +59,9 @@ mongooseConnectionPromise
 const insertSettings = async () => {
   try {
     const settings = [
-      { name: "Game Status", value: "Active", options: ["Active", "Paused", "Ended"] },
-      { name: "Initial Money", value: "1000", options: [] },
-      { name: "Attack Cost", value: "50", options: [] },
+      { name: "Disqualify Timer (mins)", value: "3", options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"] },
     ];
-
+    
     const result = await Settings.insertMany(settings);
     console.log("Settings inserted:", result);
 
@@ -75,7 +73,7 @@ const insertSettings = async () => {
 app.get("/", (req, res, next) => {
   res.send("Server is up and running. HST");
 
-  // insertSettings();
+  insertSettings();
 });
 
 

@@ -29,8 +29,10 @@ const Dashboard = () => {
     try {
       const result = await logout();
       if (result.success) {
+        console.log("Logged out successfully");
         // Handle successful logout
       } else {
+        console.log(result.errorMsg);
         setError(result.errorMsg);
       }
     } catch (err) {
@@ -150,13 +152,6 @@ const Dashboard = () => {
                     }
                   />
                 </View>
-
-                <CustomButton
-                  title="Logout"
-                  onPress={() => {
-                    logoutFunc();
-                  }}
-                />
               </>
             )}
           </View>

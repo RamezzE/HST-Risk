@@ -28,29 +28,8 @@ const TeamAttacks = () => {
 
   const insets = useSafeAreaInsets();
 
-  const getCountdown = (createdAt) => {
-    // Add 5 minutes (300 seconds) to the createdAt time
-    const endTime = moment(createdAt).add(5, "minutes");
-
-    // Calculate the remaining time until the endTime
-    const remainingTime = moment.duration(endTime.diff(moment()));
-
-    // Check if the countdown has expired
-    if (remainingTime.asMilliseconds() <= 0) {
-      return "Countdown expired";
-    }
-
-    // Extract minutes and seconds from the remaining time
-    const minutes = Math.floor(remainingTime.asMinutes());
-    const seconds = Math.floor(remainingTime.seconds());
-
-    // Format the time as MM:SS
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  };
-
   const fetchData = async () => {
     setError(null);
-    setIsRefreshing(true);
     try {
       const result = await get_all_attacks();
 
@@ -74,6 +53,9 @@ const TeamAttacks = () => {
 
   useEffect(() => {
     fetchData();
+
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   if (isRefreshing) {
@@ -114,7 +96,10 @@ const TeamAttacks = () => {
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => fetchData()}
+              onRefresh={() => {
+                setIsRefreshing(true);
+                fetchData();
+              }}
               tintColor="#000"
             />
           }

@@ -3,6 +3,7 @@ import { MongoClient } from "mongodb";
 import Attack from "../models/attack.js";
 import Country from "../models/country.js";
 import Warzone from "../models/warzone.js";
+import Settings from "../models/setting.js";
 
 const client = new MongoClient(process.env.MONGO_URI, {});
 
@@ -415,6 +416,17 @@ class AttackController {
       console.log("Attack ID:", attack_id);
 
       const attack = await Attack.findById(attack_id);
+
+      const arr = {
+        timerDuration: 5,
+      }
+
+      try {
+        arr.timerDuration = await Settings.findOne({ name: "Disqualify Timer" });
+      }
+      catch(error) {
+        console.error("Error getting timer duration:", error);
+      }
   
       if (!attack) {
         result.errorMsg = "Attack not found";
@@ -423,7 +435,12 @@ class AttackController {
   
       const attackTime = new Date(attack.createdAt);
       const currentTime = new Date(); // Get the current server time
-      const attackExpiryTime = new Date(attackTime.getTime() + 300000); // Add 5 minutes to attack time
+
+      // to number
+
+      const minutes = parseInt(arr.timerDuration.value, 10) * 60000;
+      
+      const attackExpiryTime = new Date(attackTime.getTime() + minutes); // Add 5 minutes to attack time
   
       result.success = true;
       result.createdAt = attackTime.toISOString();
