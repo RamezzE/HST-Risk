@@ -46,7 +46,8 @@ const Attack = () => {
   const [otherZones, setOtherZones] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
+  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [attacks, setAttacks] = useState([]);
 
   const insets = useSafeAreaInsets();
@@ -121,8 +122,8 @@ const Attack = () => {
 
   const fetchData = async () => {
     setError(null);
-    setZones(countries);
-    setIsRefreshing(true);
+
+    console.log("Fetching data");
 
     try {
       const result = await get_country_mappings();
@@ -160,13 +161,14 @@ const Attack = () => {
   };
 
   useEffect(() => {
+    setZones(countries);
+
     fetchData();
 
-    // const interval = setInterval(fetchData, 60000);
-    // const interval = setInterval(fetchData, 30000);
+    const interval = setInterval(fetchData, 30000);
 
     // Clear interval on component unmount
-    // return () => clearInterval(interval);
+    return () => clearInterval(interval);
   }, []);
 
   const attack_func = async (zone_1, team_1, zone_2) => {
@@ -204,7 +206,7 @@ const Attack = () => {
       });
 
       setForm({ your_zone: "", other_zone: "" });
-      router.push("/warzone");
+      router.navigate("/warzone");
     } catch (error) {
       Alert.alert(
         "Attack Failed",
@@ -273,7 +275,10 @@ const Attack = () => {
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => fetchData()}
+              onRefresh={() => { 
+                setIsRefreshing(true);
+                fetchData();
+              }}
               tintColor="#000"
             />
           }
