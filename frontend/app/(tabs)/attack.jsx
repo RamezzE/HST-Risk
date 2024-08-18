@@ -359,7 +359,7 @@ const Attack = () => {
                 longitudeDelta: 100,
               }}
               mapType="satellite"
-              // scrollEnabled={false}
+              // scrollEnabled={true}
               // zoomEnabled={false}
               rotateEnabled={false}
               pitchEnabled={false}

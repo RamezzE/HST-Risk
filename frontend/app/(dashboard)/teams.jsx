@@ -130,7 +130,7 @@ const Teams = () => {
         className="min-h-[100vh]"
       >
         <ScrollView
-          scrollEnabled={false}
+          scrollEnabled={true}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -139,7 +139,7 @@ const Teams = () => {
             />
           }
         >
-          <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4 pb-16 ">
+          <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4 ">
             <Text className="text-6xl text-center font-montez py-2 mt-7">
               Teams
             </Text>
@@ -160,6 +160,7 @@ const Teams = () => {
               <FlatList
                 data={teams}
                 keyExtractor={(item, index) => index.toString()}
+                className="mb-12"
                 renderItem={renderItem}
                 ListEmptyComponent={
                   <Text className="text-5xl text-black text-center font-montez p-5">

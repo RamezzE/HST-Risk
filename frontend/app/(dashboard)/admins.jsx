@@ -62,7 +62,7 @@ const Admins = () => {
       className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
       style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
     >
-      <View className="flex flex-col ">
+<View className="flex flex-col ">
         <Text className="text-4xl font-montez">{item.name}</Text>
         <Text className="text-2xl font-montez">War: {item.war}</Text>
       </View>
@@ -82,7 +82,14 @@ const Admins = () => {
 
   if (isRefreshing) {
     return (
-      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingRight: insets.right,
+          paddingLeft: insets.left,
+        }}
+        className="flex-1 bg-black"
+      >
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -94,14 +101,21 @@ const Admins = () => {
   }
 
   return (
-    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
+      className="bg-black h-full"
+    >
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
         className="min-h-[100vh]"
       >
         <ScrollView
-          scrollEnabled={false}
+          scrollEnabled={true}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -110,38 +124,35 @@ const Admins = () => {
             />
           }
         >
-          <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4  ">
-
-          <Text className="text-6xl text-center font-montez py-2 mt-7">
+          <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4 pb-16 ">
+            <Text className="text-6xl text-center font-montez py-2 mt-7">
               Admins
             </Text>
 
+            <View className="flex flex-row justify-between">
             <CustomButton
               title="Add Admin"
               handlePress={() => router.replace("/add_admin")}
               containerStyles="w-1/2 my-2 p-3"
               textStyles={"text-2xl"}
             />
-
-            <View>
-              {error ? (
-                <Text style={{ color: "white", textAlign: "center" }}>
-                  {error}
-                </Text>
-              ) : (
-                <FlatList
-                  data={admins}
-                  className="mb-12"
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={renderItem}
-                  ListEmptyComponent={
-                    <Text className="text-5xl text-black text-center font-montez p-5">
-                      No Admins Found
-                    </Text>
-                  }
-                />
-              )}
             </View>
+            {error ? (
+              <Text style={{ color: "white", textAlign: "center" }}>
+                {error}
+              </Text>
+            ) : (
+              <FlatList
+                data={admins}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderItem}
+                ListEmptyComponent={
+                  <Text className="text-5xl text-black text-center font-montez p-5">
+                    No Admins Found
+                  </Text>
+                }
+              />
+            )}
           </View>
         </ScrollView>
       </ImageBackground>

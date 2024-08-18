@@ -198,7 +198,7 @@ const Dashboard = () => {
         className="min-h-[100vh]"
       >
         <ScrollView
-          scrollEnabled={false}
+          scrollEnabled={true}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}

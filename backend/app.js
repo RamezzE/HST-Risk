@@ -69,7 +69,7 @@ const insertSettings = async () => {
   try {
     const settings = [
       // { name: "No of Teams", value: "5", options: ["2", "3", "4", "5", "6", "7", "8", "9", "10"] },
-      { name: "Money Rate per min for country", value: "2", options: [] },
+      // { name: "Money Rate per min for country", value: "2", options: [] },
     ];
 
     const result = await Settings.insertMany(settings);
