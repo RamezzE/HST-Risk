@@ -535,7 +535,7 @@ const WesternAustralia = {
     { latitude: -26.015495892055373, longitude: 134.9284389133305 },
     { latitude: -25.938734239908193, longitude: 129.12201804947927 },
   ],
-  adjacent_zones: ["Eastern Australia", "Indonesia", "Chile"],
+  adjacent_zones: ["Eastern Australia", "Indonesia", "Chile", "Madagascar"],
 };
 
 const EasternAustralia = {

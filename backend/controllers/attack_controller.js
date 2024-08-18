@@ -115,7 +115,8 @@ class AttackController {
 
       const canAttack = await AttackController.check_if_subteam_can_attack(
         subteam.number,
-        subteam.letter
+        subteam.letter,
+        real_team_2,
       );
 
       if (!canAttack.success) {
@@ -282,7 +283,8 @@ class AttackController {
 
       const canAttack = await AttackController.check_if_subteam_can_attack(
         subteam.number,
-        subteam.letter
+        subteam.letter,
+        real_team_2,
       );
 
       if (!canAttack.success) {
@@ -391,7 +393,7 @@ class AttackController {
     }
   }
 
-  static async check_if_subteam_can_attack(team, subteam) {
+  static async check_if_subteam_can_attack(team, subteam, otherTeam) {
     const result = {
       success: false,
       errorMsg: "",
@@ -400,20 +402,68 @@ class AttackController {
     try {
       const attacks = await Attack.find({
         attacking_team: team,
-        attacking_subteam: subteam,
+        // attacking_subteam: subteam,
       });
 
-      if (attacks.length === 0) {
+      const subteam_attacks = attacks.filter((attack) => attack.attacking_subteam === subteam);
+
+      if (subteam_attacks.length === 0) {
+
+        const attack_limit = await Settings.findOne({ name: "Max concurrent attacks per team" });
+
+        if (!attack_limit) {
+          result.errorMsg = "Server: Attack limit setting not found";
+          return result;
+        }
+
+        
+
+        if (attacks.length >= parseInt(attack_limit.value)) {
+          result.errorMsg = `Your team has reached the maximum attack limit of ${attack_limit.value}`;
+          return result;
+        }
+
+        const defence_limit = await Settings.findOne({ name: "Max concurrent defences per team" });
+
+        if (!defence_limit) {
+          result.errorMsg = "Server: Defence limit setting not found";
+          return result;
+        }
+
+        console.log(otherTeam)
+
+        const defence_attacks = await Attack.find({
+          defending_team: otherTeam,
+          // defending_subteam: subteam,
+        });
+
+        if (!defence_attacks) {
+          result.errorMsg = "Server: Error getting defence attacks";
+          return result;
+        }
+
+        console.log("Defence attacks:", defence_attacks.length);
+        console.log(defence_limit.value);
+
+        if (defence_attacks.length >= parseInt(defence_limit.value)) {
+          result.errorMsg = `Team ${otherTeam} has reached the maximum defence limit of ${defence_limit.value}`;
+          return result;
+        }
+
         result.success = true;
         return result;
       }
 
-      console.log("Attacks:", attacks);
-
-      if (attacks.length > 0) {
+      if (subteam_attacks.length > 0) {
         result.errorMsg = `You are already attacking ${attacks[0].defending_zone}`;
         return result;
       }
+
+
+
+
+      
+
     } catch (error) {
       console.error("Server: Error checking if subteam can attack:", error);
       result.errorMsg = "Server: Error checking if subteam can attack";
