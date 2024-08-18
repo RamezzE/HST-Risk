@@ -171,7 +171,7 @@ class TeamController {
     };
 
     const { number } = req.params;
-    const { teamName } = req.body;
+    const { teamName, teamBalance } = req.body;
 
     try {
       const team = await Team.findOne({ number });
@@ -182,7 +182,7 @@ class TeamController {
       }
 
       team.name = teamName;
-
+      team.balance = teamBalance;
       await team.save();
 
       result.success = true;

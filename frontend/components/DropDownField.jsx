@@ -52,9 +52,9 @@ const DropdownField = ({
           ref={pickerRef} // Attach ref to the RNPickerSelect
           onValueChange={handleChange}
           items={items}
-          value={value}
+          // value={value}
           style={pickerSelectStyles}
-          placeholder={{}}
+          placeholder={{ label: placeholder, value: "" }} // Pass the placeholder as an object
           placeholderTextColor="#F2E9D0"
           {...props}
         />
@@ -65,27 +65,28 @@ const DropdownField = ({
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    fontSize: 16,
+    fontSize: 1,
     paddingVertical: 12,
-    paddingHorizontal: 10,
-    color: "white",
-    paddingRight: 30,
+    // paddingHorizontal: 10,
+    color: "rgba(0,0,0,0.1)",
+    // paddingRight: 30,
     flex: 1,
     fontFamily: "Poppins-SemiBold",
   },
   inputAndroid: {
-    fontSize: 16,
+    fontSize: 1,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    color: "white",
-    paddingRight: 30,
+    color: "rgba(0,0,0,0.1)",
+    // paddingRight: 30,
     flex: 1,
     fontFamily: "Poppins-SemiBold",
   },
   placeholder: {
-    color: "#fff",
-    fontSize: 16,
+    color: "rgba(0,0,0,0)",
+    fontSize: 2,
     fontFamily: "Poppins-SemiBold",
+    paddingLeft:  25,
   },
   iconContainer: {
     top: 10,

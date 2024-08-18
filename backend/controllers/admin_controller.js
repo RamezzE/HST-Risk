@@ -2,7 +2,9 @@ import Admin from "../models/admin.js";
 import { MongoClient } from "mongodb";
 
 const client = new MongoClient(process.env.MONGO_URI, {});
-
+const generatePassword = () => {
+  return Math.random().toString(36).slice(-8);
+};
 class AdminController {
 
   static async get_admins(req, res) {
@@ -32,7 +34,7 @@ class AdminController {
       errorMsg: "",
     };
 
-    const { name, password, war } = req.body;
+    const { name, war } = req.body;
 
     const admin = await Admin.findOne({ name });
 
@@ -43,7 +45,7 @@ class AdminController {
 
     const newAdmin = new Admin({
       name: name,
-      password: password,
+      password: generatePassword(),
       war: war,
     });
 

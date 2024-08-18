@@ -277,6 +277,9 @@ class AttackController {
     }
 
     try {
+      const username = team_1.toString() + subteam_1.toString();
+      const subteam = await SubTeam.findOne({ username: username });
+
       const canAttack = await AttackController.check_if_subteam_can_attack(
         subteam.number,
         subteam.letter

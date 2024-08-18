@@ -126,6 +126,7 @@ const Countries = () => {
             ) : (
               <FlatList
                 data={countries}
+                className="mb-12"
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderItem}
                 ListEmptyComponent={

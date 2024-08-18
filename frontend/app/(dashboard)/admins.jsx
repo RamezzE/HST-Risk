@@ -131,6 +131,7 @@ const Admins = () => {
               ) : (
                 <FlatList
                   data={admins}
+                  className="mb-12"
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={renderItem}
                   ListEmptyComponent={

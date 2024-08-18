@@ -26,10 +26,35 @@ const EditSetting = () => {
     options: local.options ? JSON.parse(decodeURIComponent(local.options)) : [],
   });
 
+  const validateEditSetting = () => {
+    if (form.name === '') {
+      Alert.alert('Error', 'Setting name is required');
+      return false;
+    }
+
+    if (form.value === '') {
+      Alert.alert('Error', 'Setting value is required');
+      return false;
+    }
+
+    // Check if value is a number and options is not empty
+
+    if (form.options != [] && isNaN(form.value.trim())) {
+      Alert.alert('Error', `${form.name} value must be a number`);
+      return false;
+    }
+  }
+
   const submit = async () => {
     try {
       setIsSubmitting(true);
-      const result = await update_setting(form.name, form.value);
+
+      if (!validateEditSetting()) {
+        setIsSubmitting(false);
+        return;
+      }
+
+      const result = await update_setting(form.name, form.value.trim());
 
       if (result.errorMsg) {
         Alert.alert('Error', result.errorMsg);

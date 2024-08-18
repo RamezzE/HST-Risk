@@ -1,32 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 
-import { get_team, update_team } from "../../api/team_functions";
+import { update_team } from "../../api/team_functions";
 
 import BackButton from "../../components/BackButton";
 
-import Loader from "../../components/Loader";
-
 import { images } from "../../constants";
 
-const validateEditTeam = (teamName) => {
-  var result = {
-    success: false,
-    errorMsg: "",
-  };
 
-  if (!teamName) {
-    result.errorMsg = "Please fill in all the fields";
-    return result;
-  }
-
-  result.success = true;
-  return result;
-};
 
 const EditTeam = () => {
   const local = useLocalSearchParams();
@@ -34,29 +19,38 @@ const EditTeam = () => {
 
   const [form, setForm] = useState({
     teamNo: teamNo,
-    teamName: "",
+    teamName: local.teamName,
+    balance: local.teamBalance,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(true);
 
-  const fetchData = async () => {
-    
+  const validateEditTeam = (teamName) => {
+    var result = {
+      success: false,
+      errorMsg: "",
+    };
+
     try {
-      const response = await get_team(teamNo);
-
-      if (response.team) {
-        setForm({
-          teamName: response.team.name,
-        });
-      } else {
-        Alert.alert("Error", response.errorMsg);
+      if (!teamName) {
+        result.errorMsg = "Please fill in all the fields";
+        return result;
       }
+
+      if (isNaN(form.balance) || form.balance === "") {
+        result.errorMsg = "Please enter a number for the balance";
+        return result;
+      }
+
+      result.success = true;
+      return result;
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch team data");
+      console.log(error);
+      result.errorMsg = "Error validating team";
+      return result;
     }
     finally {
-      setIsRefreshing(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -75,6 +69,7 @@ const EditTeam = () => {
       const response = await update_team(
         local.teamNo.trim(),
         form.teamName.trim(),
+        form.balance.trim(),
       );
 
       if (!response.success) {
@@ -93,24 +88,7 @@ const EditTeam = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const insets = useSafeAreaInsets()
-
-  if (isRefreshing) {
-    return (
-      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
-          <Loader />
-        </ImageBackground>
-      </View>
-    );
-  }
 
   return (
     <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
@@ -144,11 +122,13 @@ const EditTeam = () => {
             />
 
             <FormField
-              title="Password"
-              value={form.password}
-              handleChangeText={(e) => setForm({ ...form, password: e })}
+              title="Balance"
+              value={form.balance}
+              handleChangeText={(e) => setForm({ ...form, balance: e })}
               otherStyles="mt-7"
             />
+
+            
 
             <CustomButton
               title="Update Team"

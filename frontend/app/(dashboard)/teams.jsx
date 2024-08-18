@@ -70,7 +70,7 @@ const Teams = () => {
 
       <CustomButton
         title="Edit"
-        handlePress={() => router.navigate(`/edit_team?teamNo=${item.number}`)}
+        handlePress={() => router.navigate(`/edit_team?teamNo=${item.number}&teamName=${item.name}&teamBalance=${item.balance}`)}
         containerStyles="w-1/4 h-2/3 mt-2 "
         textStyles="text-2xl"
       />

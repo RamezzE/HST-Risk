@@ -72,6 +72,14 @@ const Attack = () => {
   };
 
   const changeMapPreview = (zone) => {
+
+    if (zone == "")
+      return;
+
+    if (zone == "Select Your Country" || zone == "Select Country to Attack") {
+      return;
+    }
+
     const country = countries.find((c) => c.name === zone);
 
     const avgLat =
@@ -294,14 +302,14 @@ const Attack = () => {
             />
           }
         >
-          <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
+          <View className="w-full min-h-[82.5vh] px-4 pt-4 mt-2 flex flex-col justify-start">
             <View className="flex flex-col mb-6">
-              <Text className="font-montez text-center text-5xl py-5">
+              {/* <Text className="font-montez text-center text-5xl py-5">
                 {name}, Team {teamNo}
                 {subteam}
-              </Text>
+              </Text> */}
 
-              <View className="flex flex-row justify-between mb-4">
+              <View className="flex flex-row justify-between pb-4">
                 <Text className="font-montez text-2xl">
                   Team money:{" "}
                   {balance}
@@ -384,7 +392,7 @@ const Attack = () => {
               handlePress={() =>
                 attack_func(form.your_zone, parseInt(teamNo), form.other_zone)
               }
-              containerStyles="mt-7 p-3"
+              containerStyles="mt-5 mb-5 p-3"
               textStyles={"text-3xl"}
               isLoading={isSubmitting}
             />

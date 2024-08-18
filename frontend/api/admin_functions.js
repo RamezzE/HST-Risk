@@ -24,11 +24,10 @@ export const get_admins = async () => {
   }
 };
 
-export const add_admin = async (name, password, war) => {
+export const add_admin = async (name, war) => {
   try {
     const response = await apiClient.put(`/`, {
       name,
-      password,
       war,
     });
     return response.data;

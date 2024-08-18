@@ -257,6 +257,7 @@ const DashboardAttacks = () => {
             ) : (
               <FlatList
                 data={attacks}
+                className="mb-12"
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderItem}
                 ListEmptyComponent={

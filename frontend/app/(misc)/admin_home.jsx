@@ -220,7 +220,7 @@ const AdminHome = () => {
         className="min-h-[100vh]"
       >
         <ScrollView
-          scrollEnabled={false}
+          scrollEnabled={true}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -232,7 +232,7 @@ const AdminHome = () => {
             />
           }
         >
-          <View className="w-full min-h-[100vh] px-4 py-5 flex flex-col justify-between">
+          <View className="w-full min-h-[100vh] px-4 py-5 flex flex-col justify-start">
             <View>
               <BackButton
                 style="w-[20vw] mb-6"
@@ -250,7 +250,7 @@ const AdminHome = () => {
             </View>
 
             <View
-              className="rounded-md px-2 mt-3 flex flex-1 flex-col justify-between"
+              className="rounded-md mt-3 px-2 flex flex-1 flex-col justify-center max-h-[40vh]"
               style={{ backgroundColor: "rgba(32, 20, 2, 0.6)" }} // Transparent background
             >
               {currentAttack._id ? (
@@ -286,7 +286,7 @@ const AdminHome = () => {
             </View>
 
             <View>
-              <View className="flex flex-row justify-between mr-1 mt-7">
+              <View className="flex flex-row justify-between mr-1 mt-3">
                 {response.attacks.length > 0 && (
                   <View className="w-full">
                     <View className="flex flex-row">

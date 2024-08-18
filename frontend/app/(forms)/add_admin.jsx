@@ -39,7 +39,7 @@ const AddAdmin = () => {
   const [form, setForm] = useState({
     name: "",
     war: "",
-    password: "",
+    // password: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,7 +51,7 @@ const AddAdmin = () => {
   const submit = async () => {
     setIsSubmitting(true);
 
-    var result = validateAddAdmin(form.name, form.password, form.war);
+    var result = validateAddAdmin(form.name, form.war);
 
     if (!result.success) {
       Alert.alert("Error", result.errorMsg);
@@ -61,7 +61,6 @@ const AddAdmin = () => {
     try {
       const response = await add_admin(
         form.name.trim(),
-        form.password.trim(),
         form.war.trim()
       );
 
@@ -140,12 +139,12 @@ const AddAdmin = () => {
               otherStyles="mt-7"
             />
 
-            <FormField
+            {/* <FormField
               title="Password"
-              value={form.description}
+              value={form.password}
               handleChangeText={(e) => setForm({ ...form, password: e })}
               otherStyles="mt-7"
-            />
+            /> */}
 
             <DropDownField
               title="Assigned War"

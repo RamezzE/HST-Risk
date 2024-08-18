@@ -21,12 +21,13 @@ export const add_team = async (teamNo, teamName, password) => {
   }
 };
 
-export const update_team = async (teamNo, teamName) => {
+export const update_team = async (teamNo, teamName, teamBalance) => {
   try {
     const response = await apiClient.post(
       `/update/${teamNo}`,
       {
         teamName,
+        teamBalance,
       }
     );
 

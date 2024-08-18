@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  View,
-  Text,
-  Alert,
-  ImageBackground,
-} from "react-native";
+import { View, Text, Alert, ImageBackground } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
@@ -33,12 +28,13 @@ const Home = () => {
   const [attacks, setAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
   const insets = useSafeAreaInsets();
+  const { name, teamNo, subteam } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
     setZones(countries);
     console.log("Fetching data");
-    
+
     try {
       const result = await get_country_mappings();
       setCountryMappings(result);
@@ -62,9 +58,8 @@ const Home = () => {
   };
 
   useEffect(() => {
-
     fetchData();
-    
+
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -107,15 +102,16 @@ const Home = () => {
     }
   };
 
-
   if (isRefreshing) {
     return (
-      <View className="flex-1 bg-black"
-      style= {{
-        paddingTop: insets.top,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
-      }}>
+      <View
+        className="flex-1 bg-black"
+        style={{
+          paddingTop: insets.top,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        }}
+      >
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -125,7 +121,6 @@ const Home = () => {
       </View>
     );
   }
-
 
   return (
     <View
@@ -140,63 +135,63 @@ const Home = () => {
         source={images.background}
         style={{ flex: 1, resizeMode: "cover" }}
       >
-        
         <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
-        <BackButton
-              style="w-[20vw] mb-4"
-              size={32}
-              onPress={() => logoutFunc()}
-            />
-            <View
-              style={{
-                flex: 1,
-                borderWidth: 5,
-                borderColor: "black",
-                borderRadius: 2,
-                overflow: "hidden",
+          <BackButton
+            style="w-[20vw]"
+            size={32}
+            onPress={() => logoutFunc()}
+          />
+          <Text className="font-montez text-center text-5xl m-4 pt-2">
+            {name}, Team {teamNo}
+            {subteam}
+          </Text>
+          <View
+            style={{
+              flex: 1,
+              borderWidth: 5,
+              borderColor: "black",
+              borderRadius: 2,
+              overflow: "hidden",
+            }}
+          >
+            <MapView
+              className="flex-1"
+              initialRegion={{
+                latitude: 30.357810872761366,
+                longitude: 30.392057112613095,
+                latitudeDelta: 100,
+                longitudeDelta: 180,
               }}
+              mapType="satellite"
+              rotateEnabled={false}
+              pitchEnabled={false}
             >
-              <MapView
-                className="flex-1"
-                initialRegion={{
-                  latitude: 30.357810872761366,
-                  longitude: 30.392057112613095,
-                  latitudeDelta: 100,
-                  longitudeDelta: 180,
-                }}
-                mapType="satellite"
-                rotateEnabled={false}
-                pitchEnabled={false}
-              >
-                {zones.map((zone) => (
-                  <MapZone
-                    key={zone.name}
-                    points={zone.points}
-                    color={getTeamColor(zone.name)}
-                    label={zone.name}
-                    onMarkerPress={() => onMarkerPress(zone)}
-                  />
-                ))}
+              {zones.map((zone) => (
+                <MapZone
+                  key={zone.name}
+                  points={zone.points}
+                  color={getTeamColor(zone.name)}
+                  label={zone.name}
+                  onMarkerPress={() => onMarkerPress(zone)}
+                />
+              ))}
 
-                {CountryConnections.map((points, index) => (
-                  <DottedLine
-                    key={index}
-                    startPoint={points.point1}
-                    endPoint={points.point2}
-                    color="#FFF"
-                    thickness={3}
-                  />
-                ))}
-              </MapView>
-            </View>
-
-            {error && (
-              <Text className="text-white text-center p-2 text-xl">
-                {error}
-              </Text>
-            )}
+              {CountryConnections.map((points, index) => (
+                <DottedLine
+                  key={index}
+                  startPoint={points.point1}
+                  endPoint={points.point2}
+                  color="#FFF"
+                  thickness={3}
+                />
+              ))}
+            </MapView>
           </View>
-        
+
+          {error && (
+            <Text className="text-white text-center p-2 text-xl">{error}</Text>
+          )}
+        </View>
       </ImageBackground>
     </View>
   );

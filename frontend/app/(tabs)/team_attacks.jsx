@@ -118,47 +118,63 @@ const TeamAttacks = () => {
                   Ongoing Attacks
                 </Text>
                 <View className="mb-4">
-                  {attackingAttacks.map((attack, index) => (
-                    <View
-                      key={index}
-                      className="px-2 rounded-md mb-3"
-                      style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
-                    >
-                      <View className="p-2">
-                        <Text className="text-black text-3xl font-montez">
-                          {attack.attacking_zone} ({attack.attacking_team}{attack.attacking_subteam}) →{" "}
-                          {attack.defending_zone} ({attack.defending_team}{attack.defending_subteam})
-                        </Text>
-                        <Text className="text-black text-2xl font-montez">
-                          {attack.war}
-                        </Text>
-                        <Timer attack_id={attack._id} />
+                  {attackingAttacks.length > 0 ? (
+                    attackingAttacks.map((attack, index) => (
+                      <View
+                        key={index}
+                        className="px-2 rounded-md mb-3"
+                        style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
+                      >
+                        <View className="p-2">
+                          <Text className="text-black text-3xl font-montez">
+                            {attack.attacking_zone} ({attack.attacking_team}
+                            {attack.attacking_subteam}) →{" "}
+                            {attack.defending_zone} ({attack.defending_team}
+                            {attack.defending_subteam})
+                          </Text>
+                          <Text className="text-black text-2xl font-montez">
+                            {attack.war}
+                          </Text>
+                          <Timer attack_id={attack._id} />
+                        </View>
                       </View>
-                    </View>
-                  ))}
+                    ))
+                  ) : (
+                    <Text className="text-black text-3xl font-montez px-4">
+                      You are not attacking now
+                    </Text>
+                  )}
                 </View>
                 <Text className="text-green-800 text-4xl font-montez p-2 mb-2">
                   Ongoing Defence
                 </Text>
                 <View className="mb-4">
-                  {defendingAttacks.map((attack, index) => (
-                    <View
-                      key={index}
-                      className="px-2 rounded-md mb-3"
-                      style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
-                    >
-                      <View className="p-2">
-                        <Text className="text-black text-3xl font-montez">
-                          {attack.attacking_zone} ({attack.attacking_team}{attack.attacking_subteam}) →{" "}
-                          {attack.defending_zone} ({attack.defending_team}{attack.defending_subteam})
-                        </Text>
-                        <Text className="text-black text-2xl font-montez">
-                          {attack.war}
-                        </Text>
-                        <Timer attack_id={attack._id} />
+                  {defendingAttacks.length > 0 ? (
+                    defendingAttacks.map((attack, index) => (
+                      <View
+                        key={index}
+                        className="px-2 rounded-md mb-3"
+                        style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
+                      >
+                        <View className="p-2">
+                          <Text className="text-black text-3xl font-montez">
+                            {attack.attacking_zone} ({attack.attacking_team}
+                            {attack.attacking_subteam}) →{" "}
+                            {attack.defending_zone} ({attack.defending_team}
+                            {attack.defending_subteam})
+                          </Text>
+                          <Text className="text-black text-2xl font-montez">
+                            {attack.war}
+                          </Text>
+                          <Timer attack_id={attack._id} />
+                        </View>
                       </View>
-                    </View>
-                  ))}
+                    ))
+                  ) : (
+                    <Text className="text-black text-3xl font-montez px-4">
+                      There are no attacks on you
+                    </Text>
+                  )}
                 </View>
               </View>
             )}
