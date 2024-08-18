@@ -55,6 +55,7 @@ const AddAdmin = () => {
 
     if (!result.success) {
       Alert.alert("Error", result.errorMsg);
+      setIsSubmitting(false);
       return;
     }
 

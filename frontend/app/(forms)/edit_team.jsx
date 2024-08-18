@@ -122,7 +122,7 @@ const EditTeam = () => {
             />
 
             <FormField
-              title="Balance"
+              title="Running Money"
               value={form.balance}
               handleChangeText={(e) => setForm({ ...form, balance: e })}
               otherStyles="mt-7"

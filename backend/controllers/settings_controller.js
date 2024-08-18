@@ -7,8 +7,7 @@ class SettingsController {
   }
 
   static async update_setting(req, res) {
-    const { name } = req.params;
-    const { value } = req.body;
+    const { name, value } = req.body;
 
     const result = {
       success: false,

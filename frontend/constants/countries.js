@@ -3803,7 +3803,7 @@ const MiddleEast = {
     { latitude: 29.491495646403447, longitude: 34.86615758750031 },
     { latitude: 31.086857436138178, longitude: 34.293379026646264 },
   ],
-  adjacent_zones: ["Egypt", "Europe", "Kazakhstan", "India"],
+  adjacent_zones: ["Egypt", "Central Africa", "Europe", "Kazakhstan", "India"],
 };
 
 const NorthernEurope = {

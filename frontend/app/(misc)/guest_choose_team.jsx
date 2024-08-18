@@ -21,7 +21,7 @@ import Loader from "../../components/Loader";
 import { get_all_teams } from "../../api/team_functions";
 
 const GuestChooseTeam = () => {
-  const { setTeamNo } = useContext(GlobalContext);
+  const { setTeamNo, setSubteam } = useContext(GlobalContext);
   const [teams, setTeams] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
 
@@ -45,9 +45,10 @@ const GuestChooseTeam = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
+  
   const handleTeamSelection = (teamNo) => {
     setTeamNo(teamNo);
+    setSubteam('')
     router.replace("/guest_home");
   };
 

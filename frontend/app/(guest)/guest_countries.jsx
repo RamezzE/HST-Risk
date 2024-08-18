@@ -10,8 +10,6 @@ import {
   LogBox,
   RefreshControl,
 } from "react-native";
-import CustomButton from "../../components/CustomButton";
-import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Loader from "../../components/Loader";
@@ -84,24 +82,11 @@ const Countries = () => {
           <Text className="text-3xl font-montez text-left my-4">{showTitle()}</Text>
         )}
         <View
-          className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+          className="p-4 my-1 rounded-md flex flex-row justify-between items-center"
           style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
         >
-          <View className="flex flex-col">
-            <Text className="text-4xl font-montez">{item.name}</Text>
-            <Text className="text-2xl font-montez">Owner: Team {item.teamNo}</Text>
-          </View>
-  
-          <CustomButton
-            title="Edit"
-            handlePress={() =>
-              router.navigate(
-                `/edit_country?countryName=${item.name.trim()}&teamNo=${item.teamNo}`
-              )
-            }
-            containerStyles="w-1/4 h-2/3 mt-2"
-            textStyles="text-2xl"
-          />
+            <Text className="text-3xl font-montez">{item.name}</Text>
+            <Text className="text-2xl font-montez">Team {item.teamNo}</Text>
         </View>
       </View>
     );

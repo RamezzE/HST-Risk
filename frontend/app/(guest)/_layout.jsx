@@ -62,13 +62,43 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="guest_team_attacks"
           options={{
-            title: "Team Attacks",
+            title: "Attacks",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.swords}
                 color={color}
-                name="Team Attacks"
+                name="Attacks"
+                focused={focused}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="guest_teams"
+          options={{
+            title: "Teams",
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.teams}
+                color={color}
+                name="Teams"
+                focused={focused}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="guest_countries"
+          options={{
+            title: "Countries",
+            headerShown: false,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon
+                icon={icons.countries}
+                color={color}
+                name="Countries"
                 focused={focused}
               />
             ),

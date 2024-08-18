@@ -9,7 +9,6 @@ import {
   RefreshControl,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { get_all_teams } from "../../api/team_functions";
@@ -35,7 +34,6 @@ const Teams = () => {
       const result = await get_all_teams();
 
       const countriesR = await get_country_mappings();
-      console.log(countriesR)
       setCountries(countriesR);
 
       console.log(result);
@@ -69,7 +67,7 @@ const Teams = () => {
       className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
       style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
     >
-      <View className="flex flex-col ">
+      <View className="flex flex-row flex-wrap justify-between ">
         <Text className="text-4xl font-montez">{item.name}</Text>
         <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
         <Text className="text-2xl font-montez">Running Money: {item.balance}</Text>
@@ -81,17 +79,6 @@ const Teams = () => {
           }
         </Text>
       </View>
-
-      <CustomButton
-        title="Edit"
-        handlePress={() =>
-          router.navigate(
-            `/edit_team?teamNo=${item.number}&teamName=${item.name}&teamBalance=${item.balance}`
-          )
-        }
-        containerStyles="w-1/4 h-2/3 mt-2 "
-        textStyles="text-2xl"
-      />
     </View>
   );
 
@@ -139,18 +126,12 @@ const Teams = () => {
             />
           }
         >
-          <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4 pb-16 ">
+          <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4  ">
             <Text className="text-6xl text-center font-montez py-2 mt-7">
               Teams
             </Text>
 
             <View className="flex flex-row justify-between">
-              <CustomButton
-                title="View Subteams"
-                handlePress={() => router.navigate("/subteams")}
-                containerStyles="w-[45%] my-2 p-3"
-                textStyles={"text-2xl"}
-              />
             </View>
             {error ? (
               <Text style={{ color: "white", textAlign: "center" }}>

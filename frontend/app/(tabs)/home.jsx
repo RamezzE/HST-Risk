@@ -67,8 +67,23 @@ const Home = () => {
   const { Logout } = useContext(GlobalContext);
 
   const logoutFunc = () => {
-    Logout();
-    router.replace("/");
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          onPress: () => {
+            Logout();
+            router.replace("/");
+          },
+        },
+      ]
+    );
   };
 
   const onMarkerPress = (zone) => {
@@ -136,11 +151,7 @@ const Home = () => {
         style={{ flex: 1, resizeMode: "cover" }}
       >
         <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
-          <BackButton
-            style="w-[20vw]"
-            size={32}
-            onPress={() => logoutFunc()}
-          />
+          <BackButton style="w-[20vw]" size={32} onPress={() => logoutFunc()} />
           <Text className="font-montez text-center text-5xl m-4 mt-0 pt-2">
             {name}, Team {teamNo}
             {subteam}

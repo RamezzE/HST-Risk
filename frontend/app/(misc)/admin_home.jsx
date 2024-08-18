@@ -86,8 +86,23 @@ const AdminHome = () => {
   }, []);
 
   const logoutFunc = () => {
-    Logout();
-    router.replace("/");
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          onPress: () => {
+            Logout();
+            router.replace("/");
+          },
+        },
+      ]
+    );
   };
 
   const deleteAttack = async (attack_id) => {

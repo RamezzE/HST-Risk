@@ -1,6 +1,9 @@
 import Team from "../models/team.js";
 import Settings from "../models/setting.js";
 import SubTeam from "../models/subteam.js";
+import Attack from "../models/attack.js";
+import Warzone from "../models/warzone.js";
+import Country from "../models/country.js";
 
 const getTeamColor = (teamNo) => {
   if (teamNo === "1") {
@@ -58,6 +61,32 @@ const generatePassword = () => {
   return Math.random().toString(36).slice(-8);
 };
 
+const distributeCountries = async (numberOfTeams) => {
+  try {    
+    const countries = await Country.find();
+
+    if (countries.length === 0) {
+      console.log('No countries found to distribute.');
+      return;
+    }
+
+    // Create bulk operations
+    const bulkOps = countries.map((country, index) => ({
+      updateOne: {
+        filter: { _id: country._id },
+        update: { teamNo: (index % numberOfTeams) + 1 },
+      },
+    }));
+
+    // Perform bulk update
+    const result = await Country.bulkWrite(bulkOps);
+
+    console.log(`Distributed ${countries.length} countries across ${numberOfTeams} teams.`);
+  } catch (error) {
+    console.error('Error distributing countries:', error);
+  }
+};
+
 class TeamController {
   static async create_teams(req, res) {
     const result = {
@@ -76,11 +105,11 @@ class TeamController {
     let subTeams = [];
 
     try {
-
       const gameStatus = await Settings.findOne({ name: "Game Status" });
 
       if (gameStatus && gameStatus.value === "Active") {
-        result.errorMsg = "Game is already active.\nPlease pause or end the game first.";
+        result.errorMsg =
+          "Game is already active.\nPlease pause or end the game first.";
         return res.json(result);
       }
 
@@ -116,9 +145,34 @@ class TeamController {
         }
       }
 
-      await Team.insertMany(teams);
+      try {
 
-      await SubTeam.insertMany(subTeams);
+        const gameStatus = await Settings.findOne({ name: "Game Status" });
+        gameStatus.value = "Paused";
+
+        await gameStatus.save();
+
+        await Team.insertMany(teams);
+
+        await SubTeam.insertMany(subTeams);
+
+        // delete all attacks
+
+        await Attack.deleteMany({});
+        // make all warzones unoccupied
+
+        await Warzone.updateMany(
+          {}, // Empty filter to match all documents
+          { $set: { "wars.$[].available": true } }
+        );
+
+        await distributeCountries(numTeams);
+
+      } catch (error) {
+        console.error("Error creating teams:", error);
+        result.errorMsg = "Error creating teams";
+        return res.json(result);
+      }
 
       result.success = true;
       return res.json(result);
@@ -294,6 +348,60 @@ class TeamController {
       return res.json(result);
     }
   }
+
+  static async updateTeamBalances() {
+
+    console.log("Updating team balances");
+
+    try {
+      const settings = await Settings.find();
+
+      if (!settings) {
+        console.error("Error fetching settings");
+        return;
+      }
+
+      const gameStatus = settings.find((setting) => setting.name === "Game Status");
+      if (gameStatus && gameStatus.value != "Active") {
+        console.log("Game is not active. Balances will not be updated.");
+        return;
+      }
+
+      const rate = settings.find((setting) => setting.name === "Rate ($/min) per country");
+      
+      if (!rate) {
+        console.error("Error fetching settings");
+        return;
+      }
+  
+      const rateValue = rate.value;
+      const countries = await Country.find();
+  
+      // Count the number of countries owned by each team
+      const teamCounts = countries.reduce((acc, country) => {
+        acc[country.teamNo] = (acc[country.teamNo] || 0) + 1;
+        return acc;
+      }, {});
+  
+      // Get all teams that need to be updated
+      const teamsToUpdate = await Team.find({ number: { $in: Object.keys(teamCounts) } });
+  
+      // Update team balances
+      const updatePromises = teamsToUpdate.map(team => {
+        team.balance += teamCounts[team.number] * rateValue;
+        return team.save();
+      });
+  
+      // Execute all update operations in parallel
+      await Promise.all(updatePromises);
+  
+      console.log("Team balances updated successfully");
+  
+    } catch (error) {
+      console.error("An error occurred while updating team balances:", error);
+    }
+  }
+  
 }
 
 export default TeamController;

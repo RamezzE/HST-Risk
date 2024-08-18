@@ -4,6 +4,7 @@ import MongoStore from "connect-mongo";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import mongooseConnectionPromise from "./db.js";
+import TeamController from "./controllers/team_controller.js";
 
 import admin_router from "./routes/admin.js";
 import country_router from "./routes/country.js";
@@ -49,6 +50,13 @@ mongooseConnectionPromise
     app.listen(process.env.PORT, () => {
       console.log("Server is up and running");
       console.log(`Listening on ${process.env.HOST}:${process.env.PORT}`);
+
+      // TeamController.updateTeamBalances();
+      //set interval to update team balances every 1 minutes
+      TeamController.updateTeamBalances();
+      setInterval(() => {
+        TeamController.updateTeamBalances();
+      }, 1000 * 60 * 1);
     });
   })
   .catch((err) => {
@@ -57,14 +65,15 @@ mongooseConnectionPromise
   });
 
 const insertSettings = async () => {
+
   try {
     const settings = [
-      { name: "No of Teams", value: "5", options: ["2", "3", "4", "5", "6", "7", "8", "9", "10"] },
+      // { name: "No of Teams", value: "5", options: ["2", "3", "4", "5", "6", "7", "8", "9", "10"] },
+      { name: "Money Rate per min for country", value: "2", options: [] },
     ];
-    
+
     const result = await Settings.insertMany(settings);
     console.log("Settings inserted:", result);
-
   } catch (error) {
     console.error("Error inserting settings:", error);
   }
@@ -73,7 +82,8 @@ const insertSettings = async () => {
 app.get("/", (req, res, next) => {
   res.send("Server is up and running. HST");
 
-  // insertSettings();
+  insertSettings();
+
 });
 
 app.use("/users", user_router);

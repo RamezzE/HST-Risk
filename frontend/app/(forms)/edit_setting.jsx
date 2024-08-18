@@ -15,58 +15,70 @@ const EditSetting = () => {
   const local = useLocalSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-
-
   console.log(local);
 
   // Ensure options is an array
   const [form, setForm] = useState({
-    name: local.name || '',
-    value: local.value || '',
+    name: local.name || "",
+    value: local.value || "",
     options: local.options ? JSON.parse(decodeURIComponent(local.options)) : [],
   });
 
   const validateEditSetting = () => {
-    if (form.name === '') {
-      Alert.alert('Error', 'Setting name is required');
-      return false;
+    const result = {
+      success: true,
+      errorMsg: "",
+    };
+  
+    // Check if form.value is empty
+    if (form.value.trim() === "") {
+      result.success = false;
+      result.errorMsg = `${form.name} value cannot be empty`;
+      return result;
     }
-
-    if (form.value === '') {
-      Alert.alert('Error', 'Setting value is required');
-      return false;
+  
+    // Check if form.options is an empty array
+    if (form.options.length === 0) {
+      // If options is empty, value must be a number
+      if (isNaN(form.value.trim())) {
+        result.success = false;
+        result.errorMsg = `${form.name} value must be a number`;
+        return result;
+      }
     }
-
-    // Check if value is a number and options is not empty
-
-    if (form.options != [] && isNaN(form.value.trim())) {
-      Alert.alert('Error', `${form.name} value must be a number`);
-      return false;
-    }
-  }
+  
+    // If form.options is not empty, value can be a string
+    result.success = true;
+    return result;
+  };
+  
 
   const submit = async () => {
     try {
       setIsSubmitting(true);
 
-      if (!validateEditSetting()) {
+      const validation = validateEditSetting();
+      console.log(validation);
+
+      if (validation.success == false) {
+        console.log("Validation failed");
         setIsSubmitting(false);
+        Alert.alert("Error", validation.errorMsg);
         return;
       }
 
       const result = await update_setting(form.name, form.value.trim());
 
       if (result.errorMsg) {
-        Alert.alert('Error', result.errorMsg);
+        Alert.alert("Error", result.errorMsg);
       } else {
-        Alert.alert('Success', 'Setting updated successfully');
-        router.navigate('/dashboard');
+        Alert.alert("Success", "Setting updated successfully");
+        router.navigate("/dashboard");
       }
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Could not update setting');
-    }
-    finally {
+      Alert.alert("Error", "Could not update setting");
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -95,7 +107,7 @@ const EditSetting = () => {
               style="w-[20vw] mb-4"
               size={32}
               onPress={() => {
-                router.navigate('/dashboard');
+                router.navigate("/dashboard");
               }}
             />
             <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">

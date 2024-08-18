@@ -13,7 +13,6 @@ import {
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { logout } from "../../api/user_functions";
 import { get_settings } from "../../api/settings_functions";
 import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
@@ -33,24 +32,26 @@ const Dashboard = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const insets = useSafeAreaInsets();
 
-  const { setIsLoggedIn } = useContext(GlobalContext);
+  const { setIsLoggedIn, Logout } = useContext(GlobalContext);
 
-  const logoutFunc = async () => {
-    try {
-      const result = await logout();
-      if (result.success) {
-        console.log("Logged out successfully");
-        // Handle successful logout
-      } else {
-        console.log(result.errorMsg);
-        setError(result.errorMsg);
-      }
-    } catch (err) {
-      setError("Failed to logout");
-    } finally {
-      setIsLoggedIn(false);
-      router.navigate("/");
-    }
+  const logoutFunc = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          onPress: () => {
+            Logout();
+            router.replace("/");
+          },
+        },
+      ]
+    );
   };
 
   const fetchData = async () => {
@@ -127,31 +128,40 @@ const Dashboard = () => {
     }, [])
   );
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item, index }) => {
     return (
-      <View
-        className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
-        style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
-      >
-        <View className="flex flex-col ">
-          <Text className="text-4xl font-montez">{item.name}</Text>
-          <Text className="text-3xl font-montez">Value: {item.value}</Text>
+      <>
+        <View
+          className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+          style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
+        >
+          <View className="flex flex-col w-[70%]">
+            <Text className="text-4xl font-montez">{item.name}</Text>
+            <Text className="text-3xl font-montez">Value: {item.value}</Text>
+          </View>
+  
+          <CustomButton
+            title="Edit"
+            handlePress={() => {
+              const jsonData = JSON.stringify(item.options);
+              router.navigate(
+                `/edit_setting?name=${item.name}&value=${item.value}&options=${jsonData}`
+              );
+            }}
+            containerStyles="w-1/4 h-2/3 mt-2"
+            textStyles="text-2xl"
+          />
         </View>
-
-        <CustomButton
-          title="Edit"
-          handlePress={() => {
-            const jsonData = JSON.stringify(item.options);
-            router.navigate(
-              `/edit_setting?name=${item.name}&value=${item.value}&options=${jsonData}`
-            );
-          }}
-          containerStyles="w-1/4 h-2/3 mt-2"
-          textStyles="text-2xl"
-        />
-      </View>
+  
+        {index === 3 && (
+          <Text className="text-2xl text-center text-black font-montez p-5">
+            New Game Settings
+          </Text>
+        )}
+      </>
     );
   };
+  
 
   if (isRefreshing) {
     return (

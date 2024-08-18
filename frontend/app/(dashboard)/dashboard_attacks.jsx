@@ -153,7 +153,7 @@ const DashboardAttacks = () => {
       className="p-3 my-2 rounded-md flex flex-row justify-between items-center"
       style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
     >
-      <View className="flex flex-col ">
+      <View className="flex flex-col w-[72.5%]">
         <Text className="text-4xl font-montez">
           Team {item.attacking_team}{item.attacking_subteam} vs Team {item.defending_team}{item.defending_subteam}
         </Text>

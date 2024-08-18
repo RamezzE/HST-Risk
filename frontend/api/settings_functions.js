@@ -18,7 +18,7 @@ export const get_settings = async () => {
 
 export const update_setting = async (name, value) => {
   try {
-    const response = await apiClient.put(`/${name}`, { value });
+    const response = await apiClient.put(`/update`, { name, value });
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "Error updating setting" };
