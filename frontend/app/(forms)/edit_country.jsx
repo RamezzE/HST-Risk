@@ -56,7 +56,7 @@ const EditCountry = () => {
     fetchData();
   }, []);
 
-  const insets = useSafeAreInsets();
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">

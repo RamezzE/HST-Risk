@@ -76,6 +76,14 @@ class TeamController {
     let subTeams = [];
 
     try {
+
+      const gameStatus = await Settings.findOne({ name: "Game Status" });
+
+      if (gameStatus && gameStatus.value === "Active") {
+        result.errorMsg = "Game is already active.\nPlease pause or end the game first.";
+        return res.json(result);
+      }
+
       await Team.deleteMany({});
       await SubTeam.deleteMany({});
 

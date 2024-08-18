@@ -72,6 +72,23 @@ const Dashboard = () => {
     }
   };
 
+  const createNewGameAlert = async () => {
+    Alert.alert(
+      "Create New Game",
+      `Are you sure you want to create a new game?\nThis will erase current teams and subteams data.`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Create New Game",
+          onPress: () => {createNewGame()},
+        },
+      ]
+    );
+  };
+
   const createNewGame = async () => {
     
     setIsSubmitting(true);    
@@ -85,7 +102,7 @@ const Dashboard = () => {
 
     try {
       const result = await create_teams(noOfTeams, noOfSubteams);
-
+      
       if (result.success) {
         Alert.alert("Success", "New Game Created Successfully");
         router.navigate("/teams")
@@ -196,7 +213,7 @@ const Dashboard = () => {
             
             <CustomButton
               title="New Game"
-              handlePress={() => {createNewGame()}}
+              handlePress={() => {createNewGameAlert()}}
               containerStyles="w-[45%] mt-2 mb-6 p-3"
               textStyles={"text-2xl"}
               isLoading={isSubmitting}

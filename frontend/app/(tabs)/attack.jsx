@@ -47,9 +47,9 @@ const Attack = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   const [attacks, setAttacks] = useState([]);
   const [attackCost, setAttackCost] = useState(0);
+  const [balance, setBalance] = useState(0);
 
   const insets = useSafeAreaInsets();
 
@@ -165,6 +165,10 @@ const Attack = () => {
     try {
       const teamsResult = await get_all_teams();
       setTeams(teamsResult);
+
+      const team = teamsResult.find((t) => t.number === parseInt(teamNo));
+      setBalance(team.balance);
+
     } catch (err) {
       console.log(err);
       setError("Failed to fetch teams data");
@@ -189,11 +193,12 @@ const Attack = () => {
     try {
       var result = validateAttack(form.your_zone, form.other_zone);
 
-      setForm({ ...form, your_zone: "", other_zone: "" });
-      setOtherZones([]);
+      // setForm({ ...form, your_zone: "", other_zone: "" });
+      // setOtherZones([]);
 
       if (!result.success) {
         Alert.alert("Attack Failed", result.errorMsg);
+        fetchData();
         return;
       }
 
@@ -211,7 +216,7 @@ const Attack = () => {
 
       console.log("Response", response);
 
-      setForm({ your_zone: "", other_zone: "" });
+      // setForm({ your_zone: "", other_zone: "" });
       router.navigate(`/warzone?attacking_zone=${zone_1}&defending_zone=${zone_2}&attacking_team=${team_1}&defending_team=${team_2}&attacking_subteam=${subteam}`);
     } catch (error) {
       Alert.alert(
@@ -299,7 +304,7 @@ const Attack = () => {
               <View className="flex flex-row justify-between mb-4">
                 <Text className="font-montez text-2xl">
                   Team money:{" "}
-                  {teams.find((t) => t.number === parseInt(teamNo)).balance}
+                  {balance}
                 </Text>
                 <Text className="font-montez text-2xl">Attack cost: {attackCost}</Text>
               </View>

@@ -30,6 +30,7 @@ const Warzone = () => {
 
   const [warzones, setWarzones] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const insets = useSafeAreaInsets()
 
   
@@ -67,6 +68,7 @@ const Warzone = () => {
 
     const randomWar =
       availableWars[Math.floor(Math.random() * availableWars.length)];
+      setIsSubmitting(true);
 
     try {
       const response = await attack(
@@ -93,6 +95,9 @@ const Warzone = () => {
     } catch (error) {
       Alert.alert("Error", "Error making attack request");
       console.log(error);
+    }
+    finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -165,6 +170,7 @@ const Warzone = () => {
                     handlePress={() => handlePress(warzone)}
                     containerStyles="p-3 mt-3"
                     textStyles={"text-2xl"}
+                    isLoading={isSubmitting}
                   />
                 </View>
               ))}

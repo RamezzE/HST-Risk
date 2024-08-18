@@ -14,6 +14,7 @@ import { get_admin_by_name } from "../../api/admin_functions";
 import {
   get_attacks_by_war,
   set_attack_result,
+  delete_attack,
 } from "../../api/attack_functions";
 import { router } from "expo-router";
 import BackButton from "../../components/BackButton";
@@ -51,6 +52,7 @@ const AdminHome = () => {
         setCurrentAttack({
           _id: attack._id,
           attacking_team: attack.attacking_team,
+          attacking_subteam: attack.attacking_subteam,
           defending_team: attack.defending_team,
           attacking_zone: attack.attacking_zone,
           defending_zone: attack.defending_zone,
@@ -62,6 +64,7 @@ const AdminHome = () => {
         setCurrentAttack({
           _id: "",
           attacking_team: "",
+          attacking_subteam: "",
           attacking_zone: "",
           defending_team: "",
           defending_zone: "",
@@ -87,13 +90,59 @@ const AdminHome = () => {
     router.replace("/");
   };
 
+  const deleteAttack = async (attack_id) => {
+    setIsSubmitting(true);
+
+    try {
+      const response = await delete_attack(attack_id);
+      if (response.success) {
+        Alert.alert("Success", "Attack cancelled successfully");
+        fetchData();
+      } else {
+        Alert.alert("Error", response.errorMsg);
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Failed to cancel attack");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const cancelAttackAlert = (attack_id) => {
+    Alert.alert(
+      "Cancel Attack",
+      `Are you SURE that you want to cancel this attack?\nThis action cannot be undone.\nYou are advised to wait for the timer to expire first.`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm Cancelling Attack",
+          onPress: async () => {
+            deleteAttack(attack_id);
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   const setAttackResultAlert = (attackWon) => {
     const team =
-      attackWon === "true" ? currentAttack.attacking_team : currentAttack.defending_team;
-  
+      attackWon === "true"
+        ? currentAttack.attacking_team
+        : currentAttack.defending_team;
+
+    const subteam =
+      attackWon === "true"
+        ? currentAttack.attacking_subteam
+        : "";
     Alert.alert(
       "Confirm",
-      `Are you SURE that team ${team} won?`,
+      `Are you SURE that team ${team}${subteam} won?`,
       [
         {
           text: "Cancel",
@@ -101,13 +150,14 @@ const AdminHome = () => {
         },
         {
           text: "Confirm",
-          onPress: async () => {setAttackResult(attackWon)},
-        }
+          onPress: async () => {
+            setAttackResult(attackWon);
+          },
+        },
       ],
       { cancelable: false }
     );
   };
-  
 
   const setAttackResult = async (attackWon) => {
     setIsSubmitting(true);
@@ -210,7 +260,8 @@ const AdminHome = () => {
                       Attack:
                     </Text>
                     <Text className="font-montez text-white text-4xl px-5 py-2 text-left">
-                      Team {currentAttack.attacking_team},{" "}
+                      Team {currentAttack.attacking_team}
+                      {currentAttack.attacking_subteam},{" "}
                       {currentAttack.attacking_zone}
                     </Text>
                     <Text></Text>
@@ -243,18 +294,14 @@ const AdminHome = () => {
                         title="Attack Won"
                         textStyles={"text-3xl"}
                         containerStyles="w-1/2 mr-1 bg-green-800 p-3"
-                        handlePress={() =>
-                          setAttackResultAlert("true")
-                        }
+                        handlePress={() => setAttackResultAlert("true")}
                         isLoading={isSubmitting}
                       />
                       <CustomButton
                         title="Defence Won"
                         textStyles={"text-3xl"}
-                        containerStyles="w-1/2 ml-1 bg-red-700 p-3"
-                        handlePress={() =>
-                          setAttackResultAlert("false")
-                        }
+                        containerStyles="w-1/2 ml-1 bg-red-800 p-3"
+                        handlePress={() => setAttackResultAlert("false")}
                         isLoading={isSubmitting}
                       />
                     </View>
@@ -262,7 +309,9 @@ const AdminHome = () => {
                       title="Cancel Attack"
                       containerStyles="mt-5 p-3"
                       textStyles={"text-3xl"}
-                      handlePress={() => {}}
+                      handlePress={() => {
+                        cancelAttackAlert(currentAttack._id);
+                      }}
                       isLoading={isSubmitting}
                     />
                   </View>

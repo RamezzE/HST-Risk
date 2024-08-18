@@ -84,37 +84,49 @@ class AttackController {
 
       // Calculate the difference between the current time and the cooldown start time
       const diff = currentTime - cooldown_start_time;
+      const diffInMinutes = diff / 60000;
 
-      if (diff < cooldown.value) {
-        const remainingTime = cooldown.value - diff;
-        const minutes = Math.floor(remainingTime / 60000);
-        const seconds = Math.floor((remainingTime % 60000) / 1000);
-      
+      if (diffInMinutes < cooldown.value) {
+        console.log(diffInMinutes);
+        const remainingTime = cooldown.value - diffInMinutes;
+        const minutes = parseInt(remainingTime);
+        const seconds = parseInt(Math.floor((remainingTime % 1) * 60));
+
+        console.log("Minutes:", minutes);
+        console.log("Seconds:", seconds);
+
         let timeMessage = "";
         if (minutes > 0) {
-          timeMessage += `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+          timeMessage += `${minutes} minute${minutes !== 1 ? "s" : ""}`;
         }
-      
+
         if (seconds > 0) {
           if (minutes > 0) {
             timeMessage += " and ";
           }
-          timeMessage += `${seconds} second${seconds !== 1 ? 's' : ''}`;
+          timeMessage += `${seconds} second${seconds !== 1 ? "s" : ""}`;
         }
-      
+
+        console.log("Time message:", timeMessage);
+
         result.errorMsg = `Attack cooldown not over yet\nRemaining: ${timeMessage}`;
         return res.json(result);
       }
 
-      const canAttack = await AttackController.check_if_subteam_can_attack(subteam.number, subteam.letter);
+      const canAttack = await AttackController.check_if_subteam_can_attack(
+        subteam.number,
+        subteam.letter
+      );
 
       if (!canAttack.success) {
         result.errorMsg = canAttack.errorMsg;
         return res.json(result);
       }
 
-      const canAttackCountry = await AttackController.check_country_if_involved_in_attack(zone_1);
-      const canDefendCountry = await AttackController.check_country_if_involved_in_attack(zone_2);
+      const canAttackCountry =
+        await AttackController.check_country_if_involved_in_attack(zone_1);
+      const canDefendCountry =
+        await AttackController.check_country_if_involved_in_attack(zone_2);
 
       if (!canAttackCountry.success) {
         result.errorMsg = canAttackCountry.errorMsg;
@@ -141,14 +153,11 @@ class AttackController {
       }
 
       if (attacking_team.balance < attack_cost.value) {
-        result.errorMsg = "Insufficient balance\nYou cannot afford the attack cost of " + attack_cost.value;
+        result.errorMsg =
+          "Insufficient balance\nYou cannot afford the attack cost of " +
+          attack_cost.value;
         return res.json(result);
       }
-
-
-
-
-
     } catch (error) {
       console.error("Server: Error checking attack cooldown:", error);
       result.errorMsg = "Server: Error checking attack cooldown";
@@ -160,6 +169,8 @@ class AttackController {
   }
 
   static async attack(req, res) {
+    console.log("Attack request received");
+
     const result = {
       success: false,
       errorMsg: "",
@@ -167,7 +178,8 @@ class AttackController {
 
     const attack_cost = await Settings.findOne({ name: "Attack Cost" });
 
-    const { zone_1, team_1, subteam_1, zone_2, team_2, warzone_id, war } = req.body;
+    const { zone_1, team_1, subteam_1, zone_2, team_2, warzone_id, war } =
+      req.body;
 
     const attacking_country = await Country.findOne({ name: zone_1 });
     const defending_country = await Country.findOne({ name: zone_2 });
@@ -230,37 +242,55 @@ class AttackController {
 
       // Calculate the difference between the current time and the cooldown start time
       const diff = currentTime - cooldown_start_time;
+      const diffInMinutes = diff / 60000;
 
-      if (diff < cooldown.value) {
-        const remainingTime = cooldown.value - diff;
-        const minutes = Math.floor(remainingTime / 60000);
-        const seconds = Math.floor((remainingTime % 60000) / 1000);
-      
+      if (diffInMinutes < cooldown.value) {
+        console.log(diffInMinutes);
+        const remainingTime = cooldown.value - diffInMinutes;
+        const minutes = parseInt(remainingTime);
+        const seconds = parseInt(Math.floor((remainingTime % 1) * 60));
+
+        console.log("Minutes:", minutes);
+        console.log("Seconds:", seconds);
+
         let timeMessage = "";
         if (minutes > 0) {
-          timeMessage += `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+          timeMessage += `${minutes} minute${minutes !== 1 ? "s" : ""}`;
         }
-      
+
         if (seconds > 0) {
           if (minutes > 0) {
             timeMessage += " and ";
           }
-          timeMessage += `${seconds} second${seconds !== 1 ? 's' : ''}`;
+          timeMessage += `${seconds} second${seconds !== 1 ? "s" : ""}`;
         }
-      
+
+        console.log("Time message:", timeMessage);
+
         result.errorMsg = `Attack cooldown not over yet\nRemaining: ${timeMessage}`;
         return res.json(result);
       }
+    } catch (error) {
+      console.error("Server: Error checking attack cooldown:", error);
+      result.errorMsg = "Server: Error checking attack cooldown";
+      return res.json(result);
+    }
 
-      const canAttack = await AttackController.check_if_subteam_can_attack(subteam.number, subteam.letter);
+    try {
+      const canAttack = await AttackController.check_if_subteam_can_attack(
+        subteam.number,
+        subteam.letter
+      );
 
       if (!canAttack.success) {
         result.errorMsg = canAttack.errorMsg;
         return res.json(result);
       }
 
-      const canAttackCountry = await AttackController.check_country_if_involved_in_attack(zone_1);
-      const canDefendCountry = await AttackController.check_country_if_involved_in_attack(zone_2);
+      const canAttackCountry =
+        await AttackController.check_country_if_involved_in_attack(zone_1);
+      const canDefendCountry =
+        await AttackController.check_country_if_involved_in_attack(zone_2);
 
       if (!canAttackCountry.success) {
         result.errorMsg = canAttackCountry.errorMsg;
@@ -271,7 +301,6 @@ class AttackController {
         result.errorMsg = canDefendCountry.errorMsg;
         return res.json(result);
       }
-
 
       if (!attack_cost) {
         result.errorMsg = "Server: Attack cost setting not found";
@@ -286,10 +315,11 @@ class AttackController {
       }
 
       if (attacking_team.balance < attack_cost.value) {
-        result.errorMsg = "Insufficient balance\nYou cannot afford the attack cost of " + attack_cost.value;
+        result.errorMsg =
+          "Insufficient balance\nYou cannot afford the attack cost of " +
+          attack_cost.value;
         return res.json(result);
       }
-
     } catch (error) {
       console.error("Server: Error checking attack cooldown:", error);
       result.errorMsg = "Server: Error checking attack cooldown";
@@ -341,7 +371,6 @@ class AttackController {
             // Deduct the attack cost from the attacking team's balance
             attacking_team.balance -= attack_cost.value;
             await attacking_team.save();
-
           } catch (error) {
             console.error("Error updating war availability:", error);
           }
@@ -366,7 +395,10 @@ class AttackController {
     };
 
     try {
-      const attacks = await Attack.find({ attacking_team: team, attacking_subteam: subteam });
+      const attacks = await Attack.find({
+        attacking_team: team,
+        attacking_subteam: subteam,
+      });
 
       if (attacks.length === 0) {
         result.success = true;
@@ -379,13 +411,11 @@ class AttackController {
         result.errorMsg = `You are already attacking ${attacks[0].defending_zone}`;
         return result;
       }
-
     } catch (error) {
       console.error("Server: Error checking if subteam can attack:", error);
       result.errorMsg = "Server: Error checking if subteam can attack";
       return result;
     }
-
   }
 
   static async check_country_if_involved_in_attack(zone) {
@@ -408,10 +438,13 @@ class AttackController {
         result.errorMsg = `${zone} is already involved in an attack`;
         return result;
       }
-
     } catch (error) {
-      console.error("Server: Error checking if country is involved in attack:", error);
-      result.errorMsg = "Server: Error checking if country is involved in attack";
+      console.error(
+        "Server: Error checking if country is involved in attack:",
+        error
+      );
+      result.errorMsg =
+        "Server: Error checking if country is involved in attack";
       return result;
     }
   }
@@ -507,6 +540,19 @@ class AttackController {
       const country2 = await Country.findOne({ name: loserZone });
       country2.teamNo = winnerTeam;
       await country2.save();
+
+      const subteam_username =
+        attack.attacking_team.toString() + attack.attacking_subteam.toString();
+
+      const subteam = await SubTeam.findOne({ username: subteam_username });
+
+      if (!subteam) {
+        result.errorMsg = "Subteam not found";
+        return res.json(result);
+      }
+
+      subteam.cooldown_start_time = new Date();
+      await subteam.save();
 
       await Attack.deleteOne({ _id: attack_id })
         .then(() => {
