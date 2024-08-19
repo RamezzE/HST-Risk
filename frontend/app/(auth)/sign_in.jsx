@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
-import { login } from "../../api/user_functions";
+import { addPushToken, login } from "../../api/user_functions";
 
 import { useContext } from "react";
 
@@ -35,7 +35,7 @@ const SignIn = () => {
     password: "",
   });
 
-  const { setName, setTeamNo, setSubteam } = useContext(GlobalContext);
+  const { setName, setTeamNo, setSubteam, expoPushToken } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,6 +59,10 @@ const SignIn = () => {
           setTeamNo(response.subteam.number);
           setName(response.subteam.name);
           setSubteam(response.subteam.letter);
+
+
+          await addPushToken(expoPushToken, response.subteam.number);
+
           router.replace("/home");
           return;
         }

@@ -1,6 +1,9 @@
 import Admin from "../models/admin.js";
 import SuperAdmin from "../models/super_admin.js";
 import SubTeam from "../models/subteam.js";
+import Team from "../models/team.js";
+
+import fetch from "node-fetch";
 
 function isNumberString(value) {
   return /^\d+$/.test(value);
@@ -169,6 +172,150 @@ class UserController {
     }
     response.success = false;
     return res.json(response);
+  }
+
+  static async addPushToken(req, res) {
+    try {
+      const response = {
+        success: false,
+        errorMsg: "",
+      };
+
+      const { token, teamNo } = req.body;
+
+      console.log("Token backend: ", token);
+      // check if token is a number
+      if (token.length == 0) {
+        response.errorMsg = "Invalid token";
+        return res.json(response);
+      }
+
+      const teams = await Team.find({});
+
+      // check expoPushTokens array in all teams if token already exists
+
+      for (const team of teams) {
+        if (team.expoPushTokens.includes(token)) {
+          if (team.number == teamNo) return res.json({ success: true });
+
+          if (team.number != teamNo) {
+            // remove token
+            const index = team.expoPushTokens.indexOf(token);
+            team.expoPushTokens.splice(index, 1);
+            await team.save();
+            break;
+          }
+        }
+      }
+
+      // add token to team
+      // filter from teams
+      const team = teams.filter((team) => team.number == teamNo)[0];
+      team.expoPushTokens.push(token);
+      await team.save();
+
+      response.success = true;
+      return res.json(response);
+    } catch (error) {
+      console.log(error);
+      return res.json({ success: false, errorMsg: "Failed to input token" });
+    }
+  }
+
+  static async deletePushToken(req, res) {
+    try {
+      const response = {
+        success: false,
+        errorMsg: "",
+      };
+
+      const { token, teamNo } = req.body;
+
+      console.log("Token backend: ", token);
+      // check if token is a number
+      if (token.length == 0) {
+        response.errorMsg = "Invalid token";
+        return res.json(response);
+      }
+
+      const teams = await Team.find({});
+
+      // check expoPushTokens array in all teams if token already exists
+
+      for (const team of teams) {
+        if (team.expoPushTokens.includes(token)) {
+          if (team.number == teamNo) {
+            // remove token
+            const index = team.expoPushTokens.indexOf(token);
+            team.expoPushTokens.splice(index, 1);
+            await team.save();
+            return;
+          }
+        }
+      }
+
+      response.success = true;
+      return res.json(response);
+    } catch (error) {
+      console.log(error);
+      return res.json({ success: false, errorMsg: "Failed to delete token" });
+    }
+  }
+
+  static async sendBatchPushNotifications(tokensArray, messagesArray) {
+    if (!Array.isArray(tokensArray) || !Array.isArray(messagesArray)) {
+      console.log(
+        "Invalid input: Both tokensArray and messagesArray must be arrays."
+      );
+      return;
+    }
+
+    if (tokensArray.length !== messagesArray.length) {
+      console.log(
+        "Mismatch: The number of token arrays must match the number of messages."
+      );
+      return;
+    }
+
+    const requests = tokensArray.map((tokens, index) => {
+      const messageBody = messagesArray[index];
+
+      // Constructing the messages array for this batch
+      const messages = tokens.map((token) => ({
+        to: token,
+        sound: "default", // Optional: Adjust sound as needed
+        body: messageBody,
+        badge: 1, // Optional: Set badge number, adjust or remove as needed
+      }));
+
+      // Sending the request for this batch
+      return fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          host: "exp.host",
+          accept: "application/json",
+          "accept-encoding": "gzip, deflate",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(messages),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(
+            `Push notification response for message ${index + 1}:`,
+            data
+          );
+        })
+        .catch((error) => {
+          console.error(
+            `Error sending push notifications for message ${index + 1}:`,
+            error
+          );
+        });
+    });
+
+    // Wait for all requests to finish
+    await Promise.all(requests);
   }
 }
 

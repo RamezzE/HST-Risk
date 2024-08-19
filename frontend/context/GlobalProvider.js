@@ -12,10 +12,12 @@ export const GlobalProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [subteam, setSubteam] = useState('')
   const [userMode, setUserMode] = useState('');
+  const [expoPushToken, setExpoPushToken] = useState('');
 
   const Logout = async () => {
     try {
       setName('');
+      setSubteam('');
       setTeamNo('');
       setAttackData({});
       setIsLoggedIn(false);
@@ -25,7 +27,7 @@ export const GlobalProvider = ({ children }) => {
   };
 
   return (
-    <GlobalContext.Provider value={{ name, teamNo, attackData, isLoggedIn, userMode, subteam, setName, setTeamNo, setAttackData, setIsLoggedIn, setUserMode, setSubteam, Logout }}>
+    <GlobalContext.Provider value={{ name, teamNo, attackData, isLoggedIn, userMode, subteam, expoPushToken, setExpoPushToken, setName, setTeamNo, setAttackData, setIsLoggedIn, setUserMode, setSubteam, Logout }}>
       {children}
     </GlobalContext.Provider>
   );

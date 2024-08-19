@@ -7,6 +7,8 @@ import Settings from "../models/setting.js";
 import SubTeam from "../models/subteam.js";
 import Team from "../models/team.js";
 
+import UserController from './user_controller.js';
+
 const client = new MongoClient(process.env.MONGO_URI, {});
 
 class AttackController {
@@ -116,7 +118,7 @@ class AttackController {
       const canAttack = await AttackController.check_if_subteam_can_attack(
         subteam.number,
         subteam.letter,
-        real_team_2,
+        real_team_2
       );
 
       if (!canAttack.success) {
@@ -284,7 +286,7 @@ class AttackController {
       const canAttack = await AttackController.check_if_subteam_can_attack(
         subteam.number,
         subteam.letter,
-        real_team_2,
+        real_team_2
       );
 
       if (!canAttack.success) {
@@ -376,8 +378,27 @@ class AttackController {
             // Deduct the attack cost from the attacking team's balance
             attacking_team.balance -= attack_cost.value;
             await attacking_team.save();
+
+            const defending_team = await Team.findOne({ number: real_team_2 });
+
+            if (!defending_team) {
+              result.errorMsg = "Defending team not found";
+              return res.json(result);
+            }
+
+            await UserController.sendBatchPushNotifications(
+              [attacking_team.expoPushTokens, defending_team.expoPushTokens],
+              [
+                `${team_1}${subteam_1} is attacking ${real_team_2}, ${zone_2} in ${war}`,
+                `You are under attack!\n${zone_1} is under attack by ${team_1}${subteam_1} in ${war}`,
+              ]
+            );
+
           } catch (error) {
-            console.error("Error updating war availability:", error);
+            console.error(
+              "Error updating war availability or pushing tokens:",
+              error
+            );
           }
         })
         .catch((e) => {
@@ -405,32 +426,35 @@ class AttackController {
         // attacking_subteam: subteam,
       });
 
-      const subteam_attacks = attacks.filter((attack) => attack.attacking_subteam === subteam);
+      const subteam_attacks = attacks.filter(
+        (attack) => attack.attacking_subteam === subteam
+      );
 
       if (subteam_attacks.length === 0) {
-
-        const attack_limit = await Settings.findOne({ name: "Max concurrent attacks per team" });
+        const attack_limit = await Settings.findOne({
+          name: "Max concurrent attacks per team",
+        });
 
         if (!attack_limit) {
           result.errorMsg = "Attack limit setting not found";
           return result;
         }
 
-        
-
         if (attacks.length >= parseInt(attack_limit.value)) {
           result.errorMsg = `Your team has reached the maximum attack limit of ${attack_limit.value}`;
           return result;
         }
 
-        const defence_limit = await Settings.findOne({ name: "Max concurrent defences per team" });
+        const defence_limit = await Settings.findOne({
+          name: "Max concurrent defences per team",
+        });
 
         if (!defence_limit) {
           result.errorMsg = "Defence limit setting not found";
           return result;
         }
 
-        console.log(otherTeam)
+        console.log(otherTeam);
 
         const defence_attacks = await Attack.find({
           defending_team: otherTeam,
@@ -458,12 +482,6 @@ class AttackController {
         result.errorMsg = `You are already attacking ${attacks[0].defending_zone}`;
         return result;
       }
-
-
-
-
-      
-
     } catch (error) {
       console.error("Error checking if subteam can attack:", error);
       result.errorMsg = "Error checking if subteam can attack";
@@ -492,12 +510,8 @@ class AttackController {
         return result;
       }
     } catch (error) {
-      console.error(
-        "Error checking if country is involved in attack:",
-        error
-      );
-      result.errorMsg =
-        "Error checking if country is involved in attack";
+      console.error("Error checking if country is involved in attack:", error);
+      result.errorMsg = "Error checking if country is involved in attack";
       return result;
     }
   }

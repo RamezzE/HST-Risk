@@ -19,6 +19,11 @@ const teamSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    expoPushTokens: {
+        type: [String],
+        default: [],
+        required: true
+    },
 }, {
     timestamps: true
 })

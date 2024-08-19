@@ -8,6 +8,7 @@ import DottedLine from "../../components/DottedLine";
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
+import { deletePushToken } from "../../api/user_functions";
 import { router } from "expo-router";
 
 import { GlobalContext } from "../../context/GlobalProvider";
@@ -28,7 +29,7 @@ const Home = () => {
   const [attacks, setAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
   const insets = useSafeAreaInsets();
-  const { name, teamNo, subteam } = useContext(GlobalContext);
+  const { name, teamNo, subteam, Logout, expoPushToken } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -64,8 +65,6 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const { Logout } = useContext(GlobalContext);
-
   const logoutFunc = () => {
     Alert.alert(
       "Logout",
@@ -77,7 +76,8 @@ const Home = () => {
         },
         {
           text: "Logout",
-          onPress: () => {
+          onPress: async () => {
+            deletePushToken(expoPushToken, teamNo);
             Logout();
             router.replace("/");
           },

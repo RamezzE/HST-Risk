@@ -1,12 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { GlobalProvider } from "../context/GlobalProvider";
 import { StyleSheet } from "react-native";
-
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+
 const RootLayout = () => {
+
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),

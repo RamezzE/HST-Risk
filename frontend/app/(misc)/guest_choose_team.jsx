@@ -19,9 +19,10 @@ import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
 
 import { get_all_teams } from "../../api/team_functions";
+import { addPushToken } from "../../api/user_functions";
 
 const GuestChooseTeam = () => {
-  const { setTeamNo, setSubteam } = useContext(GlobalContext);
+  const { setTeamNo, setSubteam, expoPushToken } = useContext(GlobalContext);
   const [teams, setTeams] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
 
@@ -46,9 +47,10 @@ const GuestChooseTeam = () => {
     fetchData();
   }, []);
   
-  const handleTeamSelection = (teamNo) => {
+  const handleTeamSelection = async (teamNo) => {
     setTeamNo(teamNo);
     setSubteam('')
+    await addPushToken(expoPushToken, teamNo);
     router.replace("/guest_home");
   };
 
@@ -97,7 +99,7 @@ const GuestChooseTeam = () => {
               <CustomButton
                 key={team.number}
                 title={`${team.number} - ${team.name}`}
-                handlePress={() => handleTeamSelection(team.number)}
+                handlePress={async () => await handleTeamSelection(team.number)}
                 containerStyles="my-4 p-4"
                 textStyles="text-2xl text-center text-white"
               />

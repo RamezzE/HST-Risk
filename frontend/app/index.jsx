@@ -2,6 +2,9 @@ import { Text, View, Image, ImageBackground } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import * as Notifications from "expo-notifications";
+import { Platform } from "react-native";
+
 import CustomButton from "../components/CustomButton";
 
 import { useContext, useState, useEffect } from "react";
@@ -9,7 +12,6 @@ import { GlobalContext } from "../context/GlobalProvider";
 import { is_logged_in } from "../api/user_functions";
 
 import { images } from "../constants";
-
 
 export default function App() {
   const {
@@ -20,7 +22,49 @@ export default function App() {
     userMode,
     setUserMode,
     setSubteam,
+    setExpoPushToken
   } = useContext(GlobalContext);
+
+  const registerForPushNotificationsAsync = async () => {
+    let token;
+
+    // Check and request for permissions
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!");
+      return;
+    }
+
+    // Get the token that can be used to send notifications to this device
+    try {
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      setExpoPushToken(token);
+    } catch (err) {
+      console.log("Error getting token: ", err);
+    }
+
+    console.log("Token: ", token);
+
+    // If using a physical device, configure for push notifications
+    if (Platform.OS === "android") {
+      Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
+    }
+
+    return token;
+  };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const insets = useSafeAreaInsets();
@@ -96,7 +140,11 @@ export default function App() {
       checkLoginStatus();
     }
   }, [isSubmitting]);
-  
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
+
   const checkLoggedIn = () => {
     setIsSubmitting(true);
   };
@@ -107,8 +155,13 @@ export default function App() {
   };
 
   return (
-    <View className=" h-full bg-black"
-    style={{paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}}
+    <View
+      className=" h-full bg-black"
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
     >
       <ImageBackground
         source={images.background}
@@ -124,7 +177,6 @@ export default function App() {
                 <Text className="text-5xl text-black font-montez p-2 text-center">
                   Camp Domination
                 </Text>
-
               </View>
 
               <View className="w-full flex flex-row justify-evenly text- items-center">
@@ -146,11 +198,15 @@ export default function App() {
             </View>
 
             <View>
-              <Image source={images.papyrus_globe} className= "h-48" resizeMode="contain"/>
+              <Image
+                source={images.papyrus_globe}
+                className="h-48"
+                resizeMode="contain"
+              />
             </View>
             <Text className="text-black text-2xl text-center font-montez mt-3 ">
-                  by Helio Sports Team
-                </Text>
+              by Helio Sports Team
+            </Text>
           </View>
         </View>
         <StatusBar backgroundColor="#000" style="light" />

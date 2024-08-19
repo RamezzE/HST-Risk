@@ -28,7 +28,7 @@ const Home = () => {
   const [attacks, setAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
   const insets = useSafeAreaInsets();
-  const { name, teamNo, subteam } = useContext(GlobalContext);
+  const { name, teamNo, subteam, expoPushToken } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -66,7 +66,8 @@ const Home = () => {
 
   const { Logout } = useContext(GlobalContext);
 
-  const logoutFunc = () => {
+  const logoutFunc = async () => {
+    deletePushToken(expoPushToken, teamNo);
     Logout();
     router.replace("/");
   };
@@ -141,7 +142,7 @@ const Home = () => {
         style={{ flex: 1, resizeMode: "cover" }}
       >
         <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
-          <BackButton style="w-[20vw]" size={32} onPress={() => logoutFunc()} />
+          <BackButton style="w-[20vw]" size={32} onPress={async () => await logoutFunc()} />
           <Text className="font-montez text-center text-5xl m-4 pt-2">
             {name}, Team {teamNo}
             {subteam}

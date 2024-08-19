@@ -39,3 +39,21 @@ export const is_logged_in = async () => {
     return { errorMsg: error.response?.data || "Could not check login status" };
   }
 };
+
+export const addPushToken = async (token, teamNo) => {
+  try {
+    const response = await apiClient.post(`/pushToken`, { token, teamNo });
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "Could not add push token" };
+  }
+}
+
+export const deletePushToken = async (token, teamNo) => {
+  try {
+    const response = await apiClient.delete(`/pushToken`, { data: { token, teamNo } });
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "Could not delete push token" };
+  }
+}
