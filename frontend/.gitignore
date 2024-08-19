@@ -26,3 +26,4 @@ android/
 .idea/
 
 tsconfig.json
+hst-risk-firebase-key.json

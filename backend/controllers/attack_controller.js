@@ -388,9 +388,10 @@ class AttackController {
 
             await UserController.sendBatchPushNotifications(
               [attacking_team.expoPushTokens, defending_team.expoPushTokens],
+              [`Your team is attacking!`, "Your team is under attack!!"],
               [
-                `${team_1}${subteam_1} is attacking ${real_team_2}, ${zone_2} in ${war}`,
-                `You are under attack!\n${zone_1} is under attack by ${team_1}${subteam_1} in ${war}`,
+                `Your team ${team_1}${subteam_1} is attacking ${real_team_2}'s ${zone_2} in ${war}\nHead there now!`,
+                `Your ${zone_1} is under attack by team${team_1}${subteam_1} in ${war}!\nHead there now!`,
               ]
             );
 

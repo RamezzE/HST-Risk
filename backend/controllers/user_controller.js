@@ -3,12 +3,6 @@ import SuperAdmin from "../models/super_admin.js";
 import SubTeam from "../models/subteam.js";
 import Team from "../models/team.js";
 
-import fetch from "node-fetch";
-
-function isNumberString(value) {
-  return /^\d+$/.test(value);
-}
-
 class UserController {
   static async login(req, res) {
     const response = {
@@ -262,60 +256,86 @@ class UserController {
     }
   }
 
-  static async sendBatchPushNotifications(tokensArray, messagesArray) {
-    if (!Array.isArray(tokensArray) || !Array.isArray(messagesArray)) {
-      console.log(
-        "Invalid input: Both tokensArray and messagesArray must be arrays."
+  static async retryFetchRequest(requestFn, retries, backoff) {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const response = await requestFn();
+        return response;
+      } catch (error) {
+        console.error(`Attempt ${i + 1} failed: ${error.message}`);
+        if (i < retries - 1) {
+          await new Promise((resolve) => setTimeout(resolve, backoff));
+        } else {
+          throw error;
+        }
+      }
+    }
+  }
+
+  static async sendBatchPushNotifications(
+    tokensArray,
+    titlesArray,
+    messagesArray
+  ) {
+    if (
+      !Array.isArray(tokensArray) ||
+      !Array.isArray(messagesArray) ||
+      !Array.isArray(titlesArray)
+    ) {
+      console.error(
+        "Invalid input: tokensArray, messagesArray, and titlesArray must all be arrays."
       );
       return;
     }
 
-    if (tokensArray.length !== messagesArray.length) {
-      console.log(
-        "Mismatch: The number of token arrays must match the number of messages."
+    if (
+      tokensArray.length !== messagesArray.length ||
+      tokensArray.length !== titlesArray.length
+    ) {
+      console.error(
+        "Mismatch: The number of token arrays must match the number of messages and titles."
       );
       return;
     }
 
-    const requests = tokensArray.map((tokens, index) => {
+    // Prepare a single array of messages to be sent in one request
+    const notifications = tokensArray.flatMap((tokens, index) => {
       const messageBody = messagesArray[index];
+      const notificationTitle = titlesArray[index];
 
-      // Constructing the messages array for this batch
-      const messages = tokens.map((token) => ({
+      return tokens.map((token) => ({
         to: token,
-        sound: "default", // Optional: Adjust sound as needed
+        sound: "default",
+        title: notificationTitle, // Customized title for each notification
         body: messageBody,
-        badge: 1, // Optional: Set badge number, adjust or remove as needed
+        // data: { someData: "goes here" }, // You can customize this
       }));
-
-      // Sending the request for this batch
-      return fetch("https://exp.host/--/api/v2/push/send", {
-        method: "POST",
-        headers: {
-          host: "exp.host",
-          accept: "application/json",
-          "accept-encoding": "gzip, deflate",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(messages),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(
-            `Push notification response for message ${index + 1}:`,
-            data
-          );
-        })
-        .catch((error) => {
-          console.error(
-            `Error sending push notifications for message ${index + 1}:`,
-            error
-          );
-        });
     });
 
-    // Wait for all requests to finish
-    await Promise.all(requests);
+    // Send all notifications in a single request
+    try {
+      const response = await this.retryFetchRequest(
+        () =>
+          fetch("https://exp.host/--/api/v2/push/send", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Accept-Encoding": "gzip, deflate",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(notifications),
+          }),
+        3, // Number of retries
+        2000 // Backoff time in milliseconds
+      );
+
+      console.log(
+        "Push notifications sent successfully:",
+        await response.json()
+      );
+    } catch (error) {
+      console.error("Error sending push notifications:", error.message);
+    }
   }
 }
 

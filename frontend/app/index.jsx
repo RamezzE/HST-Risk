@@ -1,17 +1,24 @@
-import { Text, View, Image, ImageBackground } from "react-native";
+import { useState, useEffect, useRef, useContext } from 'react';
+import { Text, View, Image, ImageBackground, Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
 import * as Notifications from "expo-notifications";
-import { Platform } from "react-native";
-
+import * as Device from 'expo-device';
+import { router } from "expo-router";
+import Constants from 'expo-constants';
 import CustomButton from "../components/CustomButton";
-
-import { useContext, useState, useEffect } from "react";
 import { GlobalContext } from "../context/GlobalProvider";
 import { is_logged_in } from "../api/user_functions";
-
 import { images } from "../constants";
+
+// Configure notification handler
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function App() {
   const {
@@ -25,49 +32,62 @@ export default function App() {
     setExpoPushToken
   } = useContext(GlobalContext);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  const insets = useSafeAreaInsets();
+
   const registerForPushNotificationsAsync = async () => {
     let token;
 
-    // Check and request for permissions
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-
-    if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
-      return;
-    }
-
-    // Get the token that can be used to send notifications to this device
-    try {
-      token = (await Notifications.getExpoPushTokenAsync()).data;
-      setExpoPushToken(token);
-    } catch (err) {
-      console.log("Error getting token: ", err);
-    }
-
-    console.log("Token: ", token);
-
-    // If using a physical device, configure for push notifications
-    if (Platform.OS === "android") {
-      Notifications.setNotificationChannelAsync("default", {
-        name: "default",
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
+        lightColor: '#FF231F7C',
       });
     }
 
-    return token;
-  };
+    if (Device.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const insets = useSafeAreaInsets();
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+
+      const projectId =
+        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+
+      if (!projectId) {
+        alert('Project ID not found');
+        return;
+      }
+
+      try {
+        const pushTokenString = (
+          await Notifications.getExpoPushTokenAsync({
+            projectId,
+          })
+        ).data;
+        console.log("Expo Push Token: ", pushTokenString);
+        setExpoPushToken(pushTokenString);
+        return pushTokenString;
+      } catch (error) {
+        alert(`Error getting token: ${error}`);
+      }
+    } else {
+      alert('Must use physical device for push notifications');
+    }
+  };
 
   const checkLoginStatus = async () => {
     if (!isSubmitting) {
@@ -75,22 +95,18 @@ export default function App() {
     }
     try {
       if (isLoggedIn) {
-        console.log("isLoggedIn");
         if (userMode === "subteam") {
           router.navigate("/home");
-          console.log("Team");
           return;
         }
 
         if (userMode === "admin") {
           router.navigate("/admin_home");
-          console.log("Admin");
           return;
         }
 
         if (userMode === "super_admin") {
           router.navigate("/dashboard");
-          console.log("Super Admin");
           return;
         }
       }
@@ -98,7 +114,6 @@ export default function App() {
       const response = await is_logged_in();
 
       if (!response.success) {
-        console.log("Not success");
         router.navigate("/sign_in");
         return;
       }
@@ -142,7 +157,27 @@ export default function App() {
   }, [isSubmitting]);
 
   useEffect(() => {
+    // Register for push notifications and save the token
     registerForPushNotificationsAsync();
+
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    // This listener is fired whenever a user interacts with a notification (taps on it)
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      if (notificationListener.current) {
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      }
+      if (responseListener.current) {
+        Notifications.removeNotificationSubscription(responseListener.current);
+      }
+    };
   }, []);
 
   const checkLoggedIn = () => {
