@@ -231,7 +231,7 @@ class TeamController {
       const team = await Team.findOne({ number });
 
       if (!team) {
-        result.errorMsg = `Server: Team ${number} not found`;
+        result.errorMsg = `Team ${number} not found`;
         return res.json(result);
       }
 
@@ -242,7 +242,7 @@ class TeamController {
       result.success = true;
       return res.json(result);
     } catch (error) {
-      result.errorMsg = "Server: Error updating team";
+      result.errorMsg = "Error updating team";
       console.log(error);
       return res.json(result);
     }
@@ -260,7 +260,7 @@ class TeamController {
       const team = await Team.findOne({ number });
 
       if (!team) {
-        result.errorMsg = `Server: Team ${number} not found`;
+        result.errorMsg = `Team ${number} not found`;
         return res.json(result);
       }
 
@@ -269,7 +269,7 @@ class TeamController {
       result.success = true;
       return res.json(result);
     } catch (error) {
-      result.errorMsg = "Server: Error deleting team";
+      result.errorMsg = "Error deleting team";
       console.log(error);
       return res.json(result);
     }

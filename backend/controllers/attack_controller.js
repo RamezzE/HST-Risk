@@ -65,7 +65,7 @@ class AttackController {
     try {
       const cooldown = await Settings.findOne({ name: "Attack Cooldown" });
       if (!cooldown) {
-        result.errorMsg = "Server: Attack cooldown setting not found";
+        result.errorMsg = "Attack cooldown setting not found";
         return res.json(result);
       }
 
@@ -142,7 +142,7 @@ class AttackController {
       const attack_cost = await Settings.findOne({ name: "Attack Cost" });
 
       if (!attack_cost) {
-        result.errorMsg = "Server: Attack cost setting not found";
+        result.errorMsg = "Attack cost setting not found";
         return res.json(result);
       }
 
@@ -160,8 +160,8 @@ class AttackController {
         return res.json(result);
       }
     } catch (error) {
-      console.error("Server: Error checking attack cooldown:", error);
-      result.errorMsg = "Server: Error checking attack cooldown";
+      console.error("Error checking attack cooldown:", error);
+      result.errorMsg = "Error checking attack cooldown";
       return res.json(result);
     }
 
@@ -224,7 +224,7 @@ class AttackController {
     try {
       const cooldown = await Settings.findOne({ name: "Attack Cooldown" });
       if (!cooldown) {
-        result.errorMsg = "Server: Attack cooldown setting not found";
+        result.errorMsg = "Attack cooldown setting not found";
         return res.json(result);
       }
 
@@ -272,8 +272,8 @@ class AttackController {
         return res.json(result);
       }
     } catch (error) {
-      console.error("Server: Error checking attack cooldown:", error);
-      result.errorMsg = "Server: Error checking attack cooldown";
+      console.error("Error checking attack cooldown:", error);
+      result.errorMsg = "Error checking attack cooldown";
       return res.json(result);
     }
 
@@ -308,7 +308,7 @@ class AttackController {
       }
 
       if (!attack_cost) {
-        result.errorMsg = "Server: Attack cost setting not found";
+        result.errorMsg = "Attack cost setting not found";
         return res.json(result);
       }
 
@@ -326,8 +326,8 @@ class AttackController {
         return res.json(result);
       }
     } catch (error) {
-      console.error("Server: Error checking attack cooldown:", error);
-      result.errorMsg = "Server: Error checking attack cooldown";
+      console.error("Error checking attack cooldown:", error);
+      result.errorMsg = "Error checking attack cooldown";
       return res.json(result);
     }
 
@@ -387,8 +387,8 @@ class AttackController {
       result.success = true;
       return res.json(result);
     } catch (error) {
-      console.error("Server: Error making attack:", error);
-      result.errorMsg = "Server: Error making attack";
+      console.error("Error making attack:", error);
+      result.errorMsg = "Error making attack";
       return res.json(result);
     }
   }
@@ -412,7 +412,7 @@ class AttackController {
         const attack_limit = await Settings.findOne({ name: "Max concurrent attacks per team" });
 
         if (!attack_limit) {
-          result.errorMsg = "Server: Attack limit setting not found";
+          result.errorMsg = "Attack limit setting not found";
           return result;
         }
 
@@ -426,7 +426,7 @@ class AttackController {
         const defence_limit = await Settings.findOne({ name: "Max concurrent defences per team" });
 
         if (!defence_limit) {
-          result.errorMsg = "Server: Defence limit setting not found";
+          result.errorMsg = "Defence limit setting not found";
           return result;
         }
 
@@ -438,7 +438,7 @@ class AttackController {
         });
 
         if (!defence_attacks) {
-          result.errorMsg = "Server: Error getting defence attacks";
+          result.errorMsg = "Error getting defence attacks";
           return result;
         }
 
@@ -465,8 +465,8 @@ class AttackController {
       
 
     } catch (error) {
-      console.error("Server: Error checking if subteam can attack:", error);
-      result.errorMsg = "Server: Error checking if subteam can attack";
+      console.error("Error checking if subteam can attack:", error);
+      result.errorMsg = "Error checking if subteam can attack";
       return result;
     }
   }
@@ -493,11 +493,11 @@ class AttackController {
       }
     } catch (error) {
       console.error(
-        "Server: Error checking if country is involved in attack:",
+        "Error checking if country is involved in attack:",
         error
       );
       result.errorMsg =
-        "Server: Error checking if country is involved in attack";
+        "Error checking if country is involved in attack";
       return result;
     }
   }
@@ -526,8 +526,8 @@ class AttackController {
       result.success = true;
       return result;
     } catch (error) {
-      console.error("Server: Error checking duplicate attack:", error);
-      result.errorMsg = "Server: Error checking duplicate attack";
+      console.error("Error checking duplicate attack:", error);
+      result.errorMsg = "Error checking duplicate attack";
       return result;
     } finally {
       await client.close();
@@ -557,9 +557,9 @@ class AttackController {
       result.errorMsg = "No attacks found";
       return res.json(result);
     } catch (error) {
-      console.error("Server: Error getting attacks by war:", error);
+      console.error("Error getting attacks by war:", error);
       result.success = false;
-      result.errorMsg = "Server: Error getting attacks by war";
+      result.errorMsg = "Error getting attacks by war";
       return res.json(result);
     }
   }
@@ -651,8 +651,8 @@ class AttackController {
         console.log("War not found in the warzone.");
       }
     } catch (error) {
-      console.error("Server: Error setting attack result:", error);
-      result.errorMsg = "Server: Error setting attack result";
+      console.error("Error setting attack result:", error);
+      result.errorMsg = "Error setting attack result";
       return res.json(result);
     }
   }
@@ -709,8 +709,8 @@ class AttackController {
         console.log("War not found in the warzone.");
       }
     } catch (error) {
-      console.error("Server: Error deleting attack:", error);
-      result.errorMsg = "Server: Error deleting attack";
+      console.error("Error deleting attack:", error);
+      result.errorMsg = "Error deleting attack";
       return res.json(result);
     }
   }
@@ -770,8 +770,8 @@ class AttackController {
 
       return res.json(result);
     } catch (error) {
-      console.error("Server: Error getting attack expiry time:", error);
-      result.errorMsg = "Server: Error getting attack expiry time";
+      console.error("Error getting attack expiry time:", error);
+      result.errorMsg = "Error getting attack expiry time";
       return res.json(result);
     }
   }

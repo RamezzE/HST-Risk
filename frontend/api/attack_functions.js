@@ -20,7 +20,7 @@ export const attack_check = async (zone_1, team_1, subteam_1, zone_2, team_2) =>
   } catch (error) {
     console.log("Error checking attack:", error);
     return {
-      errorMsg: error.response?.data || "API: Error checking attack"
+      errorMsg: error.response?.data || "Error checking attack"
     };
   }
 };
@@ -40,7 +40,7 @@ export const attack = async (zone_1, team_1, subteam_1, zone_2, team_2, warzone_
     return response.data;
   } catch (error) {
     return {
-      errorMsg: error.response?.data || "API: Error making attack request",
+      errorMsg: error.response?.data || "Error making attack request",
     };
   }
 };
@@ -51,7 +51,7 @@ export const get_all_attacks = async () => {
     return response.data;
   } catch (error) {
     return {
-      errorMsg: error.response?.data || "API: Error fetching all attacks",
+      errorMsg: error.response?.data || "Error fetching all attacks",
     };
   }
 };
@@ -64,7 +64,7 @@ export const get_attacks_by_war = async (war) => {
     return response.data;
   } catch (error) {
     return {
-      errorMsg: error.response?.data || "API: Error getting attacks by war",
+      errorMsg: error.response?.data || "Error getting attacks by war",
     };
   }
 };
@@ -79,7 +79,7 @@ export const set_attack_result = async (attack_id, result) => {
     return response.data;
   } catch (error) {
     return {
-      errorMsg: error.response?.data || "API: Error setting attack result",
+      errorMsg: error.response?.data || "Error setting attack result",
     };
   }
 }
@@ -93,7 +93,7 @@ export const delete_attack = async (attack_id) => {
     return response.data;
   } catch (error) {
     return {
-      errorMsg: error.response?.data || "API: Error deleting attack",
+      errorMsg: error.response?.data || "Error deleting attack",
     };
   }
 }
@@ -106,7 +106,7 @@ export const get_attack_expiry_time = async (attack_id) => {
     return response.data;
   } catch (error) {
     return {
-      errorMsg: error.response?.data || "API: Error getting attack expiry time",
+      errorMsg: error.response?.data || "Error getting attack expiry time",
     };
   }
 }

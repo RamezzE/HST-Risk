@@ -17,7 +17,7 @@ export const login = async (username, password) => {
 
     return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || "API: Could not log in" };
+    return { errorMsg: error.response?.data || "Could not log in" };
   }
 };
 
@@ -27,7 +27,7 @@ export const logout = async () => {
     console.log(response.data);
     return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || "API: Could not log out" };
+    return { errorMsg: error.response?.data || "Could not log out" };
   }
 };
 
@@ -36,6 +36,6 @@ export const is_logged_in = async () => {
     const response = await apiClient.get(`/is_logged_in`);
     return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || "API: Could not check login status" };
+    return { errorMsg: error.response?.data || "Could not check login status" };
   }
 };

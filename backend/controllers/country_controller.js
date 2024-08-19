@@ -25,9 +25,9 @@ class CountryController {
 
       return res.json(result);
     } catch (error) {
-      console.error("Server: Error getting countries by team", error);
+      console.error("Error getting countries by team", error);
       result.success = false;
-      result.errorMsg = "Server: Error getting countries by team";
+      result.errorMsg = "Error getting countries by team";
       return res.json(result);
     }
   }
@@ -45,7 +45,7 @@ class CountryController {
       const country = await Country.findOne({ name: name });
 
       if (!country) {
-        result.errorMsg = `Server: ${name} not found`;
+        result.errorMsg = `${name} not found`;
         return res.json(result);
       }
 
@@ -56,7 +56,7 @@ class CountryController {
       result.success = true;
       return res.json(result);
     } catch (error) {
-      result.errorMsg = `Server: Error updating ${name}`;
+      result.errorMsg = `Error updating ${name}`;
       console.log(error);
       return res.json(result);
     }

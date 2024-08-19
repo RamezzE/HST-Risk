@@ -88,11 +88,18 @@ const Home = () => {
 
   const onMarkerPress = (zone) => {
     try {
-      const country = countryMappings.find((c) => c.name === zone.name);
-      const team = country
-        ? teams.find((t) => t.number === country.teamNo)
+      const country = Array.isArray(countryMappings)
+        ? countryMappings.find((c) => c.name === zone.name)
         : null;
-      const attack = attacks.find((a) => a.defending_zone === zone.name);
+
+      const team =
+        country && Array.isArray(teams)
+          ? teams.find((t) => t.number === country.teamNo)
+          : null;
+
+      const attack = Array.isArray(attacks)
+        ? attacks.find((a) => a.defending_zone === zone.name)
+        : null;
 
       Alert.alert(
         zone.name,
@@ -177,25 +184,27 @@ const Home = () => {
               rotateEnabled={false}
               pitchEnabled={false}
             >
-              {zones.map((zone) => (
-                <MapZone
-                  key={zone.name}
-                  points={zone.points}
-                  color={getTeamColor(zone.name)}
-                  label={zone.name}
-                  onMarkerPress={() => onMarkerPress(zone)}
-                />
-              ))}
+              {Array.isArray(zones) &&
+                zones.map((zone) => (
+                  <MapZone
+                    key={zone.name}
+                    points={zone.points}
+                    color={getTeamColor(zone.name)}
+                    label={zone.name}
+                    onMarkerPress={() => onMarkerPress(zone)}
+                  />
+                ))}
 
-              {CountryConnections.map((points, index) => (
-                <DottedLine
-                  key={index}
-                  startPoint={points.point1}
-                  endPoint={points.point2}
-                  color="#FFF"
-                  thickness={3}
-                />
-              ))}
+              {Array.isArray(CountryConnections) &&
+                CountryConnections.map((points, index) => (
+                  <DottedLine
+                    key={index}
+                    startPoint={points.point1}
+                    endPoint={points.point2}
+                    color="#FFF"
+                    thickness={3}
+                  />
+                ))}
             </MapView>
           </View>
 

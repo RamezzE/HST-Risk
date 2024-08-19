@@ -1,3 +1,4 @@
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -5,13 +6,9 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect, useState, useContext } from "react";
-
 import { GlobalContext } from "../../context/GlobalProvider";
 import { get_all_attacks } from "../../api/attack_functions";
-
 import { images } from "../../constants";
 import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
@@ -22,8 +19,7 @@ const TeamAttacks = () => {
   const [defendingAttacks, setDefendingAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
 
-  const { teamNo, subteam } = useContext(GlobalContext);
-
+  const { teamNo } = useContext(GlobalContext);
   const insets = useSafeAreaInsets();
 
   const fetchData = async () => {
@@ -31,13 +27,13 @@ const TeamAttacks = () => {
     try {
       const result = await get_all_attacks();
 
-      // Filter attacks based on the attacking_team and defending_team
-      const filteredAttackingAttacks = result.filter(
-        (attack) => attack.attacking_team === teamNo.toString()
-      );
-      const filteredDefendingAttacks = result.filter(
-        (attack) => attack.defending_team === teamNo.toString()
-      );
+      const filteredAttackingAttacks = Array.isArray(result)
+        ? result.filter((attack) => attack.attacking_team === teamNo.toString())
+        : [];
+
+      const filteredDefendingAttacks = Array.isArray(result)
+        ? result.filter((attack) => attack.defending_team === teamNo.toString())
+        : [];
 
       setAttackingAttacks(filteredAttackingAttacks);
       setDefendingAttacks(filteredDefendingAttacks);
@@ -51,7 +47,6 @@ const TeamAttacks = () => {
 
   useEffect(() => {
     fetchData();
-
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -59,7 +54,7 @@ const TeamAttacks = () => {
   if (isRefreshing) {
     return (
       <View
-        className=" bg-black h-full"
+        className="bg-black h-full"
         style={{
           paddingTop: insets.top,
           paddingRight: insets.right,
@@ -82,7 +77,6 @@ const TeamAttacks = () => {
       style={{
         paddingTop: insets.top,
         paddingRight: insets.right,
-        // paddingBottom: insets.bottom,
         paddingLeft: insets.left,
       }}
     >
@@ -103,11 +97,10 @@ const TeamAttacks = () => {
           }
         >
           <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-start">
-            <View className="flex flex-col mb-6">
-              <Text className="font-montez text-center text-5xl py-5">
-                Team {teamNo} Attacks
-              </Text>
-            </View>
+            <Text className="font-montez text-center text-5xl py-5">
+              Team {teamNo} Attacks
+            </Text>
+
             {error ? (
               <Text className="text-red-500 text-center p-2 text-xl">
                 {error}
@@ -118,7 +111,8 @@ const TeamAttacks = () => {
                   Ongoing Attacks
                 </Text>
                 <View className="mb-4">
-                  {attackingAttacks.length > 0 ? (
+                  {Array.isArray(attackingAttacks) &&
+                  attackingAttacks.length > 0 ? (
                     attackingAttacks.map((attack, index) => (
                       <View
                         key={index}
@@ -145,11 +139,13 @@ const TeamAttacks = () => {
                     </Text>
                   )}
                 </View>
+
                 <Text className="text-green-800 text-4xl font-montez p-2 mb-2">
-                  Ongoing Defence
+                  Ongoing Defense
                 </Text>
                 <View className="mb-4">
-                  {defendingAttacks.length > 0 ? (
+                  {Array.isArray(defendingAttacks) &&
+                  defendingAttacks.length > 0 ? (
                     defendingAttacks.map((attack, index) => (
                       <View
                         key={index}

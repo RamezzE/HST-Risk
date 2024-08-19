@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 
 import {
   View,
   Text,
-  FlatList,
   ImageBackground,
   ScrollView,
-  LogBox,
   RefreshControl,
 } from "react-native";
 import CustomButton from "../../components/CustomButton";
@@ -55,21 +53,27 @@ const Countries = () => {
 
   useEffect(() => {
     fetchData();
-    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, []);
 
-  const renderItem = ({ item, index }) => {
-    // Titles for different sections
+  const renderCountries = () => {
+
+    if (!Array.isArray(countries)) {
+      return (
+        <Text className="text-center">
+          No countries available or unexpected data format.
+        </Text>
+      );
+    }
+
     const titles = [
       "Africa",
       "Australia",
       "South America",
       "North America",
-      "Asia & Europe"
+      "Asia & Europe",
     ];
-    
-    // Determine which title to show based on index
-    const showTitle = () => {
+  
+    const showTitle = (index) => {
       if (index === 0) return titles[0];
       if (index === 6) return titles[1];
       if (index === 11) return titles[2];
@@ -78,39 +82,54 @@ const Countries = () => {
       return null;
     };
   
-    return (
-      <View>
-        {showTitle() && (
-          <Text className="text-3xl font-montez text-left my-4">{showTitle()}</Text>
-        )}
-        <View
-          className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
-          style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
-        >
-          <View className="flex flex-col">
-            <Text className="text-4xl font-montez">{item.name}</Text>
-            <Text className="text-2xl font-montez">Owner: Team {item.teamNo}</Text>
-          </View>
+    return countries.map((item, index) => {
+      const title = showTitle(index);
   
-          <CustomButton
-            title="Edit"
-            handlePress={() =>
-              router.navigate(
-                `/edit_country?countryName=${item.name.trim()}&teamNo=${item.teamNo}`
-              )
-            }
-            containerStyles="w-1/4 h-2/3 mt-2"
-            textStyles="text-2xl"
-          />
-        </View>
-      </View>
-    );
+      return (
+        <React.Fragment key={item.name}>
+          {title && (
+            <Text className="text-3xl font-montez text-left my-4">
+              {title}
+            </Text>
+          )}
+          <View
+            className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+            style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
+          >
+            <View className="flex flex-col">
+              <Text className="text-4xl font-montez">{item.name}</Text>
+              <Text className="text-2xl font-montez">
+                Owner: Team {item.teamNo}
+              </Text>
+            </View>
+  
+            <CustomButton
+              title="Edit"
+              handlePress={() =>
+                router.navigate(
+                  `/edit_country?countryName=${item.name.trim()}&teamNo=${item.teamNo}`
+                )
+              }
+              containerStyles="w-1/4 h-2/3 mt-2"
+              textStyles="text-2xl"
+            />
+          </View>
+        </React.Fragment>
+      );
+    });
   };
   
 
   if (isRefreshing) {
     return (
-      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingRight: insets.right,
+          paddingLeft: insets.left,
+        }}
+        className="flex-1 bg-black"
+      >
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -122,50 +141,46 @@ const Countries = () => {
   }
 
   return (
-    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
+      className="bg-black flex-1"
+    >
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+        className="flex-1"  // Ensure it covers the full height
       >
         <ScrollView
-          scrollEnabled={true}
+          contentContainerStyle={{ paddingBottom: 20 }}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => fetchData()}
+              onRefresh={fetchData}
               tintColor="#000"
             />
           }
         >
-          <View className="w-full justify-center min-h-[82.5vh] max-h-[90vh] p-4  ">
-
-          <Text className="text-6xl text-center font-montez py-2 mt-7">
+          <View className="w-full justify-center p-4">
+            <Text className="text-6xl text-center font-montez py-2 mt-7">
               Countries
             </Text>
-
+  
             {error ? (
               <Text style={{ color: "white", textAlign: "center" }}>
                 {error}
               </Text>
             ) : (
-              <FlatList
-                data={countries}
-                className="mb-12"
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderItem}
-                ListEmptyComponent={
-                  <Text className="text-5xl text-black text-center font-montez p-5">
-                    No Countries Found
-                  </Text>
-                }
-              />
+              renderCountries()
             )}
           </View>
         </ScrollView>
       </ImageBackground>
     </View>
   );
-};
+};  
 
 export default Countries;

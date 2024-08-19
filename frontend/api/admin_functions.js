@@ -11,7 +11,7 @@ export const get_admin_by_name = async (name) => {
     const response = await apiClient.get(`/${name}`);
     return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || "API: Error getting admin by name" };
+    return { errorMsg: error.response?.data || "Error getting admin by name" };
   }
 };
 
@@ -20,7 +20,7 @@ export const get_admins = async () => {
     const response = await apiClient.get(`/`);
     return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || "API: Error getting admins" };
+    return { errorMsg: error.response?.data || "Error getting admins" };
   }
 };
 
@@ -32,7 +32,7 @@ export const add_admin = async (name, war) => {
     });
     return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || "API: Error adding admin" };
+    return { errorMsg: error.response?.data || "Error adding admin" };
   }
 };
 
@@ -46,7 +46,7 @@ export const update_admin = async (oldName, name, password, war) => {
     });
     return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || "API: Error updating admin" };
+    return { errorMsg: error.response?.data || "Error updating admin" };
   }
 };
 
@@ -55,6 +55,6 @@ export const delete_admin = async (name) => {
     const response = await apiClient.delete(`/${name}`);
     return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || "API: Error deleting admin" };
+    return { errorMsg: error.response?.data || "Error deleting admin" };
   }
 };

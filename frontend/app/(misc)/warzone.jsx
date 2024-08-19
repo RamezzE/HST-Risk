@@ -7,33 +7,24 @@ import {
   RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import React, { useState, useEffect, useContext } from "react";
-
+import React, { useState, useEffect, useCallback } from "react";
 import CustomButton from "../../components/CustomButton";
-import { GlobalContext } from "../../context/GlobalProvider";
-
-import { router, useLocalSearchParams } from "expo-router";
-
+import { useLocalSearchParams } from "expo-router";
 import { get_warzones } from "../../api/warzone_functions";
 import { attack } from "../../api/attack_functions";
-
 import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
-
 import { images } from "../../constants";
 
+import { router } from "expo-router";
+
 const Warzone = () => {
-
   const local = useLocalSearchParams();
-
-
-
   const [warzones, setWarzones] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const insets = useSafeAreaInsets()
+  const insets = useSafeAreaInsets();
 
-  
   const fetchData = async () => {
     try {
       const data = await get_warzones();
@@ -50,13 +41,13 @@ const Warzone = () => {
   };
 
   useEffect(() => {
-    
     fetchData();
-    
   }, []);
 
   const handlePress = async (warzone) => {
-    const availableWars = warzone.wars.filter((war) => war.available);
+    const availableWars = Array.isArray(warzone.wars)
+      ? warzone.wars.filter((war) => war.available)
+      : [];
 
     if (availableWars.length === 0) {
       Alert.alert(
@@ -68,7 +59,7 @@ const Warzone = () => {
 
     const randomWar =
       availableWars[Math.floor(Math.random() * availableWars.length)];
-      setIsSubmitting(true);
+    setIsSubmitting(true);
 
     try {
       const response = await attack(
@@ -86,7 +77,7 @@ const Warzone = () => {
           `${warzone.name}`,
           `You are assigned ${randomWar.name}\n\nAttacking from: ${local.attacking_zone} - Team ${local.attacking_team}${local.attacking_subteam}\nDefending Side: ${local.defending_zone} - Team ${local.defending_team}\n\nProceed to the warzone\n\nGood luck!`
         );
-        
+
         // Navigate to the home screen or any other route
         router.replace("/team_attacks");
       } else {
@@ -95,16 +86,21 @@ const Warzone = () => {
     } catch (error) {
       Alert.alert("Error", "Error making attack request");
       console.log(error);
-    }
-    finally {
+    } finally {
       setIsSubmitting(false);
     }
   };
 
-
   if (isRefreshing) {
     return (
-      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingRight: insets.right,
+          paddingLeft: insets.left,
+        }}
+        className="flex-1 bg-black"
+      >
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -115,9 +111,15 @@ const Warzone = () => {
     );
   }
 
-
   return (
-    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
+      className="bg-black h-full"
+    >
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -127,16 +129,17 @@ const Warzone = () => {
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => fetchData()}
+              onRefresh={fetchData}
               tintColor="#000"
             />
           }
+          contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
             <BackButton
               style="w-[20vw]"
               size={32}
-              onPress={() => router.navigate('/attack')}
+              onPress={() => router.navigate("/attack")}
             />
             <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
               Choose your warzone
@@ -145,35 +148,37 @@ const Warzone = () => {
               Be careful, once you choose, you cannot change this attack.
             </Text>
             <View className="flex flex-row justify-between flex-wrap p-5">
-              {warzones.map((warzone) => (
-                <View
-                  className="p-3 my-2 w-full rounded-md"
-                  style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
-                  key={warzone._id}
-                >
-                  <Text className="text-black font-montez text-4xl">
-                    {warzone.name}
-                  </Text>
+              {Array.isArray(warzones) &&
+                warzones.map((warzone) => (
+                  <View
+                    className="p-3 my-2 w-full rounded-md"
+                    style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+                    key={warzone._id}
+                  >
+                    <Text className="text-black font-montez text-4xl">
+                      {warzone.name}
+                    </Text>
 
-                  {warzone.wars.map((war) => (
-                    <View
-                      className="p-1 flex flex-wrap flex-row justify-evenly align-center"
-                      key={war.name}
-                    >
-                      <Text className="text-black font-montez text-2xl">
-                        {war.name}
-                      </Text>
-                    </View>
-                  ))}
-                  <CustomButton
-                    title={`Join ${warzone.name}`}
-                    handlePress={() => handlePress(warzone)}
-                    containerStyles="p-3 mt-3"
-                    textStyles={"text-2xl"}
-                    isLoading={isSubmitting}
-                  />
-                </View>
-              ))}
+                    {Array.isArray(warzone.wars) &&
+                      warzone.wars.map((war) => (
+                        <View
+                          className="p-1 flex flex-wrap flex-row justify-evenly align-center"
+                          key={war.name}
+                        >
+                          <Text className="text-black font-montez text-2xl">
+                            {war.name}
+                          </Text>
+                        </View>
+                      ))}
+                    <CustomButton
+                      title={`Join ${warzone.name}`}
+                      handlePress={() => handlePress(warzone)}
+                      containerStyles="p-3 mt-3"
+                      textStyles={"text-2xl"}
+                      isLoading={isSubmitting}
+                    />
+                  </View>
+                ))}
             </View>
           </View>
         </ScrollView>

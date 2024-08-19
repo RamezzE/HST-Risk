@@ -2,10 +2,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
-  FlatList,
   ImageBackground,
   ScrollView,
-  LogBox,
   RefreshControl,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -13,9 +11,7 @@ import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { get_all_teams } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
-
 import { images } from "../../constants";
-
 import Loader from "../../components/Loader";
 
 const Teams = () => {
@@ -24,7 +20,6 @@ const Teams = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [countries, setCountries] = useState([]);
   const insets = useSafeAreaInsets();
-
   const router = useRouter();
 
   const fetchData = async () => {
@@ -32,11 +27,9 @@ const Teams = () => {
     setIsRefreshing(true);
     try {
       const result = await get_all_teams();
-
       const countriesR = await get_country_mappings();
       setCountries(countriesR);
 
-      console.log(result);
       if (result.success === false) {
         setError(result.errorMsg);
       } else if (Array.isArray(result)) {
@@ -59,28 +52,35 @@ const Teams = () => {
 
   useEffect(() => {
     fetchData();
-    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, []);
 
-  const renderItem = ({ item }) => (
-    <View
-      className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
-      style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
-    >
-      <View className="flex flex-row flex-wrap justify-between ">
-        <Text className="text-4xl font-montez">{item.name}</Text>
-        <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
-        <Text className="text-2xl font-montez">Running Money: {item.balance}</Text>
-        <Text className="text-2xl font-montez">
-          Countries Owned:{" "}
-          {
-            countries.filter((country) => country.teamNo === item.number)
-              .length
-          }
+  const renderTeams = () => {
+    if (!Array.isArray(teams)) {
+      return (
+        <Text className="text-center">
+          No teams available or unexpected data format.
         </Text>
+      );
+    }
+
+    return teams.map((item, index) => (
+      <View
+        key={index}
+        className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+        style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
+      >
+        <View className="flex flex-row flex-wrap justify-between">
+          <Text className="text-4xl font-montez">{item.name}</Text>
+          <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
+          <Text className="text-2xl font-montez">Running Money: {item.balance}</Text>
+          <Text className="text-2xl font-montez">
+            Countries Owned:{" "}
+            {Array.isArray(countries) && countries.filter((country) => country.teamNo === item.number).length}
+          </Text>
+        </View>
       </View>
-    </View>
-  );
+    ));
+  };
 
   if (isRefreshing) {
     return (
@@ -117,37 +117,26 @@ const Teams = () => {
         className="min-h-[100vh]"
       >
         <ScrollView
-          scrollEnabled={true}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => fetchData()}
+              onRefresh={fetchData}
               tintColor="#000"
             />
           }
+          contentContainerStyle={{ paddingBottom: 20 }}
         >
-          <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4  ">
+          <View className="w-full justify-start p-4 mb-24">
             <Text className="text-6xl text-center font-montez py-2 mt-7">
               Teams
             </Text>
 
-            <View className="flex flex-row justify-between">
-            </View>
             {error ? (
               <Text style={{ color: "white", textAlign: "center" }}>
                 {error}
               </Text>
             ) : (
-              <FlatList
-                data={teams}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderItem}
-                ListEmptyComponent={
-                  <Text className="text-5xl text-black text-center font-montez p-5">
-                    No Teams Found
-                  </Text>
-                }
-              />
+              renderTeams()
             )}
           </View>
         </ScrollView>

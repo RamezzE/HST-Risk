@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Alert,
-  ImageBackground,
-} from "react-native";
+import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
 import FormField from "../../components/FormField";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
@@ -60,10 +54,7 @@ const AddAdmin = () => {
     }
 
     try {
-      const response = await add_admin(
-        form.name.trim(),
-        form.war.trim()
-      );
+      const response = await add_admin(form.name.trim(), form.war.trim());
 
       if (!response.success) {
         Alert.alert("Error", response.errorMsg);
@@ -100,11 +91,18 @@ const AddAdmin = () => {
     fetchData();
   }, []);
 
-  const insets = useSafeAreaInsets()
+  const insets = useSafeAreaInsets();
 
   if (isRefreshing) {
     return (
-      <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="flex-1 bg-black">
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingRight: insets.right,
+          paddingLeft: insets.left,
+        }}
+        className="flex-1 bg-black"
+      >
         <ImageBackground
           source={images.background}
           style={{ flex: 1, resizeMode: "cover" }}
@@ -116,7 +114,14 @@ const AddAdmin = () => {
   }
 
   return (
-    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
+      className="bg-black h-full"
+    >
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
@@ -127,7 +132,7 @@ const AddAdmin = () => {
             <BackButton
               style="w-[20vw]"
               size={32}
-              onPress={() => router.navigate('/admins')}
+              onPress={() => router.navigate("/admins")}
             />
             <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
               Add Admin
@@ -147,17 +152,19 @@ const AddAdmin = () => {
               otherStyles="mt-7"
             /> */}
 
-            <DropDownField
-              title="Assigned War"
-              value={form.war}
-              placeholder="Select War"
-              items={wars.map((war) => ({
-                label: `${war.name}`,
-                value: war.name,
-              }))}
-              handleChange={(e) => setForm({ ...form, war: e })}
-              otherStyles="mt-7"
-            />
+            {Array.isArray(wars) && (
+              <DropDownField
+                title="Assigned War"
+                value={form.war}
+                placeholder="Select War"
+                items={wars.map((war) => ({
+                  label: `${war.name}`,
+                  value: war.name,
+                }))}
+                handleChange={(e) => setForm({ ...form, war: e })}
+                otherStyles="mt-7"
+              />
+            )}
 
             <CustomButton
               title="Add Admin"

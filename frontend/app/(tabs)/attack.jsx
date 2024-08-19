@@ -72,25 +72,30 @@ const Attack = () => {
   };
 
   const changeMapPreview = (zone) => {
-
-    if (zone == "")
-      return;
-
-    if (zone == "Select Your Country" || zone == "Select Country to Attack") {
+    if (!zone || zone === "Select Your Country" || zone === "Select Country to Attack") {
       return;
     }
-
+  
+    if (!Array.isArray(countries)) {
+      return;
+    }
+  
     const country = countries.find((c) => c.name === zone);
-
+  
+    if (!country || !Array.isArray(country.points) || country.points.length === 0) {
+      return;
+    }
+  
     const avgLat =
       country.points.reduce((acc, curr) => acc + curr.latitude, 0) /
       country.points.length;
     const avgLong =
       country.points.reduce((acc, curr) => acc + curr.longitude, 0) /
       country.points.length;
-
+  
     setInitialArea([avgLat, avgLong]);
   };
+  
 
   const validateAttack = (zone_1, zone_2) => {
     var result = {
@@ -109,25 +114,27 @@ const Attack = () => {
 
   const selectYourZone = (zone) => {
     setForm({ ...form, your_zone: zone, other_zone: "" });
-
-    if (!zone || zone == "") return;
-
+  
+    if (!zone || zone === "") return;
+  
     changeMapPreview(zone);
-
-    let country = countries.find((c) => c.name === zone);
-
-    if (!country) return;
-
+  
+    if (!Array.isArray(countries)) return;
+  
+    const country = countries.find((c) => c.name === zone);
+  
+    if (!country || !Array.isArray(country.adjacent_zones)) return;
+  
     setOtherZones(country.adjacent_zones);
   };
-
+  
   const selectOtherZone = (zone) => {
     setForm({ ...form, other_zone: zone });
-
-    if (!zone || zone == "") return;
-
+  
+    if (!zone || zone === "") return;
+  
     changeMapPreview(zone);
-  };
+  };  
 
   const fetchData = async () => {
     setError(null);
@@ -304,10 +311,6 @@ const Attack = () => {
         >
           <View className="w-full min-h-[82.5vh] px-4 pt-4 mt-2 flex flex-col justify-start">
             <View className="flex flex-col mb-6">
-              {/* <Text className="font-montez text-center text-5xl py-5">
-                {name}, Team {teamNo}
-                {subteam}
-              </Text> */}
 
               <View className="flex flex-row justify-between pb-4">
                 <Text className="font-montez text-2xl">
@@ -364,7 +367,7 @@ const Attack = () => {
               rotateEnabled={false}
               pitchEnabled={false}
             >
-              {zones.map((zone, index) => (
+              {Array.isArray(zones) && zones.map((zone, index) => (
                 <MapZone
                   key={index}
                   points={zone.points}
@@ -374,7 +377,7 @@ const Attack = () => {
                 />
               ))}
 
-              {CountryConnections.map((points, index) => (
+              {Array.isArray(CountryConnections) && CountryConnections.map((points, index) => (
                 <DottedLine
                   key={index}
                   startPoint={points.point1}

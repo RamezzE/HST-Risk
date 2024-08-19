@@ -1,11 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
-  FlatList,
   ImageBackground,
   ScrollView,
-  LogBox,
   RefreshControl,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -13,11 +11,8 @@ import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { get_all_subteams } from "../../api/team_functions";
-
 import { images } from "../../constants";
-
 import Loader from "../../components/Loader";
-
 import BackButton from "../../components/BackButton";
 
 const SubTeams = () => {
@@ -25,7 +20,6 @@ const SubTeams = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const insets = useSafeAreaInsets();
-
   const router = useRouter();
 
   const fetchData = async () => {
@@ -33,7 +27,6 @@ const SubTeams = () => {
     setIsRefreshing(true);
     try {
       const result = await get_all_subteams();
-      console.log(result);
       if (result.success === false) {
         setError(result.errorMsg);
       } else if (Array.isArray(result)) {
@@ -42,7 +35,7 @@ const SubTeams = () => {
         setError("Unexpected response format");
       }
     } catch (err) {
-      setError("Failed to fetch teams");
+      setError("Failed to fetch subteams");
     } finally {
       setIsRefreshing(false);
     }
@@ -54,29 +47,37 @@ const SubTeams = () => {
     }, [])
   );
 
-  useEffect(() => {
-    fetchData();
-    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
-  }, []);
+  const renderSubTeams = () => {
+    if (!Array.isArray(teams)) {
+      return (
+        <Text className="text-center">
+          No teams available or unexpected data format.
+        </Text>
+      );
+    }
 
-  const renderItem = ({ item }) => (
-    <View
-      className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
-      style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
-    >
-      <View className="flex flex-col ">
-        <Text className="text-3xl font-montez">Team {item.username}</Text>
-        <Text className="text-3xl font-montez">{item.name}</Text>
+    return teams.map((item, index) => (
+      <View
+        key={index}
+        className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+        style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
+      >
+        <View className="flex flex-col">
+          <Text className="text-3xl font-montez">Team {item.username}</Text>
+          <Text className="text-3xl font-montez">{item.name}</Text>
+        </View>
+
+        <CustomButton
+          title="Edit"
+          handlePress={() =>
+            router.navigate(`/edit_subteam?username=${item.username}&password=${item.password}`)
+          }
+          containerStyles="w-1/4 h-2/3 mt-2"
+          textStyles="text-2xl"
+        />
       </View>
-
-      <CustomButton
-        title="Edit"
-        handlePress={() => router.navigate(`/edit_subteam?username=${item.username}&password=${item.password}`)}
-        containerStyles="w-1/4 h-2/3 mt-2 "
-        textStyles="text-2xl"
-      />
-    </View>
-  );
+    ));
+  };
 
   if (isRefreshing) {
     return (
@@ -105,28 +106,27 @@ const SubTeams = () => {
         paddingRight: insets.right,
         paddingLeft: insets.left,
       }}
-      className="bg-black h-full"
+      className="bg-black flex-1"
     >
       <ImageBackground
         source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+        style={{ flex: 1, resizeMode: "cover" }}
       >
         <ScrollView
-          scrollEnabled={true}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => fetchData()}
+              onRefresh={fetchData}
               tintColor="#000"
             />
           }
+          contentContainerStyle={{ paddingBottom: 20 }}
         >
-          <View className="w-full justify-start min-h-[82.5vh] max-h-[90vh] p-4  ">
+          <View className="w-full justify-start p-4 mb-24">
             <BackButton 
-                style="w-[20vw]"
-                size={32}
-                onPress={() => router.navigate('/teams')}
+              style="w-[20vw]"
+              size={32}
+              onPress={() => router.navigate('/teams')}
             />
             <Text className="text-6xl text-center font-montez py-2 mt-7">
               Subteams
@@ -137,16 +137,7 @@ const SubTeams = () => {
                 {error}
               </Text>
             ) : (
-              <FlatList
-                data={teams}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderItem}
-                ListEmptyComponent={
-                  <Text className="text-5xl text-black text-center font-montez p-5">
-                    No Subteams Found
-                  </Text>
-                }
-              />
+              renderSubTeams()
             )}
           </View>
         </ScrollView>

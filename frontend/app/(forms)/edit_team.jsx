@@ -49,9 +49,6 @@ const EditTeam = () => {
       result.errorMsg = "Error validating team";
       return result;
     }
-    finally {
-      setIsSubmitting(false);
-    }
   };
 
   const submit = async () => {
@@ -62,6 +59,7 @@ const EditTeam = () => {
 
     if (!result.success) {
       Alert.alert("Error", result.errorMsg);
+      setIsSubmitting(false);
       return;
     }
 

@@ -36,6 +36,6 @@ export const update_country = async (name, teamNo) => {
 
     return response.data;
   } catch (error) {
-    return { errorMsg: error.response?.data || "API: Error updating country" };
+    return { errorMsg: error.response?.data || "Error updating country" };
   }
 };

@@ -93,7 +93,7 @@ const GuestChooseTeam = () => {
             <Text className="text-5xl mt-10 py-2 text-center font-montez text-black">
               Choose your team
             </Text>
-            {teams.map((team) => (
+            {Array.isArray(teams) && teams.map((team) => (
               <CustomButton
                 key={team.number}
                 title={`${team.number} - ${team.name}`}

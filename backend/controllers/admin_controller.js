@@ -22,7 +22,7 @@ class AdminController {
 
       return res.json(result);
     } catch (error) {
-      result.errorMsg = "Server: Error fetching admins";
+      result.errorMsg = "Error fetching admins";
       console.log(error);
       return res.json(result);
     }
@@ -39,7 +39,7 @@ class AdminController {
     const admin = await Admin.findOne({ name });
 
     if (admin) {
-      result.errorMsg = `Server: Admin ${name} already exists`;
+      result.errorMsg = `Admin ${name} already exists`;
       return res.json(result);
     }
 
@@ -54,8 +54,8 @@ class AdminController {
       result.success = true;
       return res.json(result);
     } catch (error) {
-      console.error("Server: Error adding admin:", error);
-      result.errorMsg = "Server: Error adding admin";
+      console.error("Error adding admin:", error);
+      result.errorMsg = "Error adding admin";
       return res.json(result);
     }
   }
@@ -72,7 +72,7 @@ class AdminController {
       const admin = await Admin.findOne({ name: oldName });
 
       if (!admin) {
-        result.errorMsg = `Server: Admin ${name} not found`;
+        result.errorMsg = `Admin ${name} not found`;
         return res.json(result);
       }
 
@@ -85,7 +85,7 @@ class AdminController {
       result.success = true;
       return res.json(result);
     } catch (error) {
-      result.errorMsg = "Server: Error updating admin";
+      result.errorMsg = "Error updating admin";
       console.log(error);
       return res.json(result);
     }
@@ -103,12 +103,12 @@ class AdminController {
       const admin = await Admin.findOne({ name });
 
       if (!admin) {
-        result.errorMsg = `Server: Admin ${name} not found`;
+        result.errorMsg = `Admin ${name} not found`;
         return res.json(result);
       }
 
     } catch (error) {
-      result.errorMsg = `Server: Admin ${name} not found`;
+      result.errorMsg = `Admin ${name} not found`;
       return res.json(result);
     }
 
@@ -117,7 +117,7 @@ class AdminController {
       result.success = true;
       return res.json(result);
     } catch (error) {
-      result.errorMsg = "Server: Error deleting admin";
+      result.errorMsg = "Error deleting admin";
       console.log(error);
       return res.json(result);
     }
@@ -136,7 +136,7 @@ class AdminController {
       const admin = await Admin.findOne({ name });
 
       if (!admin) {
-        result.errorMsg = `Server: Admin ${name} not found`;
+        result.errorMsg = `Admin ${name} not found`;
         return res.json(result);
       }
 
@@ -144,7 +144,7 @@ class AdminController {
       result.admin = admin;
       return res.json(result);
     } catch (error) {
-      result.errorMsg = "Server: Error getting admin by name";
+      result.errorMsg = "Error getting admin by name";
       console.log(error);
       return res.json(result);
     }

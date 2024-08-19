@@ -129,7 +129,8 @@ const EditSetting = () => {
               editable={form.options.length === 0}
             />
 
-            {form.options.length > 0 && (
+
+            {Array.isArray(form.options) && form.options.length > 0 && (
               <DropDownField
                 title="Value Options"
                 value={form.value}

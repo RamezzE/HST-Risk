@@ -2,12 +2,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
-  FlatList,
   ImageBackground,
   RefreshControl,
   ScrollView,
   Alert,
-  LogBox,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../components/CustomButton";
@@ -59,14 +57,16 @@ const DashboardAttacks = () => {
 
   useEffect(() => {
     fetchData();
-    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, []);
 
-  const setAttackResultAlert = (attackWon, id, attacking_team, attacking_subteam, defending_team) => {
-    const team =
-      attackWon === "true"
-        ? attacking_team
-        : defending_team;
+  const setAttackResultAlert = (
+    attackWon,
+    id,
+    attacking_team,
+    attacking_subteam,
+    defending_team
+  ) => {
+    const team = attackWon === "true" ? attacking_team : defending_team;
 
     const subteam = attackWon === "true" ? attacking_subteam : "";
     Alert.alert(
@@ -88,7 +88,12 @@ const DashboardAttacks = () => {
     );
   };
 
-  const setAttackResult = async (attackWon, id, attacking_team, defending_team) => {
+  const setAttackResult = async (
+    attackWon,
+    id,
+    attacking_team,
+    defending_team
+  ) => {
     setIsSubmitting(true);
 
     try {
@@ -148,58 +153,87 @@ const DashboardAttacks = () => {
     );
   };
 
-  const renderItem = ({ item }) => (
-    <View
-      className="p-3 my-2 rounded-md flex flex-row justify-between items-center"
-      style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
-    >
-      <View className="flex flex-col w-[72.5%]">
-        <Text className="text-4xl font-montez">
-          Team {item.attacking_team}{item.attacking_subteam} vs Team {item.defending_team}{item.defending_subteam}
+  const renderAttacks = () => {
+
+    if (!Array.isArray(attacks)) {
+      return (
+        <Text className="text-center">
+          No attacks available or unexpected data format.
         </Text>
-        <Text className="text-2xl font-montez">
-          {item.attacking_zone} vs {item.defending_zone}
-        </Text>
-        <Text className="text-2xl font-montez">War: {item.war}</Text>
-        <Timer attack_id={item._id} />
-      </View>
-      <View className="flex flex-col ">
-        <CustomButton
-          title="Set Win"
-          handlePress={() => setAttackResultAlert("true", item._id, item.attacking_team, item.attacking_subteam, item.defending_team)}
-          containerStyles="p-1 mt-2 bg-green-800"
-          textStyles="text-2xl"
-          isLoading={isSubmitting}
-        />
-        <CustomButton
-          title="Set Lose"
-          handlePress={() => setAttackResultAlert("false", item._id, item.attacking_team, item.attacking_subteam, item.defending_team)}
-          containerStyles="p-1 mt-2 bg-red-800"
-          textStyles="text-2xl"
-          isLoading={isSubmitting}
+      );
+    }
 
-        />
-
-        <CustomButton
-          title="Delete"
-          handlePress={() => {
-            deleteAttackAlert(
-              item._id,
-              item.attacking_zone,
-              item.attacking_team,
-              item.defending_zone,
-              item.defending_team,
-              item.war
-            );
-          }}
-          containerStyles="mt-2"
-          textStyles="text-2xl"
-          isLoading={isSubmitting}
-
-        />
-      </View>
-    </View>
-  );
+    return attacks.map((item) => {
+      return (
+        <View
+          key={item._id}
+          className="p-3 my-2 rounded-md flex flex-row justify-between items-center"
+          style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
+        >
+          <View className="flex flex-col w-[72.5%]">
+            <Text className="text-4xl font-montez">
+              Team {item.attacking_team}
+              {item.attacking_subteam} vs Team {item.defending_team}
+              {item.defending_subteam}
+            </Text>
+            <Text className="text-2xl font-montez">
+              {item.attacking_zone} vs {item.defending_zone}
+            </Text>
+            <Text className="text-2xl font-montez">War: {item.war}</Text>
+            <Timer attack_id={item._id} />
+          </View>
+          <View className="flex flex-col ">
+            <CustomButton
+              title="Set Win"
+              handlePress={() =>
+                setAttackResultAlert(
+                  "true",
+                  item._id,
+                  item.attacking_team,
+                  item.attacking_subteam,
+                  item.defending_team
+                )
+              }
+              containerStyles="p-1 mt-2 bg-green-800"
+              textStyles="text-2xl"
+              isLoading={isSubmitting}
+            />
+            <CustomButton
+              title="Set Lose"
+              handlePress={() =>
+                setAttackResultAlert(
+                  "false",
+                  item._id,
+                  item.attacking_team,
+                  item.attacking_subteam,
+                  item.defending_team
+                )
+              }
+              containerStyles="p-1 mt-2 bg-red-800"
+              textStyles="text-2xl"
+              isLoading={isSubmitting}
+            />
+            <CustomButton
+              title="Delete"
+              handlePress={() => {
+                deleteAttackAlert(
+                  item._id,
+                  item.attacking_zone,
+                  item.attacking_team,
+                  item.defending_zone,
+                  item.defending_team,
+                  item.war
+                );
+              }}
+              containerStyles="mt-2"
+              textStyles="text-2xl"
+              isLoading={isSubmitting}
+            />
+          </View>
+        </View>
+      );
+    });
+  };
 
   if (isRefreshing) {
     return (
@@ -228,7 +262,7 @@ const DashboardAttacks = () => {
         paddingRight: insets.right,
         paddingLeft: insets.left,
       }}
-      className="bg-black h-full"
+      className="bg-black"
     >
       <ImageBackground
         source={images.background}
@@ -236,36 +270,25 @@ const DashboardAttacks = () => {
         className="min-h-[100vh]"
       >
         <ScrollView
-          scrollEnabled={true}
+          contentContainerStyle={{ paddingBottom: 20 }}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => fetchData()}
+              onRefresh={fetchData}
               tintColor="#000"
             />
           }
         >
-          <View className="w-full justify-center min-h-[82.5vh] max-h-[90vh] p-4 ">
+          <View className="w-full justify-center p-4 mb-24">
             <Text className="text-6xl text-center font-montez py-2 mt-7">
               Attacks
             </Text>
-
             {error ? (
               <Text style={{ color: "white", textAlign: "center" }}>
                 {error}
               </Text>
             ) : (
-              <FlatList
-                data={attacks}
-                className="mb-12"
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderItem}
-                ListEmptyComponent={
-                  <Text className="text-5xl text-black text-center font-montez p-5">
-                    No attacks Found
-                  </Text>
-                }
-              />
+              renderAttacks()
             )}
           </View>
         </ScrollView>
