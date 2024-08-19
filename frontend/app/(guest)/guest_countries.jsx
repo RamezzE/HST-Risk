@@ -58,7 +58,6 @@ const Countries = () => {
         </Text>
       );
     }
-
     // Titles for different sections
     const titles = [
       "Africa",

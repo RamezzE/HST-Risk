@@ -8,6 +8,7 @@ import DottedLine from "../../components/DottedLine";
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
+import { deletePushToken } from "../../api/user_functions";
 import { router } from "expo-router";
 
 import { GlobalContext } from "../../context/GlobalProvider";
@@ -28,7 +29,7 @@ const Home = () => {
   const [attacks, setAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
   const insets = useSafeAreaInsets();
-  const { name, teamNo, subteam, expoPushToken } = useContext(GlobalContext);
+  const { name, teamNo, subteam, Logout, expoPushToken } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -64,12 +65,25 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const { Logout } = useContext(GlobalContext);
-
-  const logoutFunc = async () => {
-    deletePushToken(expoPushToken, teamNo);
-    Logout();
-    router.replace("/");
+  const logoutFunc = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          onPress: async () => {
+            deletePushToken(expoPushToken, teamNo);
+            Logout();
+            router.replace("/");
+          },
+        },
+      ]
+    );
   };
 
   const onMarkerPress = (zone) => {
@@ -98,15 +112,17 @@ const Home = () => {
     } catch (error) {}
   };
 
-  try {
-    const country = countryMappings.find((c) => c.name === countryName);
-    const team = country
-      ? teams.find((t) => t.number === country.teamNo)
-      : null;
-    return team ? team.color : "#000000";
-  } catch (error) {
-    return "#000000";
-  }
+  const getTeamColor = (countryName) => {
+    try {
+      const country = countryMappings.find((c) => c.name === countryName);
+      const team = country
+        ? teams.find((t) => t.number === country.teamNo)
+        : null;
+      return team ? team.color : "#000000";
+    } catch (error) {
+      return "#000000";
+    }
+  };
 
   if (isRefreshing) {
     return (
@@ -142,8 +158,8 @@ const Home = () => {
         style={{ flex: 1, resizeMode: "cover" }}
       >
         <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
-          <BackButton style="w-[20vw]" size={32} onPress={async () => await logoutFunc()} />
-          <Text className="font-montez text-center text-5xl m-4 pt-2">
+          <BackButton style="w-[20vw]" size={32} onPress={() => logoutFunc()} />
+          <Text className="font-montez text-center text-5xl m-4 mt-0 pt-2">
             {name}, Team {teamNo}
             {subteam}
           </Text>

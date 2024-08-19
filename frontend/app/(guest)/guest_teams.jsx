@@ -55,6 +55,7 @@ const Teams = () => {
   }, []);
 
   const renderTeams = () => {
+
     if (!Array.isArray(teams)) {
       return (
         <Text className="text-center">
