@@ -27,12 +27,16 @@ class AttackController {
 
     const attacking_country = await Country.findOne({ name: zone_1 });
     const defending_country = await Country.findOne({ name: zone_2 });
-
-    const real_team_1 = attacking_country.teamNo;
+    var real_team_1;
+    try {
+      real_team_1 =  attacking_country.teamNo;
+    }
+    catch(error) {
+      real_team_1 = team_1
+    }
     const real_team_2 = defending_country.teamNo;
 
     if (team_1.toString() !== real_team_1.toString()) {
-      console.log(team_1, real_team_1);
       result.errorMsg = `You do not own ${zone_1}`;
       return res.json(result);
     }
@@ -188,7 +192,13 @@ class AttackController {
     const attacking_country = await Country.findOne({ name: zone_1 });
     const defending_country = await Country.findOne({ name: zone_2 });
 
-    const real_team_1 = attacking_country.teamNo;
+    var real_team_1;
+    try {
+      real_team_1 =  attacking_country.teamNo;
+    }
+    catch(error) {
+      real_team_1 = team_1
+    }
     const real_team_2 = defending_country.teamNo;
 
     if (team_1.toString() !== real_team_1.toString()) {
@@ -603,12 +613,22 @@ class AttackController {
       console.log("Loser Zone:", loserZone);
 
       const country1 = await Country.findOne({ name: winnerZone });
-      country1.teamNo = winnerTeam;
-      await country1.save();
+      try {
+        country1.teamNo = winnerTeam;
+        await country1.save();
+      }
+      catch(error) {
+        console.log("Error saving country1:", error);
+      }
 
       const country2 = await Country.findOne({ name: loserZone });
-      country2.teamNo = winnerTeam;
-      await country2.save();
+      try {
+        country2.teamNo = winnerTeam;
+        await country2.save();
+      }
+      catch(error) {
+        console.log("Error saving country2:", error);
+      }
 
       const subteam_username =
         attack.attacking_team.toString() + attack.attacking_subteam.toString();

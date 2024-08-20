@@ -422,6 +422,16 @@ class TeamController {
 
       const amountToChange = parseInt(amount);
 
+      if (isNaN(amountToChange) || amountToChange <= 0) {
+        result.errorMsg = "Please enter a valid positive number";
+        return res.json(result);
+      }
+
+      if (amountToChange > team.balance && type === "remove") {
+        result.errorMsg = "Insufficient balance";
+        return res.json(result);
+      }
+
       if (type === "add") {
         team.balance += amountToChange;
       } else if (type === "remove") {

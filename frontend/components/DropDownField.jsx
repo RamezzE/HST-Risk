@@ -33,11 +33,11 @@ const DropdownField = ({
       <Text className="font-montez text-black text-3xl">{title}</Text>
 
       <View
-        className="w-full h-16 px-4 bg- rounded-md focus:border-secondary flex flex-row items-center"
+        className="w-full h-16 bg- rounded-md focus:border-secondary flex flex-row items-center"
         style={{ backgroundColor: "rgba(75, 50, 12, 0.5)" }} // Transparent background
       >
         <TouchableWithoutFeedback onPress={openPicker}>
-          <View style={{ flex: 1 }} className="w-full h-16 px-4 bg- rounded-md focus:border-secondary flex flex-row items-center">
+          <View style={{ flex: 1 }} className="w-full h-16 px-4 rounded-md focus:border-secondary flex flex-row items-center">
             <TextInput
               className="text-white font-psemibold text-[16px]"
               value={value ? value : placeholder}

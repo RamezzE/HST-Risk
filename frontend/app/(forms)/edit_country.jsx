@@ -17,12 +17,15 @@ import { images } from "../../constants";
 const EditCountry = () => {
   const local = useLocalSearchParams();
 
+  const[isSubmitting, setIsSubmitting] = useState(false);
+
   const [form, setForm] = useState({
     countryName: local.countryName,
     teamNo: local.teamNo,
   });
 
   const submit = async () => {
+    setIsSubmitting(true);
     try {
       const result = await update_country(
         form.countryName.trim(),
@@ -38,6 +41,9 @@ const EditCountry = () => {
       Alert.alert("Error", "Failed to update country");
       console.log(error);
     }
+    finally {
+      setIsSubmitting(false);
+    } 
   };
 
   const [teams, setTeams] = useState([]);
@@ -118,7 +124,7 @@ const EditCountry = () => {
               handlePress={submit}
               containerStyles="mt-7 p-3 bg-green-800"
               textStyles={"text-3xl"}
-              // isLoading={isSubmitting}
+              isLoading={isSubmitting}
             />
           </View>
         </ScrollView>

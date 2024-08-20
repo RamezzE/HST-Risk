@@ -43,7 +43,7 @@ const validateAddAttack = (
 const AddAttack = () => {
   const [form, setForm] = useState({
     attackingTeam: "",
-    attackingSubteam: "A",
+    attackingSubteam: "",
     attackingCountry: "",
     defendingTeam: "",
     defendingCountry: "",
@@ -76,11 +76,11 @@ const AddAttack = () => {
 
     try {
       const response = await attack_check(
-        form.attackingCountry.trim(),
-        form.attackingTeam.trim(),
-        form.attackingSubteam.trim(),
-        form.defendingCountry.trim(),
-        form.defendingTeam.trim(),
+        form.attackingCountry,
+        form.attackingTeam,
+        form.attackingSubteam,
+        form.defendingCountry,
+        form.defendingTeam,
         ""
       );
 
@@ -90,7 +90,7 @@ const AddAttack = () => {
       }
 
       router.navigate(
-        `/warzone?attacking_zone=${form.attackingCountry.trim()}&defending_zone=${form.defendingCountry.trim()}&attacking_team=${form.attackingTeam.trim()}&defending_team=${form.defendingTeam.trim()}&attacking_subteam=${form.attackingSubteam.trim()}`
+        `/warzone?attacking_zone=${form.attackingCountry}&defending_zone=${form.defendingCountry}&attacking_team=${form.attackingTeam}&defending_team=${form.defendingTeam}&attacking_subteam=${form.attackingSubteam}`
       );
     } catch (error) {
       Alert.alert("Error", "Error initiating attack");
@@ -176,10 +176,10 @@ const AddAttack = () => {
             <DropDownField
               title="Attacking Team"
               value={form.attackingTeam}
-              placeholder="Select Attacking Team"
+              placeholder="Select Team"
               items={teams.map((team) => ({
                 label: `Team ${team.number} - ${team.name}`,
-                value: team.number,
+                value: team.number.toString(),
               }))}
               handleChange={(e) => {
                 setForm({ ...form, attackingTeam: e, attackingCountry: "" });
@@ -190,7 +190,7 @@ const AddAttack = () => {
             <DropDownField
               title="Attacking Subteam"
               value={form.attackingSubteam}
-              placeholder="Select Attacking Team"
+              placeholder="Select Subteam"
               items={[
                 "A",
                 "B",
@@ -217,8 +217,8 @@ const AddAttack = () => {
               <DropDownField
                 title="Attacking Country"
                 value={form.attackingCountry}
-                placeholder="Select Attacking Country"
-                items={filterCountriesByTeam(form.attackingTeam.trim()).map(
+                placeholder="Select Country"
+                items={filterCountriesByTeam(form.attackingTeam).map(
                   (country) => ({
                     label: country.name,
                     value: country.name,
@@ -232,10 +232,10 @@ const AddAttack = () => {
             <DropDownField
               title="Defending Team"
               value={form.defendingTeam}
-              placeholder="Select Defending Team"
+              placeholder="Select Team"
               items={teams.map((team) => ({
                 label: `Team ${team.number} - ${team.name}`,
-                value: team.number,
+                value: team.number.toString(),
               }))}
               handleChange={(e) => {
                 setForm({ ...form, defendingTeam: e, defendingCountry: "" });

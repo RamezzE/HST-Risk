@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 const attackSchema = new mongoose.Schema({
     attacking_zone: {
         type: String,
-        required: true,
+        default: ""
     },
     attacking_team: {
         type: String,

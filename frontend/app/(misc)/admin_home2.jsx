@@ -91,14 +91,14 @@ const Teams = () => {
           style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
         >
           <View className="flex flex-col justify-start w-[70%]">
-            <Text className="text-4xl font-montez">{item.name}</Text>
-            <Text className="text-2xl font-montez">
-              Team Number: {item.number}
+          <Text className="text-4xl font-montez">{item.name}</Text>
+            <Text className="text-xl font-pregular">
+              Team {item.number}
             </Text>
-            <Text className="text-2xl font-montez">
+            <Text className="text-[16px] font-pregular">
               Running Money: {item.balance}
             </Text>
-            <Text className="text-2xl font-montez">
+            <Text className="text-[16px] font-pregular">
               Countries Owned: {ownedCountries.length}
             </Text>
 
@@ -106,7 +106,7 @@ const Teams = () => {
             {expandedTeam === item.number && (
               <View className="mt-2">
                 {ownedCountries.map((country, index) => (
-                  <Text key={index} className="text-xl font-montez">
+                  <Text key={index} className="text-l font-pmedium">
                     {country.name}
                   </Text>
                 ))}

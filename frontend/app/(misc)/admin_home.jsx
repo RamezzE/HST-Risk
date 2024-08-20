@@ -151,10 +151,7 @@ const AdminHome = () => {
         ? currentAttack.attacking_team
         : currentAttack.defending_team;
 
-    const subteam =
-      attackWon === "true"
-        ? currentAttack.attacking_subteam
-        : "";
+    const subteam = attackWon === "true" ? currentAttack.attacking_subteam : "";
     Alert.alert(
       "Confirm",
       `Are you SURE that team ${team}${subteam} won?`,
@@ -265,33 +262,29 @@ const AdminHome = () => {
             </View>
 
             <View
-              className="rounded-md mt-3 px-2 flex flex-1 flex-col justify-center max-h-[40vh]"
+              className="rounded-md mt-3 px-2 flex-1 flex-col justify-start"
               style={{ backgroundColor: "rgba(32, 20, 2, 0.6)" }} // Transparent background
             >
               {currentAttack._id ? (
                 <View className="h-full flex flex-col justify-between py-4">
                   <View>
-                    <Text className="font-montez text-white text-4xl px-5 py-2 text-left">
+                    <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
                       Attack:
                     </Text>
-                    <Text className="font-montez text-white text-4xl px-5 py-2 text-left">
-                      Team {currentAttack.attacking_team}
+                    <Text className="font-pregular text-white text-xl px-5 py-2 text-left">
+                      {currentAttack.attacking_team}
                       {currentAttack.attacking_subteam},{" "}
                       {currentAttack.attacking_zone}
                     </Text>
                     <Text></Text>
-                    <Text className="font-montez text-white text-4xl px-5 py-2 text-left">
+                    <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
                       Defence:
                     </Text>
-                    <Text className="font-montez text-white text-4xl px-5 py-2 text-left">
-                      Team {currentAttack.defending_team},{" "}
+                    <Text className="font-pregular text-white text-xl px-5 py-2 text-left">
+                      {currentAttack.defending_team},{" "}
                       {currentAttack.defending_zone}
                     </Text>
                   </View>
-                  <Timer
-                    attack_id={currentAttack._id}
-                    textStyles={"text-4xl text-white text-center"}
-                  />
                 </View>
               ) : (
                 <Text className="font-montez text-white text-4xl p-5 text-center ">
@@ -301,6 +294,14 @@ const AdminHome = () => {
             </View>
 
             <View>
+              {currentAttack._id && (
+                <Timer
+                  attack_id={currentAttack._id}
+                  textStyles={
+                    "text-3xl text-red-800 mt-4 mb-2 text-center font-psemibold"
+                  }
+                />
+              )}
               <View className="flex flex-row justify-between mr-1 mt-3">
                 {response.attacks.length > 0 && (
                   <View className="w-full">
@@ -322,7 +323,7 @@ const AdminHome = () => {
                     </View>
                     <CustomButton
                       title="Cancel Attack"
-                      containerStyles="mt-5 p-3"
+                      containerStyles="mt-5 p-3 mb-10"
                       textStyles={"text-3xl"}
                       handlePress={() => {
                         cancelAttackAlert(currentAttack._id);

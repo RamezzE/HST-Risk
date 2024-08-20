@@ -67,7 +67,7 @@ const Home = () => {
   const logoutFunc = () => {
     Alert.alert(
       "Logout",
-      "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
+      "Are you sure you want to logout?\nYou will not receive any notifications after logging out.",
       [
         {
           text: "Cancel",

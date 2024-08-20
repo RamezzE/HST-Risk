@@ -23,8 +23,7 @@ class UserController {
           response.errorMsg = "Invalid Credentials";
           return res.json(response);
         }
-        console.log("Subteam Found");
-        console.log(subteam._id);
+        console.log("Subteam Found ", subteam);
         req.session.user = { id: subteam._id, mode: "subteam" };
         req.session.save((err) => {
           if (err) {

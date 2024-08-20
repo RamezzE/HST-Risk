@@ -25,6 +25,7 @@ const GuestChooseTeam = () => {
   const { setTeamNo, setSubteam, expoPushToken } = useContext(GlobalContext);
   const [teams, setTeams] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchData = async () => {
     setIsRefreshing(true);
@@ -48,10 +49,21 @@ const GuestChooseTeam = () => {
   }, []);
   
   const handleTeamSelection = async (teamNo) => {
-    setTeamNo(teamNo);
-    setSubteam('')
-    await addPushToken(expoPushToken, teamNo);
-    router.replace("/guest_home");
+    setIsSubmitting(true);
+
+    try {
+      setTeamNo(teamNo);
+      setSubteam('')
+      await addPushToken(expoPushToken, teamNo);
+      router.replace("/guest_home");
+    }
+    catch (error) {
+      console.log(error);
+    }
+    finally {
+      setIsSubmitting(false);
+    }
+    
   };
 
   const insets = useSafeAreaInsets();
@@ -102,6 +114,7 @@ const GuestChooseTeam = () => {
                 handlePress={async () => await handleTeamSelection(team.number)}
                 containerStyles="my-4 p-4"
                 textStyles="text-2xl text-center text-white"
+                isLoading={isSubmitting}
               />
             ))}
           </View>

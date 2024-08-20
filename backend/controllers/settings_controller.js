@@ -17,8 +17,6 @@ class SettingsController {
     try {
       const setting = await Settings.findOne({ name });
 
-      console.log(setting);
-
       if (!setting) {
         result.errorMsg = "Setting not found";
         return res.json(result);
