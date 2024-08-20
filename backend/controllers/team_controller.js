@@ -408,20 +408,24 @@ class TeamController {
       errorMsg: "",
     };
 
-    const { number, amount, type } = req.body;
+    const { teamNo, amount, type } = req.body;
 
     try {
-      const team = await Team.findOne({ number });
+      const team = await Team.findOne({ number: teamNo });
 
       if (!team) {
-        result.errorMsg = `Team ${number} not found`;
+        result.errorMsg = `Team ${teamNo} not found`;
         return res.json(result);
       }
 
+      console.log(`Updating balance for team ${teamNo} by ${amount}`);
+
+      const amountToChange = parseInt(amount);
+
       if (type === "add") {
-        team.balance += amount;
+        team.balance += amountToChange;
       } else if (type === "remove") {
-        team.balance -= amount;
+        team.balance -= amountToChange;
       }
 
       await team.save();

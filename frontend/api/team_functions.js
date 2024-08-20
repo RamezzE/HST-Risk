@@ -100,12 +100,15 @@ export const update_subteam = async (username, password) => {
 };
 
 export const update_team_balance = async (teamNo, amount, type) => {
+  console.log(teamNo, amount, type);
   try {
     const response = await apiClient.post('/update-balance', {
       teamNo,
       amount,
       type,
     });
+
+    console.log(response.data);
 
     return response.data;
   } catch (error) {

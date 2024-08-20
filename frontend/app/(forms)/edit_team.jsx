@@ -81,13 +81,21 @@ const EditTeam = () => {
     setIsModifyingBalance(true);
     try {
       if (type === "add") {
-        await update_team_balance(local.teamNo.trim(), amount, "add");
+        const response = await update_team_balance(local.teamNo.trim(), amount, "add");
+        if (!response.success) {
+          Alert.alert("Error", response.errorMsg);
+          return;
+        }
         setForm((prevForm) => ({
           ...prevForm,
           balance: prevForm.balance + amount,
         }));
       } else if (type === "remove") {
-        await update_team_balance(local.teamNo.trim(), amount, "remove");
+        const response = await update_team_balance(local.teamNo.trim(), amount, "remove");
+        if (!response.success) {
+          Alert.alert("Error", response.errorMsg);
+          return;
+        }
         setForm((prevForm) => ({
           ...prevForm,
           balance: prevForm.balance - amount,
