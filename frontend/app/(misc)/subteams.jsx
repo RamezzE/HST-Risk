@@ -70,7 +70,7 @@ const SubTeams = () => {
         <CustomButton
           title="Edit"
           handlePress={() =>
-            router.navigate(`/edit_subteam?username=${item.username}&password=${item.password}`)
+            router.push(`/edit_subteam?username=${item.username}&password=${item.password}`)
           }
           containerStyles="w-1/4 h-2/3 mt-2"
           textStyles="text-2xl"

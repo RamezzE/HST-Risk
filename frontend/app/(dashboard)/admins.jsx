@@ -71,7 +71,7 @@ const Admins = () => {
         <CustomButton
           title="Edit"
           handlePress={() =>
-            router.navigate(
+            router.push(
               `/edit_admin?name=${item.name.trim()}&password=${item.password.trim()}&war=${item.war.trim()}&type=${item.type.trim()}`
 
             )

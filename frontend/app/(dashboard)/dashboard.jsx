@@ -153,6 +153,7 @@ const Dashboard = () => {
         return null;
       };
 
+
       return (
         <React.Fragment key={index}>
           <View
@@ -168,7 +169,7 @@ const Dashboard = () => {
               title="Edit"
               handlePress={() => {
                 const jsonData = JSON.stringify(item.options);
-                router.navigate(
+                router.push(
                   `/edit_setting?name=${item.name}&value=${item.value}&options=${jsonData}`
                 );
               }}

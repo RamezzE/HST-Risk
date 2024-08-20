@@ -108,7 +108,7 @@ const Teams = () => {
             <CustomButton
               title="Edit"
               handlePress={() =>
-                router.navigate(
+                router.push(
                   `/edit_team?teamNo=${item.number}&teamName=${item.name}&teamBalance=${item.balance}`
                 )
               }

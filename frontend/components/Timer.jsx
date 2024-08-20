@@ -40,6 +40,7 @@ const Timer = ({ attack_id, textStyles }) => {
     };
 
     fetchServerTime();
+    setInterval(fetchServerTime, 60000);
   }, []);
 
   useEffect(() => {

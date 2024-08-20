@@ -229,7 +229,7 @@ class AttackController {
     }
 
     if (duplicate_attack.duplicate) {
-      console.log("You are already attacking this country");
+      console.log("Your team is already attacking this country");
       result.errorMsg = duplicate_attack.errorMsg;
       return res.json(result);
     }
@@ -491,7 +491,7 @@ class AttackController {
       }
 
       if (subteam_attacks.length > 0) {
-        result.errorMsg = `You are already attacking ${attacks[0].defending_zone}`;
+        result.errorMsg = `This subteam is already attacking ${attacks[0].defending_zone}`;
         return result;
       }
     } catch (error) {
