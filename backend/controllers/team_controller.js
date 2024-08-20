@@ -401,6 +401,39 @@ class TeamController {
       console.error("An error occurred while updating team balances:", error);
     }
   }
+
+  static async update_team_balance(req, res) {
+    const result = {
+      success: false,
+      errorMsg: "",
+    };
+
+    const { number, amount, type } = req.body;
+
+    try {
+      const team = await Team.findOne({ number });
+
+      if (!team) {
+        result.errorMsg = `Team ${number} not found`;
+        return res.json(result);
+      }
+
+      if (type === "add") {
+        team.balance += amount;
+      } else if (type === "remove") {
+        team.balance -= amount;
+      }
+
+      await team.save();
+
+      result.success = true;
+      return res.json(result);
+    } catch (error) {
+      result.errorMsg = "Error updating team balance";
+      console.error("Error updating team balance:", error);
+      return res.json(result);
+    }
+  }
   
 }
 

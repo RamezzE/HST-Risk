@@ -1,20 +1,25 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useContext } from "react";
 import {
   View,
   Text,
   ImageBackground,
   ScrollView,
   RefreshControl,
-  TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { get_all_teams } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
 import { images } from "../../constants";
 import Loader from "../../components/Loader";
-import CustomButton from "../../components/CustomButton";
+
+import { GlobalContext } from "../../context/GlobalProvider";
+
+import BackButton from "../../components/BackButton";
+
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
@@ -24,6 +29,10 @@ const Teams = () => {
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+    const { Logout } = useContext(GlobalContext);
+    
+
 
   const fetchData = async () => {
     setError(null);
@@ -58,9 +67,7 @@ const Teams = () => {
   }, []);
 
   const toggleExpandTeam = (teamNumber) => {
-    setExpandedTeam((prev) =>
-      prev === teamNumber ? null : teamNumber
-    );
+    setExpandedTeam((prev) => (prev === teamNumber ? null : teamNumber));
   };
 
   const renderTeams = () => {
@@ -80,40 +87,78 @@ const Teams = () => {
       return (
         <View
           key={index}
-          className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+          className="p-4 my-2 rounded-md flex flex-row"
           style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
         >
-          <View className="flex flex-row flex-wrap justify-between">
+          <View className="flex flex-col justify-start w-[70%]">
             <Text className="text-4xl font-montez">{item.name}</Text>
-            <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
-            <Text className="text-[16px] font-pregular">Running Money: {item.balance}</Text>
-            <Text className="text-[16px] font-pregular">
+            <Text className="text-2xl font-montez">
+              Team Number: {item.number}
+            </Text>
+            <Text className="text-2xl font-montez">
+              Running Money: {item.balance}
+            </Text>
+            <Text className="text-2xl font-montez">
               Countries Owned: {ownedCountries.length}
             </Text>
-
-            {/* Button to toggle country names */}
-
-            <CustomButton 
-              title= {expandedTeam === item.number ? "Hide Countries" : "Show Countries"}
-              containerStyles="p-2 rounded-md mt-2"
-              handlePress={() => toggleExpandTeam(item.number)}
-              textStyles={"text-[12px] font-pregular"}
-            />
 
             {/* Conditional rendering of countries */}
             {expandedTeam === item.number && (
               <View className="mt-2">
                 {ownedCountries.map((country, index) => (
-                  <Text key={index} className="text-l font-pmedium">
+                  <Text key={index} className="text-xl font-montez">
                     {country.name}
                   </Text>
                 ))}
               </View>
             )}
           </View>
+
+          <View className="flex flex-col justify-start w-[30%]">
+            <CustomButton
+              title="Edit"
+              handlePress={() =>
+                router.navigate(
+                  `/edit_team?teamNo=${item.number}&teamName=${item.name}&teamBalance=${item.balance}`
+                )
+              }
+              containerStyles="mt-2"
+              textStyles="text-2xl"
+            />
+            <CustomButton
+              title={
+                expandedTeam === item.number
+                  ? "Hide Countries"
+                  : "Show Countries"
+              }
+              containerStyles="p-2 rounded-md mt-2"
+              textStyles={"text-2xl"}
+              handlePress={() => toggleExpandTeam(item.number)}
+            />
+          </View>
         </View>
       );
     });
+  };
+
+  const logoutFunc = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          onPress: () => {
+            Logout();
+            router.replace("/");
+          },
+        },
+      ]
+    );
   };
 
   if (isRefreshing) {
@@ -143,12 +188,11 @@ const Teams = () => {
         paddingRight: insets.right,
         paddingLeft: insets.left,
       }}
-      className="bg-black h-full"
+      className="bg-black flex-1"
     >
       <ImageBackground
         source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+        style={{ flex: 1, resizeMode: "cover" }}
       >
         <ScrollView
           refreshControl={
@@ -161,6 +205,13 @@ const Teams = () => {
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full justify-start p-4 mb-24">
+          <BackButton
+              style="w-[20vw]"
+              size={32}
+              onPress={() => {
+                logoutFunc();
+              }}
+            />
             <Text className="text-6xl text-center font-montez py-2 mt-7">
               Teams
             </Text>

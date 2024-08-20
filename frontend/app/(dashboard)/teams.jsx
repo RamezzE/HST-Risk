@@ -20,6 +20,7 @@ const Teams = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [countries, setCountries] = useState([]);
+  const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -55,8 +56,11 @@ const Teams = () => {
     fetchData();
   }, []);
 
-  const renderTeams = () => {
+  const toggleExpandTeam = (teamNumber) => {
+    setExpandedTeam((prev) => (prev === teamNumber ? null : teamNumber));
+  };
 
+  const renderTeams = () => {
     if (!Array.isArray(teams)) {
       return (
         <Text className="text-center">
@@ -64,34 +68,67 @@ const Teams = () => {
         </Text>
       );
     }
-    return teams.map((item, index) => (
-      <View
-        key={index}
-        className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
-        style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
-      >
-        <View className="flex flex-col ">
-          <Text className="text-4xl font-montez">{item.name}</Text>
-          <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
-          <Text className="text-2xl font-montez">Running Money: {item.balance}</Text>
-          <Text className="text-2xl font-montez">
-            Countries Owned:{" "}
-            {Array.isArray(countries) && countries.filter((country) => country.teamNo === item.number).length}
-          </Text>
-        </View>
 
-        <CustomButton
-          title="Edit"
-          handlePress={() =>
-            router.navigate(
-              `/edit_team?teamNo=${item.number}&teamName=${item.name}&teamBalance=${item.balance}`
-            )
-          }
-          containerStyles="w-1/4 h-2/3 mt-2 "
-          textStyles="text-2xl"
-        />
-      </View>
-    ));
+    return teams.map((item, index) => {
+      const ownedCountries = countries.filter(
+        (country) => country.teamNo === item.number
+      );
+
+      return (
+        <View
+          key={index}
+          className="p-4 my-2 rounded-md flex flex-row"
+          style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
+        >
+          <View className="flex flex-col justify-start w-[70%]">
+            <Text className="text-4xl font-montez">{item.name}</Text>
+            <Text className="text-2xl font-montez">
+              Team Number: {item.number}
+            </Text>
+            <Text className="text-2xl font-montez">
+              Running Money: {item.balance}
+            </Text>
+            <Text className="text-2xl font-montez">
+              Countries Owned: {ownedCountries.length}
+            </Text>
+
+            {/* Conditional rendering of countries */}
+            {expandedTeam === item.number && (
+              <View className="mt-2">
+                {ownedCountries.map((country, index) => (
+                  <Text key={index} className="text-xl font-montez">
+                    {country.name}
+                  </Text>
+                ))}
+              </View>
+            )}
+          </View>
+
+          <View className="flex flex-col justify-start w-[30%]">
+            <CustomButton
+              title="Edit"
+              handlePress={() =>
+                router.navigate(
+                  `/edit_team?teamNo=${item.number}&teamName=${item.name}&teamBalance=${item.balance}`
+                )
+              }
+              containerStyles="mt-2"
+              textStyles="text-2xl"
+            />
+            <CustomButton
+              title={
+                expandedTeam === item.number
+                  ? "Hide Countries"
+                  : "Show Countries"
+              }
+              containerStyles="p-2 rounded-md mt-2"
+              textStyles={"text-2xl"}
+              handlePress={() => toggleExpandTeam(item.number)}
+            />
+          </View>
+        </View>
+      );
+    });
   };
 
   if (isRefreshing) {

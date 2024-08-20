@@ -313,11 +313,11 @@ const Attack = () => {
             <View className="flex flex-col mb-6">
 
               <View className="flex flex-row justify-between pb-4">
-                <Text className="font-montez text-2xl">
+                <Text className="font-pmedium text-[16px]">
                   Team money:{" "}
                   {balance}
                 </Text>
-                <Text className="font-montez text-2xl">Attack cost: {attackCost}</Text>
+                <Text className="font-pmedium text-[16px]">Attack cost: {attackCost}</Text>
               </View>
 
               {!Array.isArray(myZones) || myZones.length === 0 ? (
@@ -396,7 +396,7 @@ const Attack = () => {
                 attack_func(form.your_zone, parseInt(teamNo), form.other_zone)
               }
               containerStyles="mt-5 mb-5 p-3"
-              textStyles={"text-3xl"}
+              textStyles={"text-xl font-pregular"}
               isLoading={isSubmitting}
             />
           </View>

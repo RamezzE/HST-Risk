@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, Alert, ImageBackground } from "react-native";
+import { View, Text, Alert, ImageBackground, ScrollView, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
@@ -27,14 +27,13 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [teams, setTeams] = useState([]);
   const [attacks, setAttacks] = useState([]);
-  const [isRefreshing, setIsRefreshing] = useState(true); // Add isRefreshing state
+  const [isRefreshing, setIsRefreshing] = useState(false); // Changed initial value to false
   const insets = useSafeAreaInsets();
   const { name, teamNo, subteam, Logout, expoPushToken } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
     setZones(countries);
-    console.log("Fetching data");
 
     try {
       const result = await get_country_mappings();
@@ -103,7 +102,7 @@ const Home = () => {
 
       Alert.alert(
         zone.name,
-        `Owned by: Team ${team.number}\n${
+        `Owned by: Team ${team ? team.number : "Unknown"}\n${
           attack
             ? `Under attack by: Team ${attack.attacking_team}`
             : "Not under attack"
@@ -122,6 +121,36 @@ const Home = () => {
     } catch (error) {
       return "#000000";
     }
+  };
+
+  const renderColorLegend = () => {
+    return (
+      <View
+        style={{
+          position: "absolute",
+          bottom: 10,
+          left: 10,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          padding: 10,
+          borderRadius: 5,
+        }}
+      >
+        {Array.isArray(teams) && teams.map((team, index) => (
+          <View key={index} style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+            <View
+              style={{
+                width: 20,
+                height: 20,
+                backgroundColor: team.color,
+                marginRight: 10,
+                borderRadius: 5,
+              }}
+            />
+            <Text style={{ color: "white", fontSize: 12 }}>Team {team.number}</Text>
+          </View>
+        ))}
+      </View>
+    );
   };
 
   if (isRefreshing) {
@@ -157,61 +186,78 @@ const Home = () => {
         source={images.background}
         style={{ flex: 1, resizeMode: "cover" }}
       >
-        <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
-          <BackButton style="w-[20vw]" size={32} onPress={() => logoutFunc()} />
-          <Text className="font-montez text-center text-5xl m-4 mt-0 pt-2">
-            {name}, Team {teamNo}
-            {subteam}
-          </Text>
-          <View
-            style={{
-              flex: 1,
-              borderWidth: 5,
-              borderColor: "black",
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
-            <MapView
-              className="flex-1"
-              initialRegion={{
-                latitude: 30.357810872761366,
-                longitude: 30.392057112613095,
-                latitudeDelta: 100,
-                longitudeDelta: 180,
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => {
+                setIsRefreshing(true);
+                fetchData();
               }}
-              mapType="satellite"
-              rotateEnabled={false}
-              pitchEnabled={false}
+            />
+          }
+        >
+          <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
+            <BackButton style="w-[20vw]" size={32} onPress={() => logoutFunc()} />
+            <View className="flex flex-row justify-center gap-0">
+              <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
+                {name}, Team {teamNo}
+              </Text>
+              <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">{subteam}</Text>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                borderWidth: 5,
+                borderColor: "black",
+                borderRadius: 2,
+                overflow: "hidden",
+              }}
             >
-              {Array.isArray(zones) &&
-                zones.map((zone) => (
-                  <MapZone
-                    key={zone.name}
-                    points={zone.points}
-                    color={getTeamColor(zone.name)}
-                    label={zone.name}
-                    onMarkerPress={() => onMarkerPress(zone)}
-                  />
-                ))}
+              <MapView
+                className="flex-1"
+                initialRegion={{
+                  latitude: 30.357810872761366,
+                  longitude: 30.392057112613095,
+                  latitudeDelta: 100,
+                  longitudeDelta: 180,
+                }}
+                mapType="satellite"
+                rotateEnabled={false}
+                pitchEnabled={false}
+              >
+                {Array.isArray(zones) &&
+                  zones.map((zone) => (
+                    <MapZone
+                      key={zone.name}
+                      points={zone.points}
+                      color={getTeamColor(zone.name)}
+                      label={zone.name}
+                      onMarkerPress={() => onMarkerPress(zone)}
+                    />
+                  ))}
 
-              {Array.isArray(CountryConnections) &&
-                CountryConnections.map((points, index) => (
-                  <DottedLine
-                    key={index}
-                    startPoint={points.point1}
-                    endPoint={points.point2}
-                    color="#FFF"
-                    thickness={3}
-                  />
-                ))}
-            </MapView>
+                {Array.isArray(CountryConnections) &&
+                  CountryConnections.map((points, index) => (
+                    <DottedLine
+                      key={index}
+                      startPoint={points.point1}
+                      endPoint={points.point2}
+                      color="#FFF"
+                      thickness={3}
+                    />
+                  ))}
+              </MapView>
+            </View>
+
+            {renderColorLegend()}
+
+            {error && (
+              <Text className="text-white text-center p-2 text-xl">{error}</Text>
+            )}
           </View>
-
-          {error && (
-            <Text className="text-white text-center p-2 text-xl">{error}</Text>
-          )}
-        </View>
+        </ScrollView>
       </ImageBackground>
     </View>
   );

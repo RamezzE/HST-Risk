@@ -39,7 +39,7 @@ const DropdownField = ({
         <TouchableWithoutFeedback onPress={openPicker}>
           <View style={{ flex: 1 }} className="w-full h-16 px-4 bg- rounded-md focus:border-secondary flex flex-row items-center">
             <TextInput
-              className="text-white font-montez text-2xl"
+              className="text-white font-psemibold text-[16px]"
               value={value ? value : placeholder}
               placeholder={placeholder}
               placeholderTextColor="#F2E9D0"
@@ -91,11 +91,6 @@ const DropdownField = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 20,
-  },
-  title: {
-    fontSize: 24,
-    color: "#000",
-    fontFamily: "montez",
   },
   textInput: {
     color: "#FFF",

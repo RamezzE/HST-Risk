@@ -22,7 +22,7 @@ const FormField = ({
         style={{ backgroundColor: 'rgba(75, 50, 12, 0.5)' }} // Transparent background
       >
         <TextInput
-          className= {`flex-1 text-white font-montez text-3xl ${textStyles}`}
+          className= {`flex-1 text-white font-psemibold text-[16px] ${textStyles}`}
           value={value}
           placeholder={placeholder}
           placeholderTextColor="#F2E9D0"

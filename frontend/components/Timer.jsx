@@ -53,7 +53,7 @@ const Timer = ({ attack_id, textStyles }) => {
     }
   }, [timeOffset, startTime, expiryTime]);
 
-  return <Text className={`text-2xl font-montez ${textStyles}`}>{countdown}</Text>;
+  return <Text className={`text-xl font-plight ${textStyles}`}>{countdown}</Text>;
 };
 
 export default Timer;

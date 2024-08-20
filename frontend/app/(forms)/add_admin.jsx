@@ -14,14 +14,19 @@ import { images } from "../../constants";
 import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
 
-const validateAddAdmin = (name, war) => {
+const validateAddAdmin = (name, war, type) => {
   var result = {
     success: false,
     errorMsg: "",
   };
 
-  if (!war || !name) {
+  if (!name) {
     result.errorMsg = "Please fill in all the fields";
+    return result;
+  }
+
+  if (!war && type == "Wars") {
+    result.errorMsg = "Please select a war";
     return result;
   }
 
@@ -33,6 +38,7 @@ const AddAdmin = () => {
   const [form, setForm] = useState({
     name: "",
     war: "",
+    type: "Wars",
     // password: "",
   });
 
@@ -45,7 +51,7 @@ const AddAdmin = () => {
   const submit = async () => {
     setIsSubmitting(true);
 
-    var result = validateAddAdmin(form.name, form.war);
+    var result = validateAddAdmin(form.name, form.war, form.type);
 
     if (!result.success) {
       Alert.alert("Error", result.errorMsg);
@@ -54,7 +60,11 @@ const AddAdmin = () => {
     }
 
     try {
-      const response = await add_admin(form.name.trim(), form.war.trim());
+      const response = await add_admin(
+        form.name.trim(),
+        form.war.trim(),
+        form.type.trim()
+      );
 
       if (!response.success) {
         Alert.alert("Error", response.errorMsg);
@@ -152,7 +162,16 @@ const AddAdmin = () => {
               otherStyles="mt-7"
             /> */}
 
-            {Array.isArray(wars) && (
+            <DropDownField
+              title="Admin Type"
+              value={form.type}
+              placeholder="Select War"
+              items={["Wars", "Missions"].map((type) => ({ label: type, value: type }))}
+              handleChange={(e) => setForm({ ...form, type: e })}
+              otherStyles="mt-7"
+            />
+
+            {Array.isArray(wars) && form.type == "Wars" && (
               <DropDownField
                 title="Assigned War"
                 value={form.war}

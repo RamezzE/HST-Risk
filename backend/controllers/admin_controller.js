@@ -34,7 +34,7 @@ class AdminController {
       errorMsg: "",
     };
 
-    const { name, war } = req.body;
+    const { name, war, type } = req.body;
 
     const admin = await Admin.findOne({ name });
 
@@ -47,6 +47,7 @@ class AdminController {
       name: name,
       password: generatePassword(),
       war: war,
+      type: type,
     });
 
     try {
@@ -66,7 +67,7 @@ class AdminController {
       errorMsg: "",
     };
 
-    const { oldName, name, password, war } = req.body;
+    const { oldName, name, password, war, type } = req.body;
 
     try {
       const admin = await Admin.findOne({ name: oldName });
@@ -79,6 +80,7 @@ class AdminController {
       admin.name = name;
       admin.password = password;
       admin.war = war;
+      admin.type = type;
 
       await admin.save();
 

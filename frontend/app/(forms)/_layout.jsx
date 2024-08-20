@@ -12,6 +12,12 @@ const FormsLayout = () => {
           }}
         />
         <Stack.Screen
+          name="add_war"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="edit_admin"
           options={{
             headerShown: false,

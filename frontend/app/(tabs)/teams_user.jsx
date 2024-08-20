@@ -5,6 +5,7 @@ import {
   ImageBackground,
   ScrollView,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -13,12 +14,14 @@ import { get_all_teams } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
 import { images } from "../../constants";
 import Loader from "../../components/Loader";
+import CustomButton from "../../components/CustomButton";
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [countries, setCountries] = useState([]);
+  const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -54,8 +57,13 @@ const Teams = () => {
     fetchData();
   }, []);
 
-  const renderTeams = () => {
+  const toggleExpandTeam = (teamNumber) => {
+    setExpandedTeam((prev) =>
+      prev === teamNumber ? null : teamNumber
+    );
+  };
 
+  const renderTeams = () => {
     if (!Array.isArray(teams)) {
       return (
         <Text className="text-center">
@@ -64,23 +72,48 @@ const Teams = () => {
       );
     }
 
-    return teams.map((item, index) => (
-      <View
-        key={index}
-        className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
-        style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
-      >
-        <View className="flex flex-row flex-wrap justify-between">
-          <Text className="text-4xl font-montez">{item.name}</Text>
-          <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
-          <Text className="text-2xl font-montez">Running Money: {item.balance}</Text>
-          <Text className="text-2xl font-montez">
-            Countries Owned:{" "}
-            {Array.isArray(countries) && countries.filter((country) => country.teamNo === item.number).length}
-          </Text>
+    return teams.map((item, index) => {
+      const ownedCountries = countries.filter(
+        (country) => country.teamNo === item.number
+      );
+
+      return (
+        <View
+          key={index}
+          className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+          style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
+        >
+          <View className="flex flex-row flex-wrap justify-between">
+            <Text className="text-4xl font-montez">{item.name}</Text>
+            <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
+            <Text className="text-[16px] font-pregular">Running Money: {item.balance}</Text>
+            <Text className="text-[16px] font-pregular">
+              Countries Owned: {ownedCountries.length}
+            </Text>
+
+            {/* Button to toggle country names */}
+
+            <CustomButton 
+              title= {expandedTeam === item.number ? "Hide Countries" : "Show Countries"}
+              containerStyles="p-2 rounded-md mt-2"
+              handlePress={() => toggleExpandTeam(item.number)}
+              textStyles={"text-[12px] font-pregular"}
+            />
+
+            {/* Conditional rendering of countries */}
+            {expandedTeam === item.number && (
+              <View className="mt-2">
+                {ownedCountries.map((country, index) => (
+                  <Text key={index} className="text-l font-pmedium">
+                    {country.name}
+                  </Text>
+                ))}
+              </View>
+            )}
+          </View>
         </View>
-      </View>
-    ));
+      );
+    });
   };
 
   if (isRefreshing) {

@@ -19,6 +19,7 @@ router.put("/", TeamController.add_team)
 router.post("/update/:number", TeamController.update_team)
 router.post("/update-subteam", TeamController.update_subteam)
 router.post("/create-teams", TeamController.create_teams)
+router.post("/update-balance", TeamController.update_team_balance)
 
 router.delete("/:number", TeamController.delete_team)
 

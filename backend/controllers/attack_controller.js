@@ -31,17 +31,18 @@ class AttackController {
     const real_team_1 = attacking_country.teamNo;
     const real_team_2 = defending_country.teamNo;
 
-    if (team_1 !== real_team_1) {
+    if (team_1.toString() !== real_team_1.toString()) {
+      console.log(team_1, real_team_1);
       result.errorMsg = `You do not own ${zone_1}`;
       return res.json(result);
     }
 
-    if (team_2 !== real_team_2) {
+    if (team_2.toString() !== real_team_2.toString()) {
       result.errorMsg = `Defending team changed from ${team_2} to ${real_team_2}. Please recheck if you want to proceed`;
       return res.json(result);
     }
 
-    if (team_1 === real_team_2) {
+    if (team_1.toString() === real_team_2.toString()) {
       result.errorMsg = "You cannot attack your own zone";
       return res.json(result);
     }
@@ -385,13 +386,13 @@ class AttackController {
               result.errorMsg = "Defending team not found";
               return res.json(result);
             }
-
+            
             await UserController.sendBatchPushNotifications(
               [attacking_team.expoPushTokens, defending_team.expoPushTokens],
               [`Your team is attacking!`, "Your team is under attack!!"],
               [
-                `Your team ${team_1}${subteam_1} is attacking ${real_team_2}'s ${zone_2} in ${war}\nHead there now!`,
-                `Your ${zone_1} is under attack by team${team_1}${subteam_1} in ${war}!\nHead there now!`,
+                `Your team ${team_1}${subteam_1} is attacking ${real_team_2}'s ${zone_2} in ${war}!`,
+                `Your ${zone_1} is under attack by team ${team_1}${subteam_1} in ${war}!!`,
               ]
             );
 

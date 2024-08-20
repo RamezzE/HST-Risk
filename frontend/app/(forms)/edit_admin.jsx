@@ -23,14 +23,19 @@ import Loader from "../../components/Loader";
 
 import { images } from "../../constants";
 
-const validateEditAdmin = (name, password, war) => {
+const validateEditAdmin = (name, password, war, type) => {
   var result = {
     success: false,
     errorMsg: "",
   };
 
-  if (!name || !password || !war) {
+  if (!name || !password) {
     result.errorMsg = "Please fill in all the fields";
+    return result;
+  }
+
+  if (!war && type == "Wars") {
+    result.errorMsg = "Please select a war";
     return result;
   }
 
@@ -45,6 +50,7 @@ const EditAdmin = () => {
     name: local.name,
     password: local.password,
     war: local.war,
+    type: local.type,
   });
 
   const [wars, setWars] = useState([]);
@@ -54,10 +60,11 @@ const EditAdmin = () => {
   const submit = async () => {
     setIsSubmitting(true);
 
-    var result = validateEditAdmin(form.name, form.password, form.war);
+    var result = validateEditAdmin(form.name, form.password, form.war, form.type);
 
     if (!result.success) {
       Alert.alert("Error", result.errorMsg);
+      setIsSubmitting(false);
       return;
     }
 
@@ -66,7 +73,8 @@ const EditAdmin = () => {
         local.name.trim(),
         form.name.trim(),
         form.password.trim(),
-        form.war.trim()
+        form.war.trim(),
+        form.type.trim()
       );
 
       if (!response.success) {
@@ -212,10 +220,19 @@ const EditAdmin = () => {
               value={form.password}
               handleChangeText={(e) => setForm({ ...form, password: e })}
               otherStyles="mt-7"
-              textStyles="font-plight"
+              textStyles=""
             />
 
-            {Array.isArray(wars) && (
+            <DropDownField
+              title="Admin Type"
+              value={form.type}
+              placeholder="Select Type"
+              items={[ { label: "Wars", value: "Wars" }, { label: "Missions", value: "Missions" } ]}
+              handleChange={(e) => setForm({ ...form, type: e })}
+              otherStyles="mt-7"
+            />
+
+            {Array.isArray(wars) && form.type == "Wars" && (
               <DropDownField
                 title="Assigned War"
                 value={form.war}

@@ -13,8 +13,12 @@ const adminSchema = new mongoose.Schema(
     },
     war: {
       type: String,
-      required: true,
+      // required: true,
     },
+    type: {
+      type: String,
+      required: true,
+    }
   },
   {
     timestamps: true,

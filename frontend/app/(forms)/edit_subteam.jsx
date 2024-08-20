@@ -107,7 +107,6 @@ const EditTeam = () => {
               value={form.password}
               handleChangeText={(e) => setForm({ ...form, password: e })}
               otherStyles="mt-7"
-              textStyles="font-plight"
             />
 
             <CustomButton

@@ -160,8 +160,8 @@ const Dashboard = () => {
             style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
           >
             <View className="flex flex-col w-[70%]">
-              <Text className="text-4xl font-montez">{item.name}</Text>
-              <Text className="text-3xl font-montez">Value: {item.value}</Text>
+              <Text className="text-2xl font-pmedium">{item.name}</Text>
+              <Text className="text-xl font-pregular">Value: {item.value}</Text>
             </View>
 
             <CustomButton
@@ -178,7 +178,7 @@ const Dashboard = () => {
           </View>
 
           {showTitle() && (
-            <Text className="text-2xl text-center text-black font-montez p-5">
+            <Text className="text-3xl text-center text-black font-montez p-5">
               {showTitle()}
             </Text>
           )}

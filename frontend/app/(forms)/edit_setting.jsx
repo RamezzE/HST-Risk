@@ -29,14 +29,14 @@ const EditSetting = () => {
       success: true,
       errorMsg: "",
     };
-  
+
     // Check if form.value is empty
     if (form.value.trim() === "") {
       result.success = false;
       result.errorMsg = `${form.name} value cannot be empty`;
       return result;
     }
-  
+
     // Check if form.options is an empty array
     if (form.options.length === 0) {
       // If options is empty, value must be a number
@@ -46,12 +46,11 @@ const EditSetting = () => {
         return result;
       }
     }
-  
+
     // If form.options is not empty, value can be a string
     result.success = true;
     return result;
   };
-  
 
   const submit = async () => {
     try {
@@ -121,18 +120,9 @@ const EditSetting = () => {
               editable={false}
             />
 
-            <FormField
-              title="Setting Value"
-              value={form.value}
-              handleChangeText={(e) => setForm({ ...form, value: e })}
-              otherStyles="mt-7"
-              editable={form.options.length === 0}
-            />
-
-
-            {Array.isArray(form.options) && form.options.length > 0 && (
+            {Array.isArray(form.options) && form.options.length > 0 ? (
               <DropDownField
-                title="Value Options"
+                title="Setting Value"
                 value={form.value}
                 placeholder="Select Value"
                 items={form.options.map((option) => ({
@@ -141,6 +131,15 @@ const EditSetting = () => {
                 }))}
                 handleChange={(e) => setForm({ ...form, value: e })}
                 otherStyles="mt-7"
+              />
+            ) : (
+              <FormField
+                title="Setting Value"
+                value={form.value}
+                handleChangeText={(e) => setForm({ ...form, value: e })}
+                otherStyles="mt-7"
+                keyboardType="numeric"
+                editable={form.options.length === 0}
               />
             )}
 

@@ -35,7 +35,7 @@ const SignIn = () => {
     password: "",
   });
 
-  const { setName, setTeamNo, setSubteam, expoPushToken } = useContext(GlobalContext);
+  const { setName, setTeamNo, setSubteam, expoPushToken, setUserMode } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,7 +59,7 @@ const SignIn = () => {
           setTeamNo(response.subteam.number);
           setName(response.subteam.name);
           setSubteam(response.subteam.letter);
-
+          setUserMode("subteam");
 
           await addPushToken(expoPushToken, response.subteam.number);
 
@@ -69,11 +69,19 @@ const SignIn = () => {
 
         if (response.admin != "") {
           setName(form.username);
-          router.replace("/admin_home");
+          setUserMode("admin");
+          if (response.admin.type == "Wars") {
+            router.replace("/admin_home");
+            return;
+          }
+
+          router.replace("/admin_home2");
+          
           return;
         }
 
         if (response.superAdmin != "") {
+          setUserMode("super_admin");
           console.log("Super admin");
           router.replace("/dashboard");
           return;

@@ -24,11 +24,12 @@ export const get_admins = async () => {
   }
 };
 
-export const add_admin = async (name, war) => {
+export const add_admin = async (name, war, type = "Wars") => {
   try {
     const response = await apiClient.put(`/`, {
       name,
       war,
+      type,
     });
     return response.data;
   } catch (error) {
@@ -36,13 +37,14 @@ export const add_admin = async (name, war) => {
   }
 };
 
-export const update_admin = async (oldName, name, password, war) => {
+export const update_admin = async (oldName, name, password, war, type) => {
   try {
     const response = await apiClient.post(`/update`, {
       oldName,
       name,
       password,
       war,
+      type,
     });
     return response.data;
   } catch (error) {

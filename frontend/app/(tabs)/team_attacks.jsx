@@ -98,7 +98,7 @@ const TeamAttacks = () => {
         >
           <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-start">
             <Text className="font-montez text-center text-5xl py-5">
-              Team {teamNo} Attacks
+              Team {teamNo} Wars
             </Text>
 
             {error ? (
@@ -120,16 +120,19 @@ const TeamAttacks = () => {
                         style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
                       >
                         <View className="p-2">
-                          <Text className="text-black text-3xl font-montez">
+                          <Text className="text-black text-xl font-psemibold">
                             {attack.attacking_zone} ({attack.attacking_team}
                             {attack.attacking_subteam}) →{" "}
                             {attack.defending_zone} ({attack.defending_team}
                             {attack.defending_subteam})
                           </Text>
-                          <Text className="text-black text-2xl font-montez">
+                          <Text className="text-black text-xl font-pregular">
                             {attack.war}
                           </Text>
-                          <Timer attack_id={attack._id} />
+                          <Timer
+                            attack_id={attack._id}
+                            textStyles={"font-pbold text-red-800 text-xl"}
+                          />
                         </View>
                       </View>
                     ))
@@ -153,16 +156,19 @@ const TeamAttacks = () => {
                         style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
                       >
                         <View className="p-2">
-                          <Text className="text-black text-3xl font-montez">
+                          <Text className="text-black text-xl font-psemibold">
                             {attack.attacking_zone} ({attack.attacking_team}
                             {attack.attacking_subteam}) →{" "}
                             {attack.defending_zone} ({attack.defending_team}
                             {attack.defending_subteam})
                           </Text>
-                          <Text className="text-black text-2xl font-montez">
+                          <Text className="text-black text-xl font-pregular">
                             {attack.war}
                           </Text>
-                          <Timer attack_id={attack._id} />
+                          <Timer
+                            attack_id={attack._id}
+                            textStyles={"font-pbold text-red-800 text-xl"}
+                          />
                         </View>
                       </View>
                     ))

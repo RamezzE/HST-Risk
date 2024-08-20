@@ -132,7 +132,11 @@ export default function App() {
         setIsLoggedIn(true);
         setName(response.admin.name);
         setUserMode("admin");
-        router.navigate("/admin_home");
+        if (response.admin.type === "Wars") {
+          router.navigate("/admin_home");
+          return;
+        }
+        router.navigate("/admin_home2");
         return;
       }
 

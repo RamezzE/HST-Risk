@@ -171,15 +171,15 @@ const DashboardAttacks = () => {
           style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
         >
           <View className="flex flex-col w-[72.5%]">
-            <Text className="text-4xl font-montez">
-              Team {item.attacking_team}
-              {item.attacking_subteam} vs Team {item.defending_team}
+            <Text className="text-[24px] font-pmedium">
+              {item.attacking_team}
+              {item.attacking_subteam} VS {item.defending_team}
               {item.defending_subteam}
             </Text>
-            <Text className="text-2xl font-montez">
-              {item.attacking_zone} vs {item.defending_zone}
+            <Text className="text-xl font-pregular">
+              {item.attacking_zone} VS {item.defending_zone}
             </Text>
-            <Text className="text-2xl font-montez">War: {item.war}</Text>
+            <Text className="text-xl font-pregular">War: {item.war}</Text>
             <Timer attack_id={item._id} />
           </View>
           <View className="flex flex-col ">
@@ -281,8 +281,16 @@ const DashboardAttacks = () => {
         >
           <View className="w-full justify-center p-4 mb-24">
             <Text className="text-6xl text-center font-montez py-2 mt-7">
-              Attacks
+              Wars
             </Text>
+            <View className="flex flex-row justify-between">
+              <CustomButton
+                title="Create War"
+                handlePress={() => router.replace("/add_war")}
+                containerStyles="w-[45%] my-2 p-3"
+                textStyles={"text-2xl"}
+              />
+            </View>
             {error ? (
               <Text style={{ color: "white", textAlign: "center" }}>
                 {error}

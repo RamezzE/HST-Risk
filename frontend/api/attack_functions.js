@@ -7,6 +7,9 @@ const apiClient = axios.create({
 });
 
 export const attack_check = async (zone_1, team_1, subteam_1, zone_2, team_2) => {
+
+  console.log("Checking attack:", zone_1, team_1, subteam_1, zone_2, team_2);
+
   try {
     const response = await apiClient.post('/check', {
       zone_1,

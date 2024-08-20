@@ -63,15 +63,17 @@ const Admins = () => {
         style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
       >
         <View className="flex flex-col">
-          <Text className="text-4xl font-montez">{item.name}</Text>
-          <Text className="text-2xl font-montez">War: {item.war}</Text>
+          <Text className="text-2xl font-pmedium">{item.name}</Text>
+          <Text className="text-xl font-pregular">Type: {item.type}</Text>
+          {item.type == "Wars" && <Text className="text-xl font-pregular">War: {item.war}</Text>}
         </View>
 
         <CustomButton
           title="Edit"
           handlePress={() =>
             router.navigate(
-              `/edit_admin?name=${item.name.trim()}&password=${item.password.trim()}&war=${item.war.trim()}`
+              `/edit_admin?name=${item.name.trim()}&password=${item.password.trim()}&war=${item.war.trim()}&type=${item.type.trim()}`
+
             )
           }
           containerStyles="w-1/4 h-2/3 mt-2"

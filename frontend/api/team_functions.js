@@ -98,3 +98,17 @@ export const update_subteam = async (username, password) => {
     return { errorMsg: error.response?.data || "Error updating subteam" };
   }
 };
+
+export const update_team_balance = async (teamNo, amount, type) => {
+  try {
+    const response = await apiClient.post('/update-balance', {
+      teamNo,
+      amount,
+      type,
+    });
+
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "Error updating team balance" };
+  }
+}

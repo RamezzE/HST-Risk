@@ -7,7 +7,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import CustomButton from "../../components/CustomButton";
 import { useLocalSearchParams } from "expo-router";
 import { get_warzones } from "../../api/warzone_functions";
@@ -18,12 +18,16 @@ import { images } from "../../constants";
 
 import { router } from "expo-router";
 
+import { GlobalContext } from "../../context/GlobalProvider";
+
 const Warzone = () => {
   const local = useLocalSearchParams();
   const [warzones, setWarzones] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const insets = useSafeAreaInsets();
+
+  const { userMode } = useContext(GlobalContext);
 
   const fetchData = async () => {
     try {
@@ -79,6 +83,10 @@ const Warzone = () => {
         );
 
         // Navigate to the home screen or any other route
+        if (userMode == "super_admin") {
+          router.replace("/dashboard_attacks");
+          return;
+        }
         router.replace("/team_attacks");
       } else {
         Alert.alert("Attack", response.errorMsg);
@@ -149,36 +157,49 @@ const Warzone = () => {
             </Text>
             <View className="flex flex-row justify-between flex-wrap p-5">
               {Array.isArray(warzones) &&
-                warzones.map((warzone) => (
-                  <View
-                    className="p-3 my-2 w-full rounded-md"
-                    style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
-                    key={warzone._id}
-                  >
-                    <Text className="text-black font-montez text-4xl">
-                      {warzone.name}
-                    </Text>
+                warzones.map((warzone) => {
+                  const availableWars = Array.isArray(warzone.wars)
+                    ? warzone.wars.filter((war) => war.available)
+                    : [];
+                  const isUnavailable = availableWars.length === 0;
 
-                    {Array.isArray(warzone.wars) &&
-                      warzone.wars.map((war) => (
-                        <View
-                          className="p-1 flex flex-wrap flex-row justify-evenly align-center"
-                          key={war.name}
-                        >
-                          <Text className="text-black font-montez text-2xl">
-                            {war.name}
-                          </Text>
-                        </View>
-                      ))}
-                    <CustomButton
-                      title={`Join ${warzone.name}`}
-                      handlePress={() => handlePress(warzone)}
-                      containerStyles="p-3 mt-3"
-                      textStyles={"text-2xl"}
-                      isLoading={isSubmitting}
-                    />
-                  </View>
-                ))}
+                  return (
+                    <View
+                      className="p-3 my-2 w-full rounded-md"
+                      style={{
+                        backgroundColor: isUnavailable
+                          ? "rgba(255, 255, 255, 0.3)"
+                          : "rgba(255, 255, 255, 0.5)",
+                        opacity: isUnavailable ? 0.5 : 1, // Make it more transparent if unavailable
+                      }}
+                      key={warzone._id}
+                    >
+                      <Text className="text-black font-montez text-4xl">
+                        {warzone.name}
+                      </Text>
+
+                      {Array.isArray(warzone.wars) &&
+                        warzone.wars.map((war) => (
+                          <View
+                            className="p-1 flex flex-wrap flex-row justify-evenly align-center"
+                            key={war.name}
+                          >
+                            <Text className="text-black font-plight text-2xl">
+                              {war.name}
+                            </Text>
+                          </View>
+                        ))}
+                      <CustomButton
+                        title={`Join ${warzone.name}`}
+                        handlePress={() => handlePress(warzone)}
+                        containerStyles="p-3 mt-3"
+                        textStyles={"text-xl font-pregular"}
+                        isLoading={isSubmitting}
+                        disabled={isUnavailable} // Disable button if the warzone is unavailable
+                      />
+                    </View>
+                  );
+                })}
             </View>
           </View>
         </ScrollView>
