@@ -262,7 +262,7 @@ const AddAttack = () => {
             <CustomButton
               title="Initiate Attack"
               handlePress={() => submit()}
-              containerStyles="mt-7 p-3 bg-red-800"
+              containerStyles="mt-7 p-3 bg-green-800"
               textStyles={"text-3xl"}
               isLoading={isSubmitting}
             />

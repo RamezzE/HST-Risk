@@ -7,7 +7,7 @@ import Settings from "../models/setting.js";
 import SubTeam from "../models/subteam.js";
 import Team from "../models/team.js";
 
-import UserController from './user_controller.js';
+import UserController from "./user_controller.js";
 
 const client = new MongoClient(process.env.MONGO_URI, {});
 
@@ -29,10 +29,9 @@ class AttackController {
     const defending_country = await Country.findOne({ name: zone_2 });
     var real_team_1;
     try {
-      real_team_1 =  attacking_country.teamNo;
-    }
-    catch(error) {
-      real_team_1 = team_1
+      real_team_1 = attacking_country.teamNo;
+    } catch (error) {
+      real_team_1 = team_1;
     }
     const real_team_2 = defending_country.teamNo;
 
@@ -194,10 +193,9 @@ class AttackController {
 
     var real_team_1;
     try {
-      real_team_1 =  attacking_country.teamNo;
-    }
-    catch(error) {
-      real_team_1 = team_1
+      real_team_1 = attacking_country.teamNo;
+    } catch (error) {
+      real_team_1 = team_1;
     }
     const real_team_2 = defending_country.teamNo;
 
@@ -359,33 +357,36 @@ class AttackController {
 
       let chosenWar = war;
 
+      const warzone = await Warzone.findById(warzone_id);
+
+      if (warzone) {
+        console.log(warzone);
+        const warIndex = warzone.wars.findIndex(
+          (war) => war.name === chosenWar
+        );
+
+        if (warIndex !== -1) {
+          // Set the war's availability to false
+          warzone.wars[warIndex].available = false;
+
+          // Save the updated warzone
+          await warzone.save();
+
+          console.log(`${chosenWar} is now marked as unavailable.`);
+        } else {
+          console.log("War not found in the warzone.");
+          result.errorMsg = "War not found in the warzone. Please refresh";
+          result.success = false;
+          return result;
+        }
+      } else {
+        console.log("Warzone not found.");
+      }
+
       attack
         .save()
         .then(async () => {
           try {
-            const warzone = await Warzone.findById(warzone_id);
-
-            if (warzone) {
-              console.log(warzone);
-              const warIndex = warzone.wars.findIndex(
-                (war) => war.name === chosenWar
-              );
-
-              if (warIndex !== -1) {
-                // Set the war's availability to false
-                warzone.wars[warIndex].available = false;
-
-                // Save the updated warzone
-                await warzone.save();
-
-                console.log(`${chosenWar.name} is now marked as unavailable.`);
-              } else {
-                console.log("War not found in the warzone.");
-              }
-            } else {
-              console.log("Warzone not found.");
-            }
-
             // Deduct the attack cost from the attacking team's balance
             attacking_team.balance -= attack_cost.value;
             await attacking_team.save();
@@ -396,7 +397,7 @@ class AttackController {
               result.errorMsg = "Defending team not found";
               return res.json(result);
             }
-            
+
             await UserController.sendBatchPushNotifications(
               [attacking_team.expoPushTokens, defending_team.expoPushTokens],
               [`Your team is attacking!`, "Your team is under attack!!"],
@@ -405,7 +406,6 @@ class AttackController {
                 `Your ${zone_1} is under attack by team ${team_1}${subteam_1} in ${war}!!`,
               ]
             );
-
           } catch (error) {
             console.error(
               "Error updating war availability or pushing tokens:",
@@ -616,8 +616,7 @@ class AttackController {
       try {
         country1.teamNo = winnerTeam;
         await country1.save();
-      }
-      catch(error) {
+      } catch (error) {
         console.log("Error saving country1:", error);
       }
 
@@ -625,8 +624,7 @@ class AttackController {
       try {
         country2.teamNo = winnerTeam;
         await country2.save();
-      }
-      catch(error) {
+      } catch (error) {
         console.log("Error saving country2:", error);
       }
 

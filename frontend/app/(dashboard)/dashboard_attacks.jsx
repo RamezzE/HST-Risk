@@ -180,7 +180,7 @@ const DashboardAttacks = () => {
               {item.attacking_zone} VS {item.defending_zone}
             </Text>
             <Text className="text-xl font-pregular">War: {item.war}</Text>
-            <Timer attack_id={item._id} textStyles="text-red-800"/>
+            <Timer attack_id={item._id} textStyles="text-red-800 font-psemibold"/>
           </View>
           <View className="flex flex-col ">
             <CustomButton
@@ -285,7 +285,7 @@ const DashboardAttacks = () => {
             </Text>
             <View className="flex flex-row justify-between">
               <CustomButton
-                title="Create War"
+                title="Create Attack"
                 handlePress={() => router.replace("/add_war")}
                 containerStyles="w-[45%] my-2 p-3"
                 textStyles={"text-2xl"}
