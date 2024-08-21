@@ -57,7 +57,6 @@ const EditSetting = () => {
       setIsSubmitting(true);
 
       const validation = validateEditSetting();
-      console.log(validation);
 
       if (validation.success == false) {
         console.log("Validation failed");

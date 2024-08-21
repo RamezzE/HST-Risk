@@ -6,10 +6,6 @@ const warzoneSchema = new mongoose.Schema({
         unique: true,
         required: true,
     },
-    number: {
-        type: Number,
-        required: true
-    },
     wars: [{
         name: {
             type: String,

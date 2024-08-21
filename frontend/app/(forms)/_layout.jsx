@@ -12,7 +12,13 @@ const FormsLayout = () => {
           }}
         />
         <Stack.Screen
-          name="add_war"
+          name="add_attack"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="add_warzone"
           options={{
             headerShown: false,
           }}
@@ -43,6 +49,12 @@ const FormsLayout = () => {
         />
         <Stack.Screen
           name="edit_setting"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="edit_warzone"
           options={{
             headerShown: false,
           }}

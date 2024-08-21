@@ -131,7 +131,10 @@ const TeamAttacks = () => {
                           <Text className="text-black text-xl font-pregular">
                             {attack.war}
                           </Text>
-                          <Timer attack_id={attack._id} />
+                          <Timer
+                            attack_id={attack._id}
+                            textStyles={"font-pbold text-red-800 text-xl"}
+                          />
                         </View>
                       </View>
                     ))

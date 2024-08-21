@@ -54,7 +54,6 @@ const Dashboard = () => {
 
     try {
       const result = await get_settings();
-      console.log(result);
       if (result.errorMsg) {
         setError(result.errorMsg);
       } else {

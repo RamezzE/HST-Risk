@@ -13,6 +13,12 @@ const MiscLayout = () => {
           }}
         />
         <Stack.Screen
+          name="warzones"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="admin_home"
           options={{
             headerShown: false,

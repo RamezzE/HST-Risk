@@ -63,7 +63,6 @@ class AttackController {
     }
 
     if (duplicate_attack.duplicate) {
-      console.log("Duplicate Attack detected");
       result.errorMsg = duplicate_attack.errorMsg;
       return res.json(result);
     }
@@ -227,7 +226,6 @@ class AttackController {
     }
 
     if (duplicate_attack.duplicate) {
-      console.log("Your team is already attacking this country");
       result.errorMsg = duplicate_attack.errorMsg;
       return res.json(result);
     }
@@ -767,8 +765,6 @@ class AttackController {
     }
 
     try {
-      console.log("Attack ID:", attack_id);
-
       const attack = await Attack.findById(attack_id);
 
       const arr = {

@@ -33,7 +33,6 @@ const DashboardAttacks = () => {
     setIsRefreshing(true);
     try {
       const result = await get_all_attacks();
-      console.log(result);
       if (result.success === false) {
         setError(result.errorMsg);
       } else if (Array.isArray(result)) {
@@ -286,7 +285,13 @@ const DashboardAttacks = () => {
             <View className="flex flex-row justify-between">
               <CustomButton
                 title="Create Attack"
-                handlePress={() => router.replace("/add_war")}
+                handlePress={() => router.replace("/add_attack")}
+                containerStyles="w-[45%] my-2 p-3"
+                textStyles={"text-2xl"}
+              />
+              <CustomButton
+                title="View Warzones"
+                handlePress={() => router.navigate("/warzones")}
                 containerStyles="w-[45%] my-2 p-3"
                 textStyles={"text-2xl"}
               />

@@ -198,7 +198,7 @@ const Attack = () => {
     fetchData();
 
     const interval = setInterval(fetchData, 60000);
-
+    
     // Clear interval on component unmount
     return () => clearInterval(interval);
   }, []);
@@ -228,8 +228,6 @@ const Attack = () => {
         Alert.alert("Attack Failed", response.errorMsg);
         return;
       }
-
-      console.log("Response", response);
 
       // setForm({ your_zone: "", other_zone: "" });
       router.navigate(`/warzone?attacking_zone=${zone_1}&defending_zone=${zone_2}&attacking_team=${team_1}&defending_team=${team_2}&attacking_subteam=${subteam}`);
