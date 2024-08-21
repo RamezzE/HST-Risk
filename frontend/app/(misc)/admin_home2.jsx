@@ -20,7 +20,6 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import BackButton from "../../components/BackButton";
 
-
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
@@ -30,9 +29,7 @@ const Teams = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-    const { Logout } = useContext(GlobalContext);
-    
-
+  const { Logout } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -91,10 +88,8 @@ const Teams = () => {
           style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
         >
           <View className="flex flex-col justify-start w-[70%]">
-          <Text className="text-4xl font-montez">{item.name}</Text>
-            <Text className="text-xl font-pregular">
-              Team {item.number}
-            </Text>
+            <Text className="text-4xl font-montez">{item.name}</Text>
+            <Text className="text-xl font-pregular">Team {item.number}</Text>
             <Text className="text-[16px] font-pregular">
               Running Money: {item.balance}
             </Text>
@@ -123,17 +118,13 @@ const Teams = () => {
                 )
               }
               containerStyles="mt-2"
-              textStyles="text-2xl"
+              textStyles="text-xl font-pregular"
             />
-            <CustomButton
-              title={
-                expandedTeam === item.number
-                  ? "Hide Countries"
-                  : "Show Countries"
-              }
+            <CustomButton 
+              title= {expandedTeam === item.number ? "Hide Countries" : "Show Countries"}
               containerStyles="p-2 rounded-md mt-2"
-              textStyles={"text-2xl"}
               handlePress={() => toggleExpandTeam(item.number)}
+              textStyles={"text-[14px] font-pregular"}
             />
           </View>
         </View>
@@ -205,7 +196,7 @@ const Teams = () => {
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full justify-start p-4 mb-24">
-          <BackButton
+            <BackButton
               style="w-[20vw]"
               size={32}
               onPress={() => {

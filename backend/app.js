@@ -64,72 +64,8 @@ mongooseConnectionPromise
     console.error("Error connecting to MongoDB:", err);
   });
 
-const insertSettings = async () => {
-  try {
-    const settings = [
-      {
-        name: "Game Status",
-        value: "Active",
-        options: ["Active", "Paused"],
-      },
-      {
-        name: "Attack Cost",
-        value: "50",
-        options: [],
-      },
-      {
-        name: "Rate ($/min) per country",
-        value: "1",
-        options: [],
-      },
-      {
-        name: "Attack Cooldown",
-        value: "1",
-        options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-      },
-      {
-        name: "Disqualify Timer",
-        value: "8",
-        options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-      },
-      {
-        name: "Max concurrent attacks per team",
-        value: "2",
-        options: ["1", "2", "3", "4", "5", "6"],
-      },
-      {
-        name: "Max concurrent defences per team",
-        value: "2",
-        options: ["1", "2", "3", "4", "5", "6"],
-      },
-      {
-        name: "Initial Money",
-        value: "1000",
-        options: [],
-      },
-      {
-        name: "No of Teams",
-        value: "5",
-        options: ["2", "3", "4", "5", "6", "7", "8", "9", "10"],
-      },
-      {
-        name: "No of Subteams",
-        value: "3",
-        options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-      },
-    ];
-
-    const result = await Settings.insertMany(settings);
-    console.log("Settings inserted:", result);
-  } catch (error) {
-    console.error("Error inserting settings:", error);
-  }
-};
-
 app.get("/", (req, res, next) => {
   res.send("Server is up and running. HST");
-
-  insertSettings();
 });
 
 app.use("/users", user_router);

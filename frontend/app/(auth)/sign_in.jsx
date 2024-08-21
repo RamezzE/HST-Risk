@@ -35,7 +35,7 @@ const SignIn = () => {
     password: "",
   });
 
-  const { setName, setTeamNo, setSubteam, expoPushToken, setUserMode } = useContext(GlobalContext);
+  const { setName, setTeamNo, setSubteam, expoPushToken, setUserMode, setIsLoggedIn } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -62,7 +62,7 @@ const SignIn = () => {
           setUserMode("subteam");
 
           await addPushToken(expoPushToken, response.subteam.number);
-
+          setIsLoggedIn(true)
           router.replace("/home");
           return;
         }
@@ -74,15 +74,16 @@ const SignIn = () => {
             router.replace("/admin_home");
             return;
           }
+          setIsLoggedIn(true)
 
           router.replace("/admin_home2");
-          
           return;
         }
 
         if (response.superAdmin != "") {
           setUserMode("super_admin");
-          console.log("Super admin");
+          setIsLoggedIn(true)
+
           router.replace("/dashboard");
           return;
         }

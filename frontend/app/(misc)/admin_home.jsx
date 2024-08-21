@@ -269,19 +269,19 @@ const AdminHome = () => {
                 <View className="h-full flex flex-col justify-between py-4">
                   <View>
                     <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
-                      Attack:
+                      Attacking Side:
                     </Text>
-                    <Text className="font-pregular text-white text-xl px-5 py-2 text-left">
-                      {currentAttack.attacking_team}
+                    <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
+                      Team {currentAttack.attacking_team}
                       {currentAttack.attacking_subteam},{" "}
                       {currentAttack.attacking_zone}
                     </Text>
                     <Text></Text>
                     <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
-                      Defence:
+                      Defending Side:
                     </Text>
-                    <Text className="font-pregular text-white text-xl px-5 py-2 text-left">
-                      {currentAttack.defending_team},{" "}
+                    <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
+                      Team {currentAttack.defending_team},{" "}
                       {currentAttack.defending_zone}
                     </Text>
                   </View>
@@ -307,15 +307,15 @@ const AdminHome = () => {
                   <View className="w-full">
                     <View className="flex flex-row">
                       <CustomButton
-                        title="Attack Won"
-                        textStyles={"text-3xl"}
+                        title={`${currentAttack.attacking_team}${currentAttack.attacking_subteam} Won`}
+                        textStyles={"text-xl font-pregular"}
                         containerStyles="w-1/2 mr-1 bg-green-800 p-3"
                         handlePress={() => setAttackResultAlert("true")}
                         isLoading={isSubmitting}
                       />
                       <CustomButton
-                        title="Defence Won"
-                        textStyles={"text-3xl"}
+                        title={`${currentAttack.defending_team} Won`}
+                        textStyles={"text-xl font-pregular"}
                         containerStyles="w-1/2 ml-1 bg-red-800 p-3"
                         handlePress={() => setAttackResultAlert("false")}
                         isLoading={isSubmitting}
@@ -324,7 +324,7 @@ const AdminHome = () => {
                     <CustomButton
                       title="Cancel Attack"
                       containerStyles="mt-5 p-3 mb-10"
-                      textStyles={"text-3xl"}
+                      textStyles={"text-xl font-pregular"}
                       handlePress={() => {
                         cancelAttackAlert(currentAttack._id);
                       }}

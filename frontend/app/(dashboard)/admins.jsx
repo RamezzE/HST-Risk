@@ -76,9 +76,9 @@ const Admins = () => {
 
             )
           }
-          containerStyles="w-1/4 h-2/3 mt-2"
-          textStyles="text-2xl"
-        />
+          containerStyles="p-2 px-4 mt-2"
+          textStyles="text-xl font-pregular"
+          />
       </View>
     ));
   };

@@ -180,11 +180,11 @@ const DashboardAttacks = () => {
               {item.attacking_zone} VS {item.defending_zone}
             </Text>
             <Text className="text-xl font-pregular">War: {item.war}</Text>
-            <Timer attack_id={item._id} />
+            <Timer attack_id={item._id} textStyles="text-red-800"/>
           </View>
           <View className="flex flex-col ">
             <CustomButton
-              title="Set Win"
+              title={`${item.attacking_team}${item.attacking_subteam}`}
               handlePress={() =>
                 setAttackResultAlert(
                   "true",
@@ -195,11 +195,11 @@ const DashboardAttacks = () => {
                 )
               }
               containerStyles="p-1 mt-2 bg-green-800"
-              textStyles="text-2xl"
+              textStyles="text-xl font-pregular"
               isLoading={isSubmitting}
             />
             <CustomButton
-              title="Set Lose"
+              title={`${item.defending_team}`}
               handlePress={() =>
                 setAttackResultAlert(
                   "false",
@@ -209,8 +209,8 @@ const DashboardAttacks = () => {
                   item.defending_team
                 )
               }
-              containerStyles="p-1 mt-2 bg-red-800"
-              textStyles="text-2xl"
+              containerStyles="p-2 px-4 mt-2 bg-red-800"
+              textStyles="text-xl font-pregular"
               isLoading={isSubmitting}
             />
             <CustomButton
@@ -225,8 +225,8 @@ const DashboardAttacks = () => {
                   item.war
                 );
               }}
-              containerStyles="mt-2"
-              textStyles="text-2xl"
+              containerStyles="p-2  mt-2"
+              textStyles="text-xl font-pregular"
               isLoading={isSubmitting}
             />
           </View>

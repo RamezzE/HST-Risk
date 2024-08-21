@@ -113,17 +113,13 @@ const Teams = () => {
                 )
               }
               containerStyles="mt-2"
-              textStyles="text-2xl"
+              textStyles="text-xl font-pregular"
             />
-            <CustomButton
-              title={
-                expandedTeam === item.number
-                  ? "Hide Countries"
-                  : "Show Countries"
-              }
+            <CustomButton 
+              title= {expandedTeam === item.number ? "Hide Countries" : "Show Countries"}
               containerStyles="p-2 rounded-md mt-2"
-              textStyles={"text-2xl"}
               handlePress={() => toggleExpandTeam(item.number)}
+              textStyles={"text-[14px] font-pregular"}
             />
           </View>
         </View>

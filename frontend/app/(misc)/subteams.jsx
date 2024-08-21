@@ -63,8 +63,8 @@ const SubTeams = () => {
         style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
       >
         <View className="flex flex-col">
-          <Text className="text-3xl font-montez">Team {item.username}</Text>
-          <Text className="text-3xl font-montez">{item.name}</Text>
+          <Text className="text-xl font-pregular">Team {item.username}</Text>
+          <Text className="text-xl font-pregular">{item.name}</Text>
         </View>
 
         <CustomButton
@@ -73,8 +73,8 @@ const SubTeams = () => {
             router.push(`/edit_subteam?username=${item.username}&password=${item.password}`)
           }
           containerStyles="w-1/4 h-2/3 mt-2"
-          textStyles="text-2xl"
-        />
+          textStyles="text-xl font-pregular"
+          />
       </View>
     ));
   };

@@ -23,9 +23,10 @@ const checkGameStatus = async (req, res, next) => {
 router.get("/", AttackController.get_attacks);
 router.get("/wars/:war", AttackController.get_attacks_by_war);
 router.get("/expiry/:attack_id", AttackController.get_attack_expiry_time);
-router.delete("/", AttackController.delete_attack);
 
 // Apply middleware to routes that need game status check
+
+router.delete("/", checkGameStatus, AttackController.delete_attack);
 router.post("/attack", checkGameStatus, AttackController.attack);
 router.post("/check", checkGameStatus, AttackController.attack_check);
 router.post("/set_result", checkGameStatus, AttackController.set_attack_result);

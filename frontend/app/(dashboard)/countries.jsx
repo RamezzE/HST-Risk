@@ -93,12 +93,12 @@ const Countries = () => {
             </Text>
           )}
           <View
-            className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+            className="p-4 my-2 rounded-md flex flex-row justify-between items-center flex-wrap"
             style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
           >
             <View className="flex flex-col">
-              <Text className="text-4xl font-montez">{item.name}</Text>
-              <Text className="text-2xl font-montez">
+              <Text className="text-2xl font-pmedium">{item.name}</Text>
+              <Text className="text-[16px] font-pregular">
                 Owner: Team {item.teamNo}
               </Text>
             </View>
@@ -110,8 +110,8 @@ const Countries = () => {
                   `/edit_country?countryName=${item.name.trim()}&teamNo=${item.teamNo}`
                 )
               }
-              containerStyles="w-1/4 h-2/3 mt-2"
-              textStyles="text-2xl"
+              containerStyles="p-2 px-4 mt-2"
+              textStyles="text-xl font-pregular"
             />
           </View>
         </React.Fragment>

@@ -17,27 +17,7 @@ const EditTeam = () => {
   const local = useLocalSearchParams();
   const teamNo = local.teamNo;
 
-  const { userMode, Logout } = useContext(GlobalContext);
-
-  const logoutFunc = () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Logout",
-          onPress: () => {
-            Logout();
-            router.replace("/");
-          },
-        },
-      ]
-    );
-  };
+  const { userMode } = useContext(GlobalContext);
 
   const [form, setForm] = useState({
     teamNo: teamNo,
@@ -78,6 +58,10 @@ const EditTeam = () => {
       return;
     }
 
+    if (amount > form.balance && type == "remove") {
+      Alert.alert("Error", "Insufficient balance to remove ")
+    }
+
     setIsModifyingBalance(true);
     try {
       if (type === "add") {
@@ -116,7 +100,7 @@ const EditTeam = () => {
       setIsModifyingBalance(false);
     }
   };
-
+  
   const submit = async () => {
     setIsSubmitting(true);
 
