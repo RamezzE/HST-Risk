@@ -1,6 +1,5 @@
 // GlobalContext.js
 import React, { createContext, useState } from 'react';
-
 import { logout } from '../api/user_functions';
 
 export const GlobalContext = createContext();
@@ -8,26 +7,48 @@ export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   const [name, setName] = useState('');
   const [teamNo, setTeamNo] = useState('');
-  const [attackData, setAttackData] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [subteam, setSubteam] = useState('')
+  const [subteam, setSubteam] = useState('');
   const [userMode, setUserMode] = useState('');
   const [expoPushToken, setExpoPushToken] = useState('');
+  const [currentAttack, setCurrentAttack] = useState(null); // Track the current attack
+  const [currentDefence, setCurrentDefence] = useState([]); // Track current defenses
 
   const Logout = async () => {
     try {
       setName('');
       setSubteam('');
       setTeamNo('');
-      setAttackData({});
       setIsLoggedIn(false);
       setUserMode('');
+      setCurrentAttack(null);
+      setCurrentDefence([]); // Clear current defense on logout
       await logout();
-    } catch (error) {console.log("Error logging out\n", error)}
+    } catch (error) {
+      console.log("Error logging out\n", error);
+    }
   };
 
   return (
-    <GlobalContext.Provider value={{ name, teamNo, attackData, isLoggedIn, userMode, subteam, expoPushToken, setExpoPushToken, setName, setTeamNo, setAttackData, setIsLoggedIn, setUserMode, setSubteam, Logout }}>
+    <GlobalContext.Provider value={{ 
+      name, 
+      teamNo, 
+      isLoggedIn, 
+      userMode, 
+      subteam, 
+      expoPushToken, 
+      currentAttack, 
+      currentDefence, // Provide currentDefence
+      setExpoPushToken, 
+      setName, 
+      setTeamNo, 
+      setIsLoggedIn, 
+      setUserMode, 
+      setSubteam, 
+      setCurrentAttack, // Provide setCurrentAttack
+      setCurrentDefence, // Provide setCurrentDefence
+      Logout 
+    }}>
       {children}
     </GlobalContext.Provider>
   );

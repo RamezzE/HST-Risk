@@ -300,6 +300,8 @@ const AdminHome = () => {
                   textStyles={
                     "text-3xl text-red-800 mt-4 mb-2 text-center font-psemibold"
                   }
+                  expiryMessage="Timer expired"
+
                 />
               )}
               <View className="flex flex-row justify-between mr-1 mt-3">

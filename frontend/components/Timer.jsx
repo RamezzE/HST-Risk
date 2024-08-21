@@ -3,21 +3,26 @@ import moment from "moment";
 import { get_attack_expiry_time } from "../api/attack_functions";
 import { Text } from "react-native";
 
-const getCountdown = (offset, startTime, expiryTime) => {
+const getCountdown = (offset, startTime, expiryTime, expiryMessage = "") => {
   const now = moment.utc().add(offset, 'milliseconds');
   const endTime = moment.utc(expiryTime);
   const remainingTime = moment.duration(endTime.diff(now));
 
   if (remainingTime.asMilliseconds() <= 0) {
-    return "Countdown expired";
+    return expiryMessage;
   }
 
   const minutes = Math.floor(remainingTime.asMinutes());
   const seconds = Math.floor(remainingTime.seconds());
+
+  if (isNaN(minutes) || isNaN(seconds)) {
+    return ""; // Return an empty string if the countdown is invalid
+  }
+
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
-const Timer = ({ attack_id, textStyles }) => {
+const Timer = ({ attack_id, textStyles, expiryMessage = "" }) => {
   const [countdown, setCountdown] = useState("");
   const [timeOffset, setTimeOffset] = useState(0);
   const [startTime, setStartTime] = useState(null);
@@ -46,15 +51,21 @@ const Timer = ({ attack_id, textStyles }) => {
   useEffect(() => {
     if (startTime && expiryTime) {
       const interval = setInterval(() => {
-        const timeLeft = getCountdown(timeOffset, startTime, expiryTime);
+        const timeLeft = getCountdown(timeOffset, startTime, expiryTime, expiryMessage);
         setCountdown(timeLeft);
       }, 1000);
 
       return () => clearInterval(interval); // Clean up on component unmount
     }
-  }, [timeOffset, startTime, expiryTime]);
+  }, [timeOffset, startTime, expiryTime, expiryMessage]);
 
-  return <Text className={`text-xl font-plight ${textStyles}`}>{countdown}</Text>;
+  return (
+    countdown && (
+      <Text className={`text-xl font-plight ${textStyles}`}>
+        {countdown}
+      </Text>
+    )
+  );
 };
 
 export default Timer;

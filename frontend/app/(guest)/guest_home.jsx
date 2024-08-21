@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, Alert, ImageBackground, ScrollView, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  Alert,
+  ImageBackground,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
 import DottedLine from "../../components/DottedLine";
+import _ from "lodash"; // Import lodash for deep comparison
 
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
@@ -21,41 +29,51 @@ import { images } from "../../constants";
 
 import Loader from "../../components/Loader";
 
-const Home = () => {
+const GuestHome = () => {
   const [zones, setZones] = useState([]);
   const [countryMappings, setCountryMappings] = useState([]);
   const [error, setError] = useState(null);
   const [teams, setTeams] = useState([]);
-  const [attacks, setAttacks] = useState([]);
-  const [isRefreshing, setIsRefreshing] = useState(false); // Changed initial value to false
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
-  const { name, teamNo, subteam, Logout, expoPushToken } = useContext(GlobalContext);
+  const { name, teamNo, subteam, Logout, expoPushToken, currentDefence, setCurrentDefence } =
+    useContext(GlobalContext);
 
-  const fetchData = async () => {
-    setError(null);
-    setZones(countries);
+    const fetchData = async () => {
+      setError(null);
+      setZones(countries);
 
-    try {
-      const result = await get_country_mappings();
-      setCountryMappings(result);
+      console.log("Fetching data...");
+    
+      try {
+        const countryMappingsResult = await get_country_mappings();
+        setCountryMappings(countryMappingsResult);
+    
+        const teamsResult = await get_all_teams();
+        setTeams(teamsResult);
+    
+        const attacksResult = await get_all_attacks();
+    
+        // Check for defenses
+        const matchingDefenses = attacksResult.filter(
+          (attack) => attack.defending_team.toString() === teamNo.toString()
+        );
 
-      const attacksResult = await get_all_attacks();
-      setAttacks(attacksResult);
-    } catch (err) {
-      console.log(err);
-      setError("Failed to fetch country mappings");
-    }
-
-    try {
-      const teamsResult = await get_all_teams();
-      setTeams(teamsResult);
-    } catch (err) {
-      console.log(err);
-      setError("Failed to fetch teams data");
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
+        if (matchingDefenses.length === 0 && currentDefence.length > 0) {
+          setCurrentDefence([]);
+        }
+    
+        // Only update if defenses have changed
+        if (!_.isEqual(matchingDefenses, currentDefence)) {
+          setCurrentDefence(matchingDefenses); // Update currentDefence in GlobalContext
+        }
+      } catch (err) {
+        console.log(err);
+        setError("Failed to fetch data. Please try again.");
+      } finally {
+        setIsRefreshing(false);
+      }
+    };
 
   useEffect(() => {
     fetchData();
@@ -87,18 +105,11 @@ const Home = () => {
 
   const onMarkerPress = (zone) => {
     try {
-      const country = Array.isArray(countryMappings)
-        ? countryMappings.find((c) => c.name === zone.name)
+      const country = countryMappings.find((c) => c.name === zone.name);
+      const team = country
+        ? teams.find((t) => t.number === country.teamNo)
         : null;
-
-      const team =
-        country && Array.isArray(teams)
-          ? teams.find((t) => t.number === country.teamNo)
-          : null;
-
-      const attack = Array.isArray(attacks)
-        ? attacks.find((a) => a.defending_zone === zone.name)
-        : null;
+      const attack = defenses.find((a) => a.defending_zone === zone.name);
 
       Alert.alert(
         zone.name,
@@ -108,7 +119,9 @@ const Home = () => {
             : "Not under attack"
         }`
       );
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error on marker press:", error);
+    }
   };
 
   const getTeamColor = (countryName) => {
@@ -135,20 +148,30 @@ const Home = () => {
           borderRadius: 5,
         }}
       >
-        {Array.isArray(teams) && teams.map((team, index) => (
-          <View key={index} style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
+        {Array.isArray(teams) &&
+          teams.map((team, index) => (
             <View
+              key={index}
               style={{
-                width: 20,
-                height: 20,
-                backgroundColor: team.color,
-                marginRight: 10,
-                borderRadius: 5,
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 5,
               }}
-            />
-            <Text style={{ color: "white", fontSize: 12 }}>Team {team.number}</Text>
-          </View>
-        ))}
+            >
+              <View
+                style={{
+                  width: 20,
+                  height: 20,
+                  backgroundColor: team.color,
+                  marginRight: 10,
+                  borderRadius: 5,
+                }}
+              />
+              <Text style={{ color: "white", fontSize: 12 }}>
+                Team {team.number}
+              </Text>
+            </View>
+          ))}
       </View>
     );
   };
@@ -199,12 +222,18 @@ const Home = () => {
           }
         >
           <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
-            <BackButton style="w-[20vw]" size={32} onPress={() => logoutFunc()} />
-            <View className="flex flex-row justify-center gap-0">
+            <BackButton
+              style="w-[20vw]"
+              size={32}
+              onPress={() => logoutFunc()}
+            />
+            <View className="flex flex-row justify-center gap-0 pt-2">
               <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
                 {name}, Team {teamNo}
               </Text>
-              <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">{subteam}</Text>
+              <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">
+                {subteam}
+              </Text>
             </View>
             <View
               style={{
@@ -254,7 +283,9 @@ const Home = () => {
             {renderColorLegend()}
 
             {error && (
-              <Text className="text-white text-center p-2 text-xl">{error}</Text>
+              <Text className="text-white text-center p-2 text-xl">
+                {error}
+              </Text>
             )}
           </View>
         </ScrollView>
@@ -263,4 +294,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default GuestHome;

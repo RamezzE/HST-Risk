@@ -121,9 +121,7 @@ const TeamAttacks = () => {
                       >
                         <View className="p-2">
                           <Text className="text-black text-xl font-psemibold">
-                            
                             {attack.attacking_zone} ({attack.attacking_team}
-                            
                             {attack.attacking_subteam}) →{" "}
                             {attack.defending_zone} ({attack.defending_team}
                             {attack.defending_subteam})
@@ -158,8 +156,8 @@ const TeamAttacks = () => {
                         style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
                       >
                         <View className="p-2">
-                        <Text className="text-black text-xl font-psemibold">
-                        {attack.attacking_zone} ({attack.attacking_team}
+                          <Text className="text-black text-xl font-psemibold">
+                            {attack.attacking_zone} ({attack.attacking_team}
                             {attack.attacking_subteam}) →{" "}
                             {attack.defending_zone} ({attack.defending_team}
                             {attack.defending_subteam})
@@ -167,7 +165,10 @@ const TeamAttacks = () => {
                           <Text className="text-black text-xl font-pregular">
                             {attack.war}
                           </Text>
-                          <Timer attack_id={attack._id} />
+                          <Timer
+                            attack_id={attack._id}
+                            textStyles={"font-pbold text-red-800 text-xl"}
+                          />
                         </View>
                       </View>
                     ))

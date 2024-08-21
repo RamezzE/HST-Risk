@@ -11,23 +11,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MapView from "react-native-maps";
 import MapZone from "../../components/MapZone";
 import DottedLine from "../../components/DottedLine";
-import Timer from "../../components/Timer"; // Assuming you have a Timer component
-
+import Timer from "../../components/Timer";
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
 import { deletePushToken } from "../../api/user_functions";
 import { router } from "expo-router";
-
 import { GlobalContext } from "../../context/GlobalProvider";
-
 import countries from "../../constants/countries";
 import BackButton from "../../components/BackButton";
-
 import CountryConnections from "../../constants/country_connections";
 import { images } from "../../constants";
-
 import Loader from "../../components/Loader";
+import _ from "lodash"; // Import lodash for deep comparison
 
 const Home = () => {
   const [zones, setZones] = useState([]);
@@ -36,42 +32,85 @@ const Home = () => {
   const [teams, setTeams] = useState([]);
   const [attacks, setAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentAttack, setCurrentAttack] = useState(null); // To store the matching attack
 
   const insets = useSafeAreaInsets();
-  const { name, teamNo, subteam, Logout, expoPushToken } =
-    useContext(GlobalContext);
+  const {
+    name,
+    teamNo,
+    subteam,
+    Logout,
+    expoPushToken,
+    currentAttack,
+    setCurrentAttack,
+    currentDefence,
+    setCurrentDefence,
+  } = useContext(GlobalContext); // Access currentAttack, currentDefence, setCurrentAttack, and setCurrentDefence
 
   const fetchData = async () => {
     setError(null);
     setZones(countries);
-
+  
     try {
       const result = await get_country_mappings();
       setCountryMappings(result);
-
+  
       const attacksResult = await get_all_attacks();
       setAttacks(attacksResult);
-
+  
       // Check for matching attack
       const matchingAttack = attacksResult.find(
         (attack) =>
           attack.attacking_team === teamNo &&
           attack.attacking_subteam === subteam
       );
+  
+      // Check for defenses
+      const matchingDefenses = attacksResult.filter(
+        (attack) => attack.defending_team === teamNo
+      );
 
-      setCurrentAttack(matchingAttack);
+      if (matchingDefenses.length === 0 && currentDefence.length > 0) {
+        setCurrentDefence([]);
+      }
+  
+      // Log and perform operations on each matching attack
+      if (matchingAttack) {
+        console.log('Matching Attack:', matchingAttack);
+        // Perform any operations you want on matchingAttack here
+      }
+  
+      // Log and perform operations on each defense
+      matchingDefenses.forEach((defense) => {
+        console.log('Matching Defense:', defense);
+        // Perform any operations you want on each defense here
+      });
+  
+      // Only update if the attack has changed
+      if (!_.isEqual(matchingAttack, currentAttack)) {
+        console.log('Attack has changed');
+        setCurrentAttack(matchingAttack); // Update currentAttack in GlobalContext
+      } else {
+        console.log('Attack has not changed');
+      }
+  
+      // Only update if the defenses have changed
+      if (!_.isEqual(matchingDefenses, currentDefence)) {
+        console.log('Defenses have changed');
+        setCurrentDefence(matchingDefenses); // Update currentDefence in GlobalContext
+      } else {
+        console.log('Defenses have not changed');
+      }
     } catch (err) {
       console.log(err);
-      setError("Failed to fetch country mappings");
+      setError('Failed to fetch country mappings');
     }
-
+  
     try {
       const teamsResult = await get_all_teams();
       setTeams(teamsResult);
     } catch (err) {
       console.log(err);
-      setError("Failed to fetch teams data");
+      setError('Failed to fetch teams data');
     } finally {
       setIsRefreshing(false);
     }
@@ -79,7 +118,6 @@ const Home = () => {
 
   useEffect(() => {
     fetchData();
-
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -235,21 +273,13 @@ const Home = () => {
               onPress={() => logoutFunc()}
             />
 
-            <View className="flex flex-row justify-center gap-0">
+            <View className="flex flex-row pt-2 justify-center gap-0">
               <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
                 {name}, Team {teamNo}
               </Text>
               <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">
                 {subteam}
               </Text>
-            </View>
-            <View>
-              {currentAttack && (
-                <View className="mb-4 flex flex-row justify-center">
-                  <Timer attack_id={currentAttack._id} 
-                  textStyles={"font-pbold text-red-800 text-2xl"}/>
-                </View>
-              )}
             </View>
             <View
               style={{

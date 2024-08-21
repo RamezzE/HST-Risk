@@ -179,7 +179,9 @@ const DashboardAttacks = () => {
               {item.attacking_zone} VS {item.defending_zone}
             </Text>
             <Text className="text-xl font-pregular">War: {item.war}</Text>
-            <Timer attack_id={item._id} textStyles="text-red-800 font-psemibold"/>
+            <Timer attack_id={item._id} textStyles="text-red-800 font-psemibold"
+              expiryMessage="Timer expired"
+            />
           </View>
           <View className="flex flex-col ">
             <CustomButton

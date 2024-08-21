@@ -87,7 +87,7 @@ const EditCountry = () => {
                 router.navigate("/countries");
               }}
             />
-            <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
+            <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
               Edit Country
             </Text>
             <FormField
