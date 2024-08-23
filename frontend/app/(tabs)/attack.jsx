@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
 
-import MapView from "react-native-maps";
+import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import { router } from "expo-router";
 
 import { useEffect, useState, useContext } from "react";
@@ -359,9 +359,8 @@ const Attack = () => {
                 latitudeDelta: 50,
                 longitudeDelta: 100,
               }}
+              provider= { Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
               mapType="satellite"
-              // scrollEnabled={true}
-              // zoomEnabled={false}
               rotateEnabled={false}
               pitchEnabled={false}
             >

@@ -8,10 +8,9 @@ import {
   RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import MapView from "react-native-maps";
+import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import MapZone from "../../components/MapZone";
 import DottedLine from "../../components/DottedLine";
-import Timer from "../../components/Timer";
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
@@ -23,7 +22,7 @@ import BackButton from "../../components/BackButton";
 import CountryConnections from "../../constants/country_connections";
 import { images } from "../../constants";
 import Loader from "../../components/Loader";
-import _ from "lodash"; // Import lodash for deep comparison
+import _ from "lodash";
 
 const Home = () => {
   const [zones, setZones] = useState([]);
@@ -298,6 +297,7 @@ const Home = () => {
                   latitudeDelta: 100,
                   longitudeDelta: 180,
                 }}
+                provider= { Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
                 mapType="satellite"
                 rotateEnabled={false}
                 pitchEnabled={false}
