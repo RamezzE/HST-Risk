@@ -169,7 +169,7 @@ const settings = [
 app.get("/", async (req, res, next) => {
   try {
     res.send("Server is up and running. HST");
-    await Settings.insertMany(settings);
+    
   } catch (error) {
     next(error);
   }
