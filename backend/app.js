@@ -114,9 +114,9 @@ const settings = [
   {
     "name": "Game Status",
     "value": "Active",
-    "options": ["Active", "Paused]
+    "options": ["Active", "Paused"]
   },
- {
+  {
     "name": "Rate ($/min) per country",
     "value": "2",
     "options": []
@@ -130,40 +130,39 @@ const settings = [
     "name": "Disqualify Timer",
     "value": "3",
     "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-
   },
   {
     "name": "Attack Cooldown",
     "value": "3",
     "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
   },
-   {
+  {
     "name": "Max concurrent defences per team",
     "value": "2",
     "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
   },
-   {
+  {
     "name": "Max concurrent attacks per team",
     "value": "2",
     "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
   },
-   {
+  {
     "name": "No of Teams",
     "value": "5",
     "options": ["2", "3", "4", "5", "6", "7", "8", "9", "10"]
   },
-   {
+  {
     "name": "No of Subteams",
     "value": "5",
-    "options": ["1","2", "3", "4", "5", "6", "7", "8", "9", "10"]
+    "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
   },
   {
     "name": "Initial Money",
     "value": "500",
     "options": []
-  },
-  
-]
+  }
+];
+
 
 
 // Route to check server status and insert countries
