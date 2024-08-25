@@ -112,7 +112,6 @@ const countries = [
 // Route to check server status and insert countries
 app.get("/", async (req, res, next) => {
   try {
-    await Country.insertMany(countries);
     res.send("Server is up and running. HST");
   } catch (error) {
     next(error);
