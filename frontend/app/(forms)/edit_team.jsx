@@ -115,8 +115,7 @@ const EditTeam = () => {
     try {
       const response = await update_team(
         local.teamNo.trim(),
-        form.teamName.trim(),
-        form.balance.toString()
+        form.teamName.trim()
       );
 
       if (!response.success) {

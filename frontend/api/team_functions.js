@@ -21,29 +21,18 @@ export const add_team = async (teamNo, teamName, password) => {
   }
 };
 
-export const update_team = async (teamNo, teamName, teamBalance) => {
+export const update_team = async (teamNo, teamName) => {
   try {
     const response = await apiClient.post(
       `/update/${teamNo}`,
       {
         teamName,
-        teamBalance,
       }
     );
 
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "Error updating team" };
-  }
-};
-
-export const delete_team = async (teamNo) => {
-  try {
-    const response = await apiClient.delete(`/${teamNo}`);
-
-    return response.data;
-  } catch (error) {
-    return { errorMsg: error.response?.data || "Error deleting team" };
   }
 };
 

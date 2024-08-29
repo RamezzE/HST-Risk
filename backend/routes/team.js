@@ -19,7 +19,6 @@ const checkGameStatus = async (req, res, next) => {
   }
 };
 
-
 router.get("/", TeamController.get_all_teams)
 router.get("/subteams", TeamController.get_all_subteams)
 router.get("/:number", TeamController.get_team);
@@ -30,8 +29,6 @@ router.post("/update/:number", TeamController.update_team)
 router.post("/update-subteam", TeamController.update_subteam)
 router.post("/create-teams", TeamController.create_teams)
 router.post("/update-balance", checkGameStatus, TeamController.update_team_balance)
-
-router.delete("/:number", TeamController.delete_team)
 
 
 export default router;

@@ -19,6 +19,11 @@ const teamSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    locked: {
+        type: Boolean,
+        default: false,
+        required: true
+    },
     expoPushTokens: {
         type: [String],
         default: [],
