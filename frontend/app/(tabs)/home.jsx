@@ -6,23 +6,29 @@ import {
   ImageBackground,
   ScrollView,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
-import MapZone from "../../components/MapZone";
+import { router } from "expo-router";
+import _ from "lodash";
+
+import { images } from "../../constants";
+import countries from "../../constants/countries";
+import CountryConnections from "../../constants/country_connections";
+
+import Loader from "../../components/Loader";
+import BackButton from "../../components/BackButton";
 import DottedLine from "../../components/DottedLine";
+import MapZone from "../../components/MapZone";
+
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
 import { deletePushToken } from "../../api/user_functions";
-import { router } from "expo-router";
+
 import { GlobalContext } from "../../context/GlobalProvider";
-import countries from "../../constants/countries";
-import BackButton from "../../components/BackButton";
-import CountryConnections from "../../constants/country_connections";
-import { images } from "../../constants";
-import Loader from "../../components/Loader";
-import _ from "lodash";
+
 
 const Home = () => {
   const [zones, setZones] = useState([]);
@@ -71,19 +77,7 @@ const Home = () => {
       if (matchingDefenses.length === 0 && currentDefence.length > 0) {
         setCurrentDefence([]);
       }
-  
-      // Log and perform operations on each matching attack
-      if (matchingAttack) {
-        console.log('Matching Attack:', matchingAttack);
-        // Perform any operations you want on matchingAttack here
-      }
-  
-      // Log and perform operations on each defense
-      matchingDefenses.forEach((defense) => {
-        console.log('Matching Defense:', defense);
-        // Perform any operations you want on each defense here
-      });
-  
+
       // Only update if the attack has changed
       if (!_.isEqual(matchingAttack, currentAttack)) {
         console.log('Attack has changed');

@@ -60,7 +60,7 @@ export default function App() {
       }
 
       if (finalStatus !== 'granted') {
-        alert('Failed to get push token for push notification!');
+        console.log('Failed to get push token for push notification!');
         return;
       }
 
@@ -68,7 +68,7 @@ export default function App() {
         Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
 
       if (!projectId) {
-        alert('Project ID not found');
+        console.log('Project ID not found');
         return;
       }
 
@@ -82,7 +82,7 @@ export default function App() {
         setExpoPushToken(pushTokenString);
         return pushTokenString;
       } catch (error) {
-        alert(`Error getting token: ${error}`);
+        console.log(`Error getting token: ${error}`);
       }
     } else {
       alert('Must use physical device for push notifications');

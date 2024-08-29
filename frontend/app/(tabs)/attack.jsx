@@ -5,23 +5,17 @@ import {
   Alert,
   ImageBackground,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import DropDownField from "../../components/DropDownField";
-import CustomButton from "../../components/CustomButton";
-
+import { useEffect, useState, useContext } from "react";
 import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import { router } from "expo-router";
 
-import { useEffect, useState, useContext } from "react";
-
 import { GlobalContext } from "../../context/GlobalProvider";
 
-import { attack_check, get_all_attacks } from "../../api/attack_functions";
-
 import { images } from "../../constants";
-
-import Loader from "../../components/Loader";
+import countries from "../../constants/countries";
 
 import {
   get_countries_by_team,
@@ -29,11 +23,14 @@ import {
 } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_settings } from "../../api/settings_functions";
-import countries from "../../constants/countries";
+import { attack_check, get_all_attacks } from "../../api/attack_functions";
 
 import MapZone from "../../components/MapZone";
 import CountryConnections from "../../constants/country_connections";
 import DottedLine from "../../components/DottedLine";
+import Loader from "../../components/Loader";
+import DropDownField from "../../components/DropDownField";
+import CustomButton from "../../components/CustomButton";
 
 const Attack = () => {
   const { name, teamNo, subteam } = useContext(GlobalContext);

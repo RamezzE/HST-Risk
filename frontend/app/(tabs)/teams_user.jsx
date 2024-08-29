@@ -5,7 +5,6 @@ import {
   ImageBackground,
   ScrollView,
   RefreshControl,
-  TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -83,9 +82,11 @@ const Teams = () => {
           className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
           style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
         >
-          <View className="flex flex-row flex-wrap justify-between">
+          <View className="flex flex-col justify-between">
+            <View className="flex flex-row justify-between w-full">
             <Text className="text-4xl font-montez">{item.name}</Text>
             <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
+            </View>
             <Text className="text-[16px] font-pregular">Running Money: {item.balance}</Text>
             <Text className="text-[16px] font-pregular">
               Countries Owned: {ownedCountries.length}
@@ -95,7 +96,7 @@ const Teams = () => {
 
             <CustomButton 
               title= {expandedTeam === item.number ? "Hide Countries" : "Show Countries"}
-              containerStyles="p-2 rounded-md mt-2"
+              containerStyles="p-2 rounded-md mt-2 w-[50%] ml-auto"
               handlePress={() => toggleExpandTeam(item.number)}
               textStyles={"text-[12px] font-pregular"}
             />
@@ -166,7 +167,7 @@ const Teams = () => {
             </Text>
 
             {error ? (
-              <Text style={{ color: "white", textAlign: "center" }}>
+              <Text style={{ color: "black", textAlign: "center" }}>
                 {error}
               </Text>
             ) : (

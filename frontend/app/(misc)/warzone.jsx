@@ -137,7 +137,10 @@ const Warzone = () => {
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={fetchData}
+              onRefresh={() => {
+                setIsRefreshing(true);
+                fetchData();
+              }}
               tintColor="#000"
             />
           }

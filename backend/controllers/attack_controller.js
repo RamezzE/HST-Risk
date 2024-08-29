@@ -1,5 +1,3 @@
-import { MongoClient } from "mongodb";
-
 import Attack from "../models/attack.js";
 import Country from "../models/country.js";
 import Warzone from "../models/warzone.js";
@@ -8,8 +6,6 @@ import SubTeam from "../models/subteam.js";
 import Team from "../models/team.js";
 
 import UserController from "./user_controller.js";
-
-const client = new MongoClient(process.env.MONGO_URI, {});
 
 class AttackController {
   static async get_attacks(req, res) {
@@ -44,7 +40,7 @@ class AttackController {
       const real_team_2 = defending_country.teamNo;
 
       if (team_1.toString() !== real_team_1.toString()) {
-        result.errorMsg = `You do not own ${zone_1}`;
+        result.errorMsg = `Your team does not own ${zone_1}`;
         return res.json(result);
       }
 
@@ -171,7 +167,7 @@ class AttackController {
 
           if (attacking_team.balance < attack_cost.value) {
             result.errorMsg =
-              "Insufficient balance\nYou cannot afford the attack cost of " +
+              "Insufficient balance\nYour team cannot afford the attack cost of " +
               attack_cost.value;
             return res.json(result);
           }
@@ -260,7 +256,7 @@ class AttackController {
           const real_team_2 = defending_country.teamNo;
 
           if (team_1.toString() !== real_team_1.toString()) {
-            result.errorMsg = `You do not own ${zone_1}`;
+            result.errorMsg = `Your team does not own ${zone_1}`;
             return res.json(result);
           }
 
@@ -357,7 +353,7 @@ class AttackController {
 
           if (attacking_team.balance < attack_cost.value) {
             result.errorMsg =
-              "Insufficient balance\nYou cannot afford the attack cost of " +
+              "Insufficient balance\nYour team cannot afford the attack cost of " +
               attack_cost.value;
             return res.json(result);
           }
@@ -556,8 +552,6 @@ class AttackController {
       console.error("Error checking duplicate attack:", error);
       result.errorMsg = "Error checking duplicate attack";
       return result;
-    } finally {
-      await client.close();
     }
   }
 
