@@ -415,13 +415,17 @@ class TeamController {
 
       for (const team of teamsToUpdate) {
         let attempt = 0;
+        let lockAcquired = false;
+
         while (attempt < maxRetries) {
           try {
             attempt++;
 
+            // Attempt to acquire the lock
             const lockedTeam = await Team.findOneAndUpdate(
               { number: team.number, locked: false },
-              { $set: { locked: true } }
+              { $set: { locked: true } },
+              { new: true }
             );
 
             if (!lockedTeam) {
@@ -435,15 +439,21 @@ class TeamController {
               continue;
             }
 
+            lockAcquired = true;
+
             console.log(
               `Lock acquired for team ${team.number}, updating balance...`
             );
 
-            lockedTeam.balance += teamCounts[team.number] * rateValue;
-            lockedTeam.locked = false;
-            await lockedTeam.save();
-
-            console.log("Saving: ", lockedTeam);
+            // Update balance
+            await Team.findOneAndUpdate(
+              { number: team.number, locked: true },
+              {
+                $inc: { balance: teamCounts[team.number] * rateValue },
+                $set: { locked: false }, // Release lock after updating
+              },
+              { new: true }
+            );
 
             console.log(
               `Balance updated and lock released for team ${team.number}`
@@ -461,19 +471,22 @@ class TeamController {
               );
             }
 
-            // Ensure the lock is released if an error occurs
-            await Team.findOneAndUpdate(
-              { number: team.number },
-              { $set: { locked: false } }
-            );
+            // If an error occurs after acquiring the lock, make sure to release it
+            if (lockAcquired) {
+              await Team.findOneAndUpdate(
+                { number: team.number },
+                { $set: { locked: false } }
+              );
+              console.log(
+                `Lock released for team ${team.number} due to error.`
+              );
+            }
 
             await new Promise((resolve) => setTimeout(resolve, retryDelay));
           }
         }
       }
 
-      console.log("Team balances updated successfully");
-      
     } catch (error) {
       console.error("An error occurred while updating team balances:", error);
     }
@@ -484,22 +497,26 @@ class TeamController {
       success: false,
       errorMsg: "",
     };
-
+  
     const { teamNo, amount, type } = req.body;
     const maxRetries = 3;
     const retryDelay = 1000;
-
+  
     try {
       let attempt = 0;
+      let lockAcquired = false;
+  
       while (attempt < maxRetries) {
         try {
           attempt++;
-
+  
+          // Attempt to acquire the lock
           const team = await Team.findOneAndUpdate(
             { number: teamNo, locked: false },
-            { locked: true }
+            { $set: { locked: true } },
+            { new: true } // Return the updated document
           );
-
+  
           if (!team) {
             if (attempt >= maxRetries) {
               result.errorMsg = `Team ${teamNo} not found or is currently being updated`;
@@ -508,48 +525,62 @@ class TeamController {
             await new Promise((resolve) => setTimeout(resolve, retryDelay));
             continue;
           }
-
+  
+          lockAcquired = true;
+  
           console.log(`Updating balance for team ${teamNo} by ${amount}`);
-
+  
           const amountToChange = parseInt(amount);
-
+  
           if (isNaN(amountToChange) || amountToChange <= 0) {
             result.errorMsg = "Please enter a valid positive number";
             return res.status(400).json(result);
           }
-
+  
           if (amountToChange > team.balance && type === "remove") {
             result.errorMsg = "Insufficient balance";
             return res.status(400).json(result);
           }
-
+  
           if (type === "add") {
             team.balance += amountToChange;
           } else if (type === "remove") {
             team.balance -= amountToChange;
           }
-
-          await team.save();
-
-          // Release the lock
-          team.locked = false;
-          await team.save();
-
+  
+          // Save the updated balance and release the lock
+          await Team.findOneAndUpdate(
+            { number: teamNo, locked: true },
+            { 
+              $set: { locked: false },
+              balance: team.balance 
+            },
+            { new: true }
+          );
+  
           result.success = true;
           return res.status(200).json(result);
+  
         } catch (error) {
           console.error(
             `Error updating balance for team ${teamNo} on attempt ${attempt}:`,
             error
           );
-
+  
           if (attempt >= maxRetries) {
-            result.errorMsg =
-              "Error updating team balance after multiple attempts";
+            result.errorMsg = "Error updating team balance after multiple attempts";
             return res.status(500).json(result);
           }
-
-          await Team.findOneAndUpdate({ number: teamNo }, { locked: false });
+  
+          if (lockAcquired) {
+            // Release the lock if it was acquired
+            await Team.findOneAndUpdate(
+              { number: teamNo },
+              { $set: { locked: false } }
+            );
+            console.log(`Lock released for team ${teamNo} due to error.`);
+          }
+  
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
         }
       }
@@ -559,6 +590,7 @@ class TeamController {
       return res.status(500).json(result);
     }
   }
+  
 }
 
 export default TeamController;
