@@ -19,14 +19,12 @@ const DropdownField = ({
   ...props
 }) => {
   const [isPickerVisible, setPickerVisible] = useState(false);
-  const [selectedValue, setSelectedValue] = useState(value || items[0].value);
 
   const openPicker = () => {
     setPickerVisible(true);
   };
 
   const closePicker = () => {
-    handleChange(selectedValue);
     setPickerVisible(false);
   };
 
@@ -42,7 +40,7 @@ const DropdownField = ({
           <View style={{ flex: 1 }} className="w-full h-16 px-4 rounded-md focus:border-secondary flex flex-row items-center">
             <TextInput
               className="text-white font-psemibold text-[16px]"
-              value={items.find((item) => item.value === selectedValue)?.label || placeholder}
+              value={value ? value : placeholder}
               placeholder={placeholder}
               placeholderTextColor="#F2E9D0"
               editable={false} // Disable editing
@@ -62,9 +60,10 @@ const DropdownField = ({
         <View style={styles.modalContainer}>
           <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={selectedValue}
+              selectedValue={value}
               onValueChange={(itemValue) => {
-                setSelectedValue(itemValue);
+                handleChange(itemValue);
+                closePicker();
               }}
               style={{ backgroundColor: "#F5F5F5" }} // Background color for the picker
               {...props}

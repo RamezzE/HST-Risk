@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -11,6 +11,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Loader from "../../components/Loader";
 import { get_country_mappings } from "../../api/country_functions";
 import { images } from "../../constants";
+
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
 
 const Countries = () => {
   const [countries, setCountries] = useState([]);
@@ -42,6 +46,31 @@ const Countries = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
+
+      socket.on("update_country", (updatedCountry) => {
+        setCountries((prevCountries) =>
+          prevCountries.map((country) =>
+            country.name === updatedCountry.name ? updatedCountry : country
+          )
+        );
+      });
+
+      socket.on("new_game", () => {
+        Alert.alert(
+          "New Game",
+          "A new game has started. You will be logged out automatically."
+        );
+      
+        setTimeout(async () => {
+          deletePushToken(expoPushToken, teamNo);
+          router.replace("/");
+        }, 3000);
+      });
+
+      return () => {
+        socket.off("update_country");
+        socket.off("new_game");
+      };
     }, [])
   );
 
@@ -50,7 +79,6 @@ const Countries = () => {
   }, []);
 
   const renderCountries = () => {
-
     if (!Array.isArray(countries)) {
       return (
         <Text className="text-center">
@@ -64,9 +92,9 @@ const Countries = () => {
       "Australia",
       "South America",
       "North America",
-      "Asia & Europe"
+      "Asia & Europe",
     ];
-    
+
     return countries.map((item, index) => {
       const showTitle = () => {
         if (index === 0) return titles[0];
@@ -99,7 +127,11 @@ const Countries = () => {
   if (isRefreshing) {
     return (
       <View
-        style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left }}
+        style={{
+          paddingTop: insets.top,
+          paddingRight: insets.right,
+          paddingLeft: insets.left,
+        }}
         className="flex-1 bg-black"
       >
         <ImageBackground
@@ -114,7 +146,11 @@ const Countries = () => {
 
   return (
     <View
-      style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left }}
+      style={{
+        paddingTop: insets.top,
+        paddingRight: insets.right,
+        paddingLeft: insets.left,
+      }}
       className="bg-black h-full"
     >
       <ImageBackground

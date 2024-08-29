@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,12 @@ import { get_all_attacks } from "../../api/attack_functions";
 import { images } from "../../constants";
 import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
+
+import { useFocusEffect } from "@react-navigation/native";
+
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
 
 const TeamAttacks = () => {
   const [error, setError] = useState(null);
@@ -44,11 +50,54 @@ const TeamAttacks = () => {
       setIsRefreshing(false);
     }
   };
+  
+  useFocusEffect(
+    useCallback(() => {
+      // Fetch initial data
+      fetchData();
+  
+      // Set up socket listeners for real-time updates
+      socket.on("new_attack", (newAttack) => {
+        if (newAttack.attacking_team === teamNo.toString()) {
+          setAttackingAttacks((prevAttacks) => [...prevAttacks, newAttack]);
+        } else if (newAttack.defending_team === teamNo.toString()) {
+          setDefendingAttacks((prevAttacks) => [...prevAttacks, newAttack]);
+        }
+      });
+  
+      // Listen for attack removal
+      socket.on("remove_attack", (attackId) => {
+        setAttackingAttacks((prevAttacks) =>
+          prevAttacks.filter((attack) => attack._id !== attackId)
+        );
+        setDefendingAttacks((prevAttacks) =>
+          prevAttacks.filter((attack) => attack._id !== attackId)
+        );
+      });
+
+      socket.on("new_game", () => {
+        Alert.alert(
+          "New Game",
+          "A new game has started. You will be logged out automatically."
+        );
+      
+        setTimeout(async () => {
+          deletePushToken(expoPushToken, teamNo);
+          router.replace("/");
+        }, 3000);
+      });
+  
+      // Clean up the socket listeners when the component loses focus or unmounts
+      return () => {
+        socket.off("new_attack");
+        socket.off("remove_attack");
+        socket.off("new_game");
+      };
+    }, [teamNo]) // Add teamNo as a dependency to re-run effect when teamNo changes
+  );
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
   }, []);
 
   if (isRefreshing) {

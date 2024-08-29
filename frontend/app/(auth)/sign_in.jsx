@@ -35,7 +35,7 @@ const SignIn = () => {
     password: "",
   });
 
-  const { setName, setTeamNo, setSubteam, expoPushToken, setUserMode, setIsLoggedIn } = useContext(GlobalContext);
+  const { setName, setTeamNo, setSubteam, expoPushToken, setUserMode, setIsLoggedIn, setAdminType } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -71,11 +71,12 @@ const SignIn = () => {
           setName(form.username);
           setUserMode("admin");
           if (response.admin.type == "Wars") {
+            setAdminType("Wars");
             router.replace("/admin_home");
             return;
           }
           setIsLoggedIn(true)
-
+          setAdminType("Missions");
           router.replace("/admin_home2");
           return;
         }

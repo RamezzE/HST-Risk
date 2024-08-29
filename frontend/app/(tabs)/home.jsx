@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import {
   View,
   Text,
@@ -29,6 +29,12 @@ import { deletePushToken } from "../../api/user_functions";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
+import { useFocusEffect } from "@react-navigation/native";
+
+import config from "../../api/config";
+import io from "socket.io-client";
+import SubTeams from './../(misc)/subteams';
+const socket = io(config.serverIP); // Replace with your server URL
 
 const Home = () => {
   const [zones, setZones] = useState([]);
@@ -109,10 +115,65 @@ const Home = () => {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchData(); // Fetch initial data
+  
+      // Set up socket listeners for real-time updates
+      socket.on("update_country", (updatedCountryMapping) => {
+        setCountryMappings((prevMappings) =>
+          prevMappings.map((mapping) =>
+            mapping.name === updatedCountryMapping.name ? updatedCountryMapping : mapping
+          )
+        );
+      });
+  
+      socket.on("update_team", (updatedTeam) => {
+        setTeams((prevTeams) =>
+          prevTeams.map((team) =>
+            team.number === updatedTeam.number ? updatedTeam : team
+          )
+        );
+      });
+  
+      socket.on("new_attack", (newAttack) => {
+        if (newAttack.defending_team === teamNo.toString()) {
+          setCurrentDefence((prevDefences) => [...prevDefences, newAttack]);
+        }
+      });
+  
+      socket.on("remove_attack", (attackId) => {
+        setCurrentDefence((prevDefences) =>
+          prevDefences.filter((attack) => attack._id !== attackId)
+        );
+      });
+
+      socket.on("new_game", () => {
+        Alert.alert(
+          "New Game",
+          "A new game has started. You will be logged out automatically."
+        );
+      
+        setTimeout(async () => {
+          deletePushToken(expoPushToken, teamNo);
+          Logout();
+          router.replace("/");
+        }, 3000);
+      });
+      
+  
+      return () => {
+        socket.off("update_country");
+        socket.off("update_team");
+        socket.off("new_attack");
+        socket.off("remove_attack");
+        socket.off("new_game");
+      };
+    }, [teamNo])
+  );
+
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
   }, []);
 
   const logoutFunc = () => {
@@ -249,15 +310,6 @@ const Home = () => {
       >
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={() => {
-                setIsRefreshing(true);
-                fetchData();
-              }}
-            />
-          }
         >
           <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
             <BackButton

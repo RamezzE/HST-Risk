@@ -20,6 +20,12 @@ import { router } from "expo-router";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
+import { useFocusEffect } from "@react-navigation/native";
+
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
+
 const Warzone = () => {
   const local = useLocalSearchParams();
   const [warzones, setWarzones] = useState([]);
@@ -43,6 +49,37 @@ const Warzone = () => {
       setIsRefreshing(false);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData(); // Fetch initial data
+  
+      // Set up socket listeners for real-time updates
+      socket.on("new_warzone", (newWarzone) => {
+        setWarzones((prevWarzones) => [newWarzone, ...prevWarzones]);
+      });
+  
+      socket.on("update_warzone", (updatedWarzone) => {
+        setWarzones((prevWarzones) =>
+          prevWarzones.map((warzone) =>
+            warzone._id === updatedWarzone._id ? updatedWarzone : warzone
+          )
+        );
+      });
+  
+      socket.on("delete_warzone", (deletedWarzoneId) => {
+        setWarzones((prevWarzones) =>
+          prevWarzones.filter((warzone) => warzone._id !== deletedWarzoneId)
+        );
+      });
+  
+      return () => {
+        socket.off("new_warzone");
+        socket.off("update_warzone");
+        socket.off("delete_warzone");
+      };
+    }, [])
+  );
 
   useEffect(() => {
     fetchData();
@@ -150,7 +187,13 @@ const Warzone = () => {
             <BackButton
               style="w-[20vw]"
               size={32}
-              onPress={() => router.navigate("/attack")}
+              onPress={() => {
+                if (userMode == "super_admin") {
+                  router.replace("/dashboard_attacks");
+                  return;
+                }
+                router.replace("/team_attacks");
+              }}
             />
             <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
               Choose your warzone

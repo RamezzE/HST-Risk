@@ -20,6 +20,10 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import BackButton from "../../components/BackButton";
 
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
+
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
@@ -56,6 +60,22 @@ const Teams = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
+
+      socket.on("update_team", (updatedTeam) => {
+        setTeams((prevTeams) =>
+          prevTeams.map((team) =>
+            team.number === updatedTeam.number ? updatedTeam : team
+          )
+        );
+      });
+
+      socket.on("update_country", (updatedCountry) => {
+        setCountries((prevCountries) =>
+          prevCountries.map((country) =>
+            country._id === updatedCountry._id ? updatedCountry : country
+          )
+        );
+      });
     }, [])
   );
 
@@ -120,8 +140,12 @@ const Teams = () => {
               containerStyles="mt-2"
               textStyles="text-xl font-pregular"
             />
-            <CustomButton 
-              title= {expandedTeam === item.number ? "Hide Countries" : "Show Countries"}
+            <CustomButton
+              title={
+                expandedTeam === item.number
+                  ? "Hide Countries"
+                  : "Show Countries"
+              }
               containerStyles="p-2 rounded-md mt-2"
               handlePress={() => toggleExpandTeam(item.number)}
               textStyles={"text-[14px] font-pregular"}

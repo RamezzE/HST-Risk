@@ -17,6 +17,10 @@ import { get_country_mappings } from "../../api/country_functions";
 
 import { images } from "../../constants";
 
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
+
 const Countries = () => {
   const [countries, setCountries] = useState([]);
   const [error, setError] = useState(null);
@@ -48,6 +52,19 @@ const Countries = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
+
+      socket.on("update_country", (updatedCountry) => {
+        setCountries((prevCountries) =>
+          prevCountries.map((country) =>
+            country.name === updatedCountry.name ? updatedCountry : country
+          )
+        );
+      });
+
+      return () => {
+        socket.off("update_country");
+      }
+      
     }, [])
   );
 
@@ -56,7 +73,6 @@ const Countries = () => {
   }, []);
 
   const renderCountries = () => {
-
     if (!Array.isArray(countries)) {
       return (
         <Text className="text-center">
@@ -72,7 +88,7 @@ const Countries = () => {
       "North America",
       "Asia & Europe",
     ];
-  
+
     const showTitle = (index) => {
       if (index === 0) return titles[0];
       if (index === 6) return titles[1];
@@ -81,16 +97,14 @@ const Countries = () => {
       if (index === 28) return titles[4];
       return null;
     };
-  
+
     return countries.map((item, index) => {
       const title = showTitle(index);
-  
+
       return (
         <React.Fragment key={item.name}>
           {title && (
-            <Text className="text-3xl font-montez text-left my-4">
-              {title}
-            </Text>
+            <Text className="text-3xl font-montez text-left my-4">{title}</Text>
           )}
           <View
             className="p-4 my-2 rounded-md flex flex-row justify-between items-center flex-wrap"
@@ -102,12 +116,14 @@ const Countries = () => {
                 Owner: Team {item.teamNo}
               </Text>
             </View>
-  
+
             <CustomButton
               title="Edit"
               handlePress={() =>
                 router.push(
-                  `/edit_country?countryName=${item.name.trim()}&teamNo=${item.teamNo}`
+                  `/edit_country?countryName=${item.name.trim()}&teamNo=${
+                    item.teamNo
+                  }`
                 )
               }
               containerStyles="p-2 px-4 mt-2"
@@ -118,7 +134,6 @@ const Countries = () => {
       );
     });
   };
-  
 
   if (isRefreshing) {
     return (
@@ -152,7 +167,7 @@ const Countries = () => {
       <ImageBackground
         source={images.background}
         style={{ resizeMode: "cover" }}
-        className="flex-1"  // Ensure it covers the full height
+        className="flex-1" // Ensure it covers the full height
       >
         <ScrollView
           contentContainerStyle={{ paddingBottom: 20 }}
@@ -168,7 +183,7 @@ const Countries = () => {
             <Text className="text-6xl text-center font-montez py-2 mt-7">
               Countries
             </Text>
-  
+
             {error ? (
               <Text style={{ color: "white", textAlign: "center" }}>
                 {error}
@@ -181,6 +196,6 @@ const Countries = () => {
       </ImageBackground>
     </View>
   );
-};  
+};
 
 export default Countries;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,83 +10,175 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
-import MapZone from "../../components/MapZone";
+import { router } from "expo-router";
+import _ from "lodash";
+
+import { images } from "../../constants";
+import countries from "../../constants/countries";
+import CountryConnections from "../../constants/country_connections";
+
+import Loader from "../../components/Loader";
+import BackButton from "../../components/BackButton";
 import DottedLine from "../../components/DottedLine";
-import _ from "lodash"; // Import lodash for deep comparison
+import MapZone from "../../components/MapZone";
 
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
 import { deletePushToken } from "../../api/user_functions";
-import { router } from "expo-router";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
-import countries from "../../constants/countries";
-import BackButton from "../../components/BackButton";
+import { useFocusEffect } from "@react-navigation/native";
 
-import CountryConnections from "../../constants/country_connections";
-import { images } from "../../constants";
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
 
-import Loader from "../../components/Loader";
-
-const GuestHome = () => {
+const Home = () => {
   const [zones, setZones] = useState([]);
   const [countryMappings, setCountryMappings] = useState([]);
   const [error, setError] = useState(null);
   const [teams, setTeams] = useState([]);
+  const [attacks, setAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
   const insets = useSafeAreaInsets();
-  const { name, teamNo, subteam, Logout, expoPushToken, currentDefence, setCurrentDefence } =
-    useContext(GlobalContext);
+  const {
+    name,
+    teamNo,
+    subteam,
+    Logout,
+    expoPushToken,
+    currentAttack,
+    setCurrentAttack,
+    currentDefence,
+    setCurrentDefence,
+  } = useContext(GlobalContext); // Access currentAttack, currentDefence, setCurrentAttack, and setCurrentDefence
 
-    const fetchData = async () => {
-      setError(null);
-      setZones(countries);
+  const fetchData = async () => {
+    setError(null);
+    setZones(countries);
+  
+    try {
+      const result = await get_country_mappings();
+      setCountryMappings(result);
+  
+      const attacksResult = await get_all_attacks();
+      setAttacks(attacksResult);
+  
+      // Check for matching attack
+      const matchingAttack = attacksResult.find(
+        (attack) =>
+          attack.attacking_team === teamNo &&
+          attack.attacking_subteam === subteam
+      );
+  
+      // Check for defenses
+      const matchingDefenses = attacksResult.filter(
+        (attack) => attack.defending_team === teamNo
+      );
 
-      console.log("Fetching data...");
-    
-      try {
-        const countryMappingsResult = await get_country_mappings();
-        setCountryMappings(countryMappingsResult);
-    
-        const teamsResult = await get_all_teams();
-        setTeams(teamsResult);
-    
-        const attacksResult = await get_all_attacks();
-    
-        // Check for defenses
-        const matchingDefenses = attacksResult.filter(
-          (attack) => attack.defending_team.toString() === teamNo.toString()
-        );
-
-        if (matchingDefenses.length === 0 && currentDefence.length > 0) {
-          setCurrentDefence([]);
-        }
-    
-        // Only update if defenses have changed
-        if (!_.isEqual(matchingDefenses, currentDefence)) {
-          setCurrentDefence(matchingDefenses); // Update currentDefence in GlobalContext
-        }
-      } catch (err) {
-        console.log(err);
-        setError("Failed to fetch data. Please try again.");
-      } finally {
-        setIsRefreshing(false);
+      if (matchingDefenses.length === 0 && currentDefence.length > 0) {
+        setCurrentDefence([]);
       }
-    };
+
+      // Only update if the attack has changed
+      if (!_.isEqual(matchingAttack, currentAttack)) {
+        console.log('Attack has changed');
+        setCurrentAttack(matchingAttack); // Update currentAttack in GlobalContext
+      } else {
+        console.log('Attack has not changed');
+      }
+  
+      // Only update if the defenses have changed
+      if (!_.isEqual(matchingDefenses, currentDefence)) {
+        console.log('Defenses have changed');
+        setCurrentDefence(matchingDefenses); // Update currentDefence in GlobalContext
+      } else {
+        console.log('Defenses have not changed');
+      }
+    } catch (err) {
+      console.log(err);
+      setError('Failed to fetch country mappings');
+    }
+  
+    try {
+      const teamsResult = await get_all_teams();
+      setTeams(teamsResult);
+    } catch (err) {
+      console.log(err);
+      setError('Failed to fetch teams data');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData(); // Fetch initial data
+  
+      // Set up socket listeners for real-time updates
+      socket.on("update_country", (updatedCountryMapping) => {
+        setCountryMappings((prevMappings) =>
+          prevMappings.map((mapping) =>
+            mapping.name === updatedCountryMapping.name ? updatedCountryMapping : mapping
+          )
+        );
+      });
+  
+      socket.on("update_team", (updatedTeam) => {
+        setTeams((prevTeams) =>
+          prevTeams.map((team) =>
+            team.number === updatedTeam.number ? updatedTeam : team
+          )
+        );
+      });
+  
+      socket.on("new_attack", (newAttack) => {
+        if (newAttack.defending_team === teamNo.toString()) {
+          setCurrentDefence((prevDefences) => [...prevDefences, newAttack]);
+        }
+      });
+  
+      socket.on("remove_attack", (attackId) => {
+        setCurrentDefence((prevDefences) =>
+          prevDefences.filter((attack) => attack._id !== attackId)
+        );
+      });
+
+      socket.on("new_game", () => {
+        Alert.alert(
+          "New Game",
+          "A new game has started. You will be logged out automatically."
+        );
+      
+        setTimeout(async () => {
+          deletePushToken(expoPushToken, teamNo);
+          router.replace("/");
+        }, 3000);
+      });
+      
+      
+  
+      return () => {
+        socket.off("update_country");
+        socket.off("update_team");
+        socket.off("new_attack");
+        socket.off("remove_attack");
+        socket.off("new_game");
+      };
+    }, [teamNo])
+  );
 
   useEffect(() => {
     fetchData();
-
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
   }, []);
 
   const logoutFunc = () => {
     Alert.alert(
       "Logout",
-      "Are you sure you want to logout?\nYou will not receive any notifications after logging out.",
+      "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
       [
         {
           text: "Cancel",
@@ -106,11 +198,18 @@ const GuestHome = () => {
 
   const onMarkerPress = (zone) => {
     try {
-      const country = countryMappings.find((c) => c.name === zone.name);
-      const team = country
-        ? teams.find((t) => t.number === country.teamNo)
+      const country = Array.isArray(countryMappings)
+        ? countryMappings.find((c) => c.name === zone.name)
         : null;
-      const attack = defenses.find((a) => a.defending_zone === zone.name);
+
+      const team =
+        country && Array.isArray(teams)
+          ? teams.find((t) => t.number === country.teamNo)
+          : null;
+
+      const attack = Array.isArray(attacks)
+        ? attacks.find((a) => a.defending_zone === zone.name)
+        : null;
 
       Alert.alert(
         zone.name,
@@ -120,9 +219,7 @@ const GuestHome = () => {
             : "Not under attack"
         }`
       );
-    } catch (error) {
-      console.error("Error on marker press:", error);
-    }
+    } catch (error) {}
   };
 
   const getTeamColor = (countryName) => {
@@ -212,15 +309,6 @@ const GuestHome = () => {
       >
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={() => {
-                setIsRefreshing(true);
-                fetchData();
-              }}
-            />
-          }
         >
           <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
             <BackButton
@@ -228,7 +316,8 @@ const GuestHome = () => {
               size={32}
               onPress={() => logoutFunc()}
             />
-            <View className="flex flex-row justify-center gap-0 pt-2">
+
+            <View className="flex flex-row pt-2 justify-center gap-0">
               <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
                 {name}, Team {teamNo}
               </Text>
@@ -253,7 +342,6 @@ const GuestHome = () => {
                   latitudeDelta: 100,
                   longitudeDelta: 180,
                 }}
-                
                 provider= { Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
                 mapType="satellite"
                 rotateEnabled={false}
@@ -297,4 +385,4 @@ const GuestHome = () => {
   );
 };
 
-export default GuestHome;
+export default Home;

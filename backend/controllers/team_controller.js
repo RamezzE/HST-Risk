@@ -5,6 +5,8 @@ import Attack from "../models/attack.js";
 import Warzone from "../models/warzone.js";
 import Country from "../models/country.js";
 
+import { io } from "../app.js"; // Adjust the path based on your file structure
+
 const getTeamColor = (teamNo) => {
   if (teamNo === "1") {
     return "#0000FF"; // Blue
@@ -175,6 +177,9 @@ class TeamController {
       }
 
       result.success = true;
+
+      io.emit("new_game", { teams, subTeams });
+
       return res.json(result);
     } catch (error) {
       console.error("Error creating teams:", error);
@@ -223,57 +228,64 @@ class TeamController {
       success: false,
       errorMsg: "",
     };
-
+  
     const { number } = req.params;
     const { teamName } = req.body;
     const maxRetries = 3; // Maximum number of retry attempts
     const retryDelay = 1000; // Delay between retries in milliseconds
-
+  
     if (!teamName || typeof teamName !== "string") {
       result.errorMsg = "Invalid input data";
       return res.json(result);
     }
-
+  
     let attempt = 0;
-
+    let lockAcquired = false;
+  
     while (attempt < maxRetries) {
       try {
         attempt++;
-
+  
         // Attempt to acquire the lock by finding an unlocked team
         const team = await Team.findOneAndUpdate(
           { number, locked: false },
-          { locked: true }
+          { $set: { locked: true } },
+          { new: true }
         );
-
+  
         if (!team) {
           if (attempt >= maxRetries) {
             result.errorMsg = `Team ${number} is currently being updated. Please try again later.`;
-            return res.json(result); // 409 Conflict
+            return res.status(409).json(result);
           } else {
             await new Promise((resolve) => setTimeout(resolve, retryDelay)); // Wait before retrying
             continue;
           }
         }
-
+  
+        lockAcquired = true;
+  
         // Update the team
-        team.name = teamName;
-        await team.save();
-
+        const updatedTeam = await Team.findOneAndUpdate(
+          { number: team.number, locked: true },
+          {
+            $set: { name: teamName, locked: false }, // Release lock after updating
+          },
+          { new: true }
+        );
+  
         // Update all subteams
         const subteams = await SubTeam.find({ number });
-
+  
         await Promise.all(
           subteams.map(async (subteam) => {
             subteam.name = teamName;
             await subteam.save();
           })
         );
-
-        // Release the lock
-        team.locked = false;
-        await team.save();
-
+  
+        io.emit("update_team", updatedTeam);
+  
         result.success = true;
         return res.json(result);
       } catch (error) {
@@ -281,19 +293,25 @@ class TeamController {
           `Error updating team ${number} on attempt ${attempt}:`,
           error
         );
-
+  
+        if (lockAcquired) {
+          // Ensure the lock is released if an error occurs
+          await Team.findOneAndUpdate(
+            { number },
+            { $set: { locked: false } }
+          );
+        }
+  
         if (attempt >= maxRetries) {
           result.errorMsg = "Error updating team after multiple attempts";
           return res.json(result);
         }
-
-        // Ensure the lock is released if an error occurs and retry is not exhausted
-        await Team.findOneAndUpdate({ number }, { locked: false });
-
+  
         await new Promise((resolve) => setTimeout(resolve, retryDelay)); // Wait before retrying
       }
     }
   }
+  
 
   static async get_all_teams(req, res) {
     try {
@@ -369,6 +387,7 @@ class TeamController {
     }
   }
 
+  // Function to update team balances periodically
   static async updateTeamBalances() {
     console.log("Updating team balances");
 
@@ -446,7 +465,7 @@ class TeamController {
             );
 
             // Update balance
-            await Team.findOneAndUpdate(
+            const updatedTeam = await Team.findOneAndUpdate(
               { number: team.number, locked: true },
               {
                 $inc: { balance: teamCounts[team.number] * rateValue },
@@ -454,6 +473,9 @@ class TeamController {
               },
               { new: true }
             );
+
+            // Emit the updated team data to all connected clients
+            io.emit("update_team", updatedTeam);
 
             console.log(
               `Balance updated and lock released for team ${team.number}`
@@ -486,37 +508,37 @@ class TeamController {
           }
         }
       }
-
     } catch (error) {
       console.error("An error occurred while updating team balances:", error);
     }
   }
 
+  // Function to update individual team balance
   static async update_team_balance(req, res) {
     const result = {
       success: false,
       errorMsg: "",
     };
-  
+
     const { teamNo, amount, type } = req.body;
     const maxRetries = 3;
     const retryDelay = 1000;
-  
+
     try {
       let attempt = 0;
       let lockAcquired = false;
-  
+
       while (attempt < maxRetries) {
         try {
           attempt++;
-  
+
           // Attempt to acquire the lock
           const team = await Team.findOneAndUpdate(
             { number: teamNo, locked: false },
             { $set: { locked: true } },
             { new: true } // Return the updated document
           );
-  
+
           if (!team) {
             if (attempt >= maxRetries) {
               result.errorMsg = `Team ${teamNo} not found or is currently being updated`;
@@ -525,53 +547,56 @@ class TeamController {
             await new Promise((resolve) => setTimeout(resolve, retryDelay));
             continue;
           }
-  
+
           lockAcquired = true;
-  
+
           console.log(`Updating balance for team ${teamNo} by ${amount}`);
-  
+
           const amountToChange = parseInt(amount);
-  
+
           if (isNaN(amountToChange) || amountToChange <= 0) {
             result.errorMsg = "Please enter a valid positive number";
             return res.json(result);
           }
-  
+
           if (amountToChange > team.balance && type === "remove") {
             result.errorMsg = "Insufficient balance";
             return res.json(result);
           }
-  
+
           if (type === "add") {
             team.balance += amountToChange;
           } else if (type === "remove") {
             team.balance -= amountToChange;
           }
-  
+
           // Save the updated balance and release the lock
-          await Team.findOneAndUpdate(
+          const updatedTeam = await Team.findOneAndUpdate(
             { number: teamNo, locked: true },
-            { 
+            {
               $set: { locked: false },
-              balance: team.balance 
+              balance: team.balance,
             },
             { new: true }
           );
-  
+
+          // Emit the updated team data to all connected clients
+          io.emit("update_team", updatedTeam);
+
           result.success = true;
           return res.json(result);
-  
         } catch (error) {
           console.error(
             `Error updating balance for team ${teamNo} on attempt ${attempt}:`,
             error
           );
-  
+
           if (attempt >= maxRetries) {
-            result.errorMsg = "Error updating team balance after multiple attempts";
+            result.errorMsg =
+              "Error updating team balance after multiple attempts";
             return res.json(result);
           }
-  
+
           if (lockAcquired) {
             // Release the lock if it was acquired
             await Team.findOneAndUpdate(
@@ -580,7 +605,7 @@ class TeamController {
             );
             console.log(`Lock released for team ${teamNo} due to error.`);
           }
-  
+
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
         }
       }
@@ -590,7 +615,6 @@ class TeamController {
       return res.json(result);
     }
   }
-  
 }
 
 export default TeamController;

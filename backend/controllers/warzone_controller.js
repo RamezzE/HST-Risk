@@ -3,6 +3,8 @@ import { MongoClient } from "mongodb";
 import Warzone from "../models/warzone.js";
 import Attack from "../models/attack.js";
 
+import { io } from "../app.js";
+
 class WarzoneController {
   static async get_warzones(req, res) {
     const zones = await Warzone.find();
@@ -64,6 +66,9 @@ class WarzoneController {
       });
   
       await newWarzone.save();
+
+      io.emit("new_warzone", newWarzone);
+
       result.success = true;
       result.errorMsg = "Warzone created successfully";
       return res.json(result);
@@ -145,6 +150,8 @@ class WarzoneController {
       warzone.wars = wars.map((war) => ({ ...war, name: war.name.trim() })); // Trim before saving
       await warzone.save();
 
+      io.emit("update_warzone", warzone);
+
       result.success = true;
       result.errorMsg = "Warzone updated successfully";
       return res.json(result);
@@ -190,6 +197,9 @@ class WarzoneController {
 
       // If no attacks are found, delete the warzone
       await Warzone.deleteOne({ _id: id });
+
+      io.emit("delete_warzone", id);
+
       result.success = true;
       result.errorMsg = "Warzone deleted successfully.";
       return res.json(result);

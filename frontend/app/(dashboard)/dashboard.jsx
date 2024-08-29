@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useContext } from "react";
+import React, { useState, useContext, useCallback } from "react";
 import {
   View,
   Text,
@@ -15,9 +15,14 @@ import { get_settings } from "../../api/settings_functions";
 import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
 import { images } from "../../constants";
-import { useFocusEffect } from "@react-navigation/native";
 import { GlobalContext } from "../../context/GlobalProvider";
 import { create_teams } from "../../api/team_functions";
+
+import { useFocusEffect } from "@react-navigation/native";
+
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
 
 const Dashboard = () => {
   const [error, setError] = useState(null);
@@ -123,6 +128,14 @@ const Dashboard = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
+
+      socket.on("update_setting", (updatedSetting) => {
+        setSettings((prevSettings) =>
+          prevSettings.map((setting) =>
+            setting.name === updatedSetting.name ? updatedSetting : setting
+          )
+        );
+      });
     }, [])
   );
 

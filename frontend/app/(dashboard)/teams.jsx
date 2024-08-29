@@ -15,6 +15,10 @@ import { get_country_mappings } from "../../api/country_functions";
 import { images } from "../../constants";
 import Loader from "../../components/Loader";
 
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
+
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
@@ -49,6 +53,28 @@ const Teams = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
+
+      socket.on("update_team", (updatedTeam) => {
+        setTeams((prevTeams) =>
+          prevTeams.map((team) =>
+            team.number === updatedTeam.number ? updatedTeam : team
+          )
+        );
+      });
+
+      socket.on("update_country", (updatedCountry) => {
+        setCountries((prevCountries) =>
+          prevCountries.map((country) =>
+            country.name === updatedCountry.name ? updatedCountry : country
+          )
+        );
+      });
+
+      return () => {
+        socket.off("update_team");
+        socket.off("update_country");
+      };
+
     }, [])
   );
 

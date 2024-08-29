@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import {
   View,
   Text,
@@ -21,6 +21,12 @@ import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 import { images } from "../../constants";
+
+import { useFocusEffect } from "@react-navigation/native";
+
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
 
 const AdminHome = () => {
   const { name, Logout } = useContext(GlobalContext);
@@ -79,10 +85,71 @@ const AdminHome = () => {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchData(); // Fetch initial data
+  
+      // Set up socket listeners for real-time updates
+      socket.on("new_attack", (newAttack) => {
+        setResponse((prevResponse) => ({
+          attacks: [newAttack, ...prevResponse.attacks],
+        }));
+        setCurrentAttack(newAttack);
+      });
+  
+      socket.on("remove_attack", (attackId) => {
+        setResponse((prevResponse) => ({
+          attacks: prevResponse.attacks.filter(
+            (attack) => attack._id !== attackId
+          ),
+        }));
+        if (currentAttack._id === attackId) {
+          setCurrentAttack({
+            _id: "",
+            attacking_team: "",
+            defending_team: "",
+            attacking_zone: "",
+            defending_zone: "",
+            createdAt: "",
+            expiryTime: "",
+          });
+        }
+      });
+  
+      socket.on("update_attack_result", (updatedAttack) => {
+        setResponse((prevResponse) => ({
+          attacks: prevResponse.attacks.map((attack) =>
+            attack._id === updatedAttack._id ? updatedAttack : attack
+          ),
+        }));
+        if (currentAttack._id === updatedAttack._id) {
+          setCurrentAttack(updatedAttack);
+        }
+      });
+  
+      socket.on("new_game", () => {
+        Alert.alert(
+          "New Game",
+          "A new game has started. You will be logged out automatically."
+        );
+  
+        setTimeout(async () => {
+          Logout();
+          router.replace("/");
+        }, 3000);
+      });
+  
+      return () => {
+        socket.off("new_attack");
+        socket.off("remove_attack");
+        socket.off("update_attack_result");
+        socket.off("new_game");
+      };
+    }, [currentAttack._id])
+  );
+
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
   }, []);
 
   const logoutFunc = () => {

@@ -6,6 +6,8 @@ import SubTeam from "../models/subteam.js";
 import Team from "../models/team.js";
 
 import UserController from "./user_controller.js";
+import { io } from "../app.js";
+
 
 class AttackController {
   static async get_attacks(req, res) {
@@ -385,6 +387,11 @@ class AttackController {
             ]
           );
 
+          io.emit("update_team", attacking_team);
+          io.emit("update_team", defending_team);
+          io.emit("new_attack", attack);
+          io.emit("update_warzone", warzone);
+
           result.success = true;
           return res.json(result);
         } catch (error) {
@@ -674,6 +681,12 @@ class AttackController {
 
         console.log(`${attack.war.name} is now marked as available.`);
 
+        io.emit("update_country", country1);
+        io.emit("update_country", country2);
+
+        io.emit("remove_attack", attack_id);
+        io.emit("update_warzone", warzone);
+
         result.success = true;
         return res.json(result);
       } else {
@@ -731,6 +744,9 @@ class AttackController {
           });
 
         console.log(`${attack.war.name} is now marked as available.`);
+
+        io.emit("remove_attack", attack_id);
+        io.emit("update_warzone", warzone);
 
         result.success = true;
         return res.json(result);

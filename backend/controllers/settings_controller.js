@@ -1,5 +1,5 @@
 import Settings from "../models/setting.js";
-
+import { io } from "../app.js";
 class SettingsController {
   static async get_settings(req, res) {
     const settings = await Settings.find();
@@ -24,6 +24,9 @@ class SettingsController {
 
       setting.value = value;
       await setting.save();
+
+      io.emit("update_setting", setting);
+
       result.success = true;
       return res.json(result);
     } catch (error) {

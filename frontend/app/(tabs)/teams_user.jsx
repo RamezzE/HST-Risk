@@ -15,6 +15,11 @@ import { images } from "../../constants";
 import Loader from "../../components/Loader";
 import CustomButton from "../../components/CustomButton";
 
+import config from "../../api/config";
+import io from "socket.io-client";
+import { update_country } from './../../api/country_functions';
+const socket = io(config.serverIP); // Replace with your server URL
+
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
@@ -49,6 +54,39 @@ const Teams = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
+      socket.on("update_team", (updatedTeam) => {
+        setTeams((prevTeams) =>
+          prevTeams.map((team) =>
+            team.number === updatedTeam.number ? updatedTeam : team
+          )
+        );
+      });
+
+      socket.on("update_country", (updatedCountry) => {
+        setCountries((prevCountries) =>
+          prevCountries.map((country) =>
+            country._id === updatedCountry._id ? updatedCountry : country
+          )
+        );
+      });
+
+      socket.on("new_game", () => {
+        Alert.alert(
+          "New Game",
+          "A new game has started. You will be logged out automatically."
+        );
+      
+        setTimeout(async () => {
+          deletePushToken(expoPushToken, teamNo);
+          router.replace("/");
+        }, 3000);
+      });
+
+      return () => {
+        socket.off("update_team"); // Cleanup socket listener on component unmount
+        socket.off("update_country"); // Cleanup socket listener on component unmount
+        socket.off("new_game"); // Cleanup socket listener on component
+      };
     }, [])
   );
 

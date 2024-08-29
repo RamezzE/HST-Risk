@@ -15,6 +15,9 @@ import { images } from "../../constants";
 import Loader from "../../components/Loader";
 import CustomButton from "../../components/CustomButton";
 
+import config from "../../api/config";
+import io from "socket.io-client";
+
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
@@ -23,6 +26,9 @@ const Teams = () => {
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  // Initialize socket connection
+  const socket = io(config.serverIP); // Replace with your server URL
 
   const fetchData = async () => {
     setError(null);
@@ -49,6 +55,30 @@ const Teams = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
+      socket.on("update_team", (updatedTeam) => {
+        setTeams((prevTeams) =>
+          prevTeams.map((team) =>
+            team.number === updatedTeam.number ? updatedTeam : team
+          )
+        );
+      });
+
+      socket.on("new_game", () => {
+        Alert.alert(
+          "New Game",
+          "A new game has started. You will be logged out automatically."
+        );
+      
+        setTimeout(async () => {
+          deletePushToken(expoPushToken, teamNo);
+          router.replace("/");
+        }, 3000);
+      });
+
+      return () => {
+        socket.off("update_team"); // Cleanup socket listener on component unmount
+        socket.off("new_game"); // Cleanup socket listener on component
+      };
     }, [])
   );
 
@@ -57,24 +87,16 @@ const Teams = () => {
   }, []);
 
   const toggleExpandTeam = (teamNumber) => {
-    setExpandedTeam((prev) =>
-      prev === teamNumber ? null : teamNumber
-    );
+    setExpandedTeam((prev) => (prev === teamNumber ? null : teamNumber));
   };
 
   const renderTeams = () => {
     if (!Array.isArray(teams)) {
-      return (
-        <Text className="text-center">
-          No teams available or unexpected data format.
-        </Text>
-      );
+      return <Text className="text-center">No teams available or unexpected data format.</Text>;
     }
 
     return teams.map((item, index) => {
-      const ownedCountries = countries.filter(
-        (country) => country.teamNo === item.number
-      );
+      const ownedCountries = countries.filter((country) => country.teamNo === item.number);
 
       return (
         <View
@@ -84,24 +106,19 @@ const Teams = () => {
         >
           <View className="flex flex-col justify-between">
             <View className="flex flex-row justify-between w-full">
-            <Text className="text-4xl font-montez">{item.name}</Text>
-            <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
+              <Text className="text-4xl font-montez">{item.name}</Text>
+              <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
             </View>
             <Text className="text-[16px] font-pregular">Running Money: {item.balance}</Text>
-            <Text className="text-[16px] font-pregular">
-              Countries Owned: {ownedCountries.length}
-            </Text>
+            <Text className="text-[16px] font-pregular">Countries Owned: {ownedCountries.length}</Text>
 
-            {/* Button to toggle country names */}
-
-            <CustomButton 
-              title= {expandedTeam === item.number ? "Hide Countries" : "Show Countries"}
+            <CustomButton
+              title={expandedTeam === item.number ? "Hide Countries" : "Show Countries"}
               containerStyles="p-2 rounded-md mt-2 w-[50%] ml-auto"
               handlePress={() => toggleExpandTeam(item.number)}
               textStyles={"text-[12px] font-pregular"}
             />
 
-            {/* Conditional rendering of countries */}
             {expandedTeam === item.number && (
               <View className="mt-2">
                 {ownedCountries.map((country, index) => (
@@ -127,10 +144,7 @@ const Teams = () => {
         }}
         className="flex-1 bg-black"
       >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
+        <ImageBackground source={images.background} style={{ flex: 1, resizeMode: "cover" }}>
           <Loader />
         </ImageBackground>
       </View>
@@ -146,30 +160,16 @@ const Teams = () => {
       }}
       className="bg-black h-full"
     >
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
-      >
+      <ImageBackground source={images.background} style={{ resizeMode: "cover" }} className="min-h-[100vh]">
         <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={fetchData}
-              tintColor="#000"
-            />
-          }
+          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={fetchData} tintColor="#000" />}
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full justify-start p-4 mb-24">
-            <Text className="text-6xl text-center font-montez py-2 mt-7">
-              Teams
-            </Text>
+            <Text className="text-6xl text-center font-montez py-2 mt-7">Teams</Text>
 
             {error ? (
-              <Text style={{ color: "black", textAlign: "center" }}>
-                {error}
-              </Text>
+              <Text style={{ color: "black", textAlign: "center" }}>{error}</Text>
             ) : (
               renderTeams()
             )}

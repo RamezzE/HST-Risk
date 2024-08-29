@@ -8,7 +8,7 @@ import {
   Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import { router } from "expo-router";
 
@@ -31,6 +31,12 @@ import DottedLine from "../../components/DottedLine";
 import Loader from "../../components/Loader";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
+
+import { useFocusEffect } from "@react-navigation/native";
+
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
 
 const Attack = () => {
   const { name, teamNo, subteam } = useContext(GlobalContext);
@@ -189,15 +195,66 @@ const Attack = () => {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchData(); // Fetch initial data
+
+      // Set up socket listeners for real-time updates
+      socket.on("update_country", (updatedCountryMapping) => {
+        setCountryMappings((prevMappings) =>
+          prevMappings.map((mapping) =>
+            mapping.name === updatedCountryMapping.name ? updatedCountryMapping : mapping
+          )
+        );
+      });
+
+      socket.on("update_team", (updatedTeam) => {
+        setTeams((prevTeams) =>
+          prevTeams.map((team) =>
+            team.number === updatedTeam.number ? updatedTeam : team
+          )
+        );
+      });
+
+      socket.on("new_attack", (newAttack) => {
+        if (newAttack.defending_team === teamNo.toString()) {
+          setCurrentDefence((prevDefences) => [...prevDefences, newAttack]);
+        }
+      });
+
+      socket.on("remove_attack", (attackId) => {
+        setCurrentDefence((prevDefences) =>
+          prevDefences.filter((attack) => attack._id !== attackId)
+        );
+      });
+
+      socket.on("new_game", () => {
+        Alert.alert(
+          "New Game",
+          "A new game has started. You will be logged out automatically."
+        );
+      
+        setTimeout(async () => {
+          deletePushToken(expoPushToken, teamNo);
+          router.replace("/");
+        }, 3000);
+      });
+      
+      return () => {
+        socket.off("update_country");
+        socket.off("update_team");
+        socket.off("new_attack");
+        socket.off("remove_attack");
+        socket.off("new_game");
+      };
+    }, [teamNo, subteam])
+  );
+
   useEffect(() => {
     setZones(countries);
 
     fetchData();
 
-    const interval = setInterval(fetchData, 60000);
-    
-    // Clear interval on component unmount
-    return () => clearInterval(interval);
   }, []);
 
   const attack_func = async (zone_1, team_1, zone_2) => {

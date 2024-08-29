@@ -10,6 +10,7 @@ export const GlobalProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [subteam, setSubteam] = useState('');
   const [userMode, setUserMode] = useState('');
+  const [adminType, setAdminType] = useState('');
   const [expoPushToken, setExpoPushToken] = useState('');
   const [currentAttack, setCurrentAttack] = useState(null); // Track the current attack
   const [currentDefence, setCurrentDefence] = useState([]); // Track current defenses
@@ -21,6 +22,7 @@ export const GlobalProvider = ({ children }) => {
       setTeamNo('');
       setIsLoggedIn(false);
       setUserMode('');
+      setAdminType('');
       setCurrentAttack(null);
       setCurrentDefence([]); // Clear current defense on logout
       await logout();
@@ -35,6 +37,7 @@ export const GlobalProvider = ({ children }) => {
       teamNo, 
       isLoggedIn, 
       userMode, 
+      adminType,
       subteam, 
       expoPushToken, 
       currentAttack, 
@@ -47,6 +50,7 @@ export const GlobalProvider = ({ children }) => {
       setSubteam, 
       setCurrentAttack, // Provide setCurrentAttack
       setCurrentDefence, // Provide setCurrentDefence
+      setAdminType,
       Logout 
     }}>
       {children}

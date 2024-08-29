@@ -1,4 +1,5 @@
 import Country from "../models/country.js";
+import { io } from "../app.js"; 
 
 class CountryController {
   static async get_country_mappings(req, res) {
@@ -52,6 +53,8 @@ class CountryController {
       country.teamNo = teamNo;
 
       await country.save();
+
+      io.emit("update_country", country);
 
       result.success = true;
       return res.json(result);

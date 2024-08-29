@@ -6,7 +6,6 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,6 +14,12 @@ import Loader from "../../components/Loader";
 import BackButton from "../../components/BackButton";
 
 import { get_warzones } from "../../api/warzone_functions";
+
+import { useFocusEffect } from "@react-navigation/native";
+
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
 
 const Warzones = () => {
   const [warzones, setWarzones] = useState([]);
@@ -44,7 +49,32 @@ const Warzones = () => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchData();
+      fetchData(); // Fetch initial data
+  
+      // Set up socket listeners for real-time updates
+      socket.on("new_warzone", (newWarzone) => {
+        setWarzones((prevWarzones) => [newWarzone, ...prevWarzones]);
+      });
+  
+      socket.on("update_warzone", (updatedWarzone) => {
+        setWarzones((prevWarzones) =>
+          prevWarzones.map((warzone) =>
+            warzone._id === updatedWarzone._id ? updatedWarzone : warzone
+          )
+        );
+      });
+  
+      socket.on("delete_warzone", (deletedWarzoneId) => {
+        setWarzones((prevWarzones) =>
+          prevWarzones.filter((warzone) => warzone._id !== deletedWarzoneId)
+        );
+      });
+  
+      return () => {
+        socket.off("new_warzone");
+        socket.off("update_warzone");
+        socket.off("delete_warzone");
+      };
     }, [])
   );
 

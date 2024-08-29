@@ -22,6 +22,7 @@ Notifications.setNotificationHandler({
 
 export default function App() {
   const {
+    adminType,
     setName,
     setTeamNo,
     setIsLoggedIn,
@@ -101,7 +102,11 @@ export default function App() {
         }
 
         if (userMode === "admin") {
-          router.navigate("/admin_home");
+          if (adminType === "Wars") {
+            router.navigate("/admin_home");
+            return;
+          }
+          router.navigate("/admin_home2");
           return;
         }
 

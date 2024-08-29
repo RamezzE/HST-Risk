@@ -20,6 +20,10 @@ import { delete_attack, set_attack_result } from "../../api/attack_functions";
 import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
+
 const DashboardAttacks = () => {
   const [attacks, setAttacks] = useState([]);
   const [error, setError] = useState(null);
@@ -50,7 +54,23 @@ const DashboardAttacks = () => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchData();
+      fetchData(); // Fetch initial data
+  
+      // Set up socket listeners for real-time updates
+      socket.on("new_attack", (newAttack) => {
+        setAttacks((prevAttacks) => [newAttack, ...prevAttacks]);
+      });
+  
+      socket.on("remove_attack", (attackId) => {
+        setAttacks((prevAttacks) =>
+          prevAttacks.filter((attack) => attack._id !== attackId)
+        );
+      });
+  
+      return () => {
+        socket.off("new_attack");
+        socket.off("remove_attack");
+      };
     }, [])
   );
 
