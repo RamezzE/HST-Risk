@@ -231,7 +231,7 @@ class TeamController {
 
     if (!teamName || typeof teamName !== "string") {
       result.errorMsg = "Invalid input data";
-      return res.status(400).json(result);
+      return res.json(result);
     }
 
     let attempt = 0;
@@ -249,7 +249,7 @@ class TeamController {
         if (!team) {
           if (attempt >= maxRetries) {
             result.errorMsg = `Team ${number} is currently being updated. Please try again later.`;
-            return res.status(409).json(result); // 409 Conflict
+            return res.json(result); // 409 Conflict
           } else {
             await new Promise((resolve) => setTimeout(resolve, retryDelay)); // Wait before retrying
             continue;
@@ -275,7 +275,7 @@ class TeamController {
         await team.save();
 
         result.success = true;
-        return res.status(200).json(result);
+        return res.json(result);
       } catch (error) {
         console.error(
           `Error updating team ${number} on attempt ${attempt}:`,
@@ -284,7 +284,7 @@ class TeamController {
 
         if (attempt >= maxRetries) {
           result.errorMsg = "Error updating team after multiple attempts";
-          return res.status(500).json(result);
+          return res.json(result);
         }
 
         // Ensure the lock is released if an error occurs and retry is not exhausted
@@ -372,7 +372,7 @@ class TeamController {
   static async updateTeamBalances() {
     console.log("Updating team balances");
 
-    const maxRetries = 3;
+    const maxRetries = 5;
     const retryDelay = 1000;
 
     try {
@@ -520,7 +520,7 @@ class TeamController {
           if (!team) {
             if (attempt >= maxRetries) {
               result.errorMsg = `Team ${teamNo} not found or is currently being updated`;
-              return res.status(409).json(result); // 409 Conflict
+              return res.json(result); // 409 Conflict
             }
             await new Promise((resolve) => setTimeout(resolve, retryDelay));
             continue;
@@ -534,12 +534,12 @@ class TeamController {
   
           if (isNaN(amountToChange) || amountToChange <= 0) {
             result.errorMsg = "Please enter a valid positive number";
-            return res.status(400).json(result);
+            return res.json(result);
           }
   
           if (amountToChange > team.balance && type === "remove") {
             result.errorMsg = "Insufficient balance";
-            return res.status(400).json(result);
+            return res.json(result);
           }
   
           if (type === "add") {
@@ -559,7 +559,7 @@ class TeamController {
           );
   
           result.success = true;
-          return res.status(200).json(result);
+          return res.json(result);
   
         } catch (error) {
           console.error(
@@ -569,7 +569,7 @@ class TeamController {
   
           if (attempt >= maxRetries) {
             result.errorMsg = "Error updating team balance after multiple attempts";
-            return res.status(500).json(result);
+            return res.json(result);
           }
   
           if (lockAcquired) {
@@ -587,7 +587,7 @@ class TeamController {
     } catch (error) {
       result.errorMsg = "Error updating team balance";
       console.error("Error updating team balance:", error);
-      return res.status(500).json(result);
+      return res.json(result);
     }
   }
   
