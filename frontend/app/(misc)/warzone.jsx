@@ -22,9 +22,6 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
 
 const Warzone = () => {
   const local = useLocalSearchParams();
@@ -33,7 +30,7 @@ const Warzone = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const insets = useSafeAreaInsets();
 
-  const { userMode } = useContext(GlobalContext);
+  const { userMode, socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     try {
@@ -195,7 +192,7 @@ const Warzone = () => {
                 router.replace("/team_attacks");
               }}
             />
-            <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
+            <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
               Choose your warzone
             </Text>
             <Text className="text-3xl mt-2 py-1 text-center font-montez text-black ">

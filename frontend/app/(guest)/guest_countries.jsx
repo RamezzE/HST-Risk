@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
@@ -12,15 +12,15 @@ import Loader from "../../components/Loader";
 import { get_country_mappings } from "../../api/country_functions";
 import { images } from "../../constants";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
+import { GlobalContext } from "../../context/GlobalProvider";
 
 const Countries = () => {
   const [countries, setCountries] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const insets = useSafeAreaInsets();
+
+  const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);

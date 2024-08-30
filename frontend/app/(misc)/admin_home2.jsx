@@ -20,9 +20,6 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import BackButton from "../../components/BackButton";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
@@ -33,7 +30,7 @@ const Teams = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  const { Logout } = useContext(GlobalContext);
+  const { Logout, socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import {
   View,
   Text,
@@ -15,9 +15,7 @@ import { images } from "../../constants";
 import Loader from "../../components/Loader";
 import BackButton from "../../components/BackButton";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
+import { GlobalContext } from "../../context/GlobalProvider";
 
 const SubTeams = () => {
   const [teams, setTeams] = useState([]);
@@ -25,6 +23,8 @@ const SubTeams = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);

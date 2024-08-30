@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import {
   View,
   Text,
@@ -17,9 +17,7 @@ import { get_warzones } from "../../api/warzone_functions";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
+import { GlobalContext } from "../../context/GlobalProvider";
 
 const Warzones = () => {
   const [warzones, setWarzones] = useState([]);
@@ -27,6 +25,8 @@ const Warzones = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);

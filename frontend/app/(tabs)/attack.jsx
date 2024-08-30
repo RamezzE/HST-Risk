@@ -34,12 +34,8 @@ import CustomButton from "../../components/CustomButton";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
-
 const Attack = () => {
-  const { name, teamNo, subteam } = useContext(GlobalContext);
+  const { name, teamNo, subteam, socket } = useContext(GlobalContext);
 
   const [countryMappings, setCountryMappings] = useState([]);
   const [initialArea, setInitialArea] = useState([30, 30]);
@@ -141,8 +137,7 @@ const Attack = () => {
 
   const fetchData = async () => {
     setError(null);
-
-    console.log("Fetching data");
+    // setIsRefreshing(true);
 
     try {
       const result = await get_country_mappings();

@@ -31,9 +31,6 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
 
 const Home = () => {
   const [zones, setZones] = useState([]);
@@ -54,6 +51,7 @@ const Home = () => {
     setCurrentAttack,
     currentDefence,
     setCurrentDefence,
+    socket,
   } = useContext(GlobalContext); // Access currentAttack, currentDefence, setCurrentAttack, and setCurrentDefence
 
   const fetchData = async () => {

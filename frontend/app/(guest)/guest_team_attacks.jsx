@@ -15,9 +15,6 @@ import Timer from "../../components/Timer";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
 
 const TeamAttacks = () => {
   const [error, setError] = useState(null);
@@ -25,7 +22,7 @@ const TeamAttacks = () => {
   const [defendingAttacks, setDefendingAttacks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
 
-  const { teamNo } = useContext(GlobalContext);
+  const { teamNo, socket } = useContext(GlobalContext);
   const insets = useSafeAreaInsets();
 
   const fetchData = async () => {

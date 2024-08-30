@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useContext } from "react";
 import {
   View,
   Text,
@@ -20,9 +20,8 @@ import { delete_attack, set_attack_result } from "../../api/attack_functions";
 import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
+import { GlobalContext } from "../../context/GlobalProvider";
+
 
 const DashboardAttacks = () => {
   const [attacks, setAttacks] = useState([]);
@@ -31,6 +30,8 @@ const DashboardAttacks = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const insets = useSafeAreaInsets();
+
+  const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);

@@ -20,9 +20,6 @@ import { create_teams } from "../../api/team_functions";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
 
 const Dashboard = () => {
   const [error, setError] = useState(null);
@@ -31,7 +28,7 @@ const Dashboard = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const insets = useSafeAreaInsets();
 
-  const { Logout } = useContext(GlobalContext);
+  const { Logout, socket } = useContext(GlobalContext);
 
   const logoutFunc = () => {
     Alert.alert(

@@ -24,12 +24,8 @@ import { images } from "../../constants";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
-
 const AdminHome = () => {
-  const { name, Logout } = useContext(GlobalContext);
+  const { name, Logout, socket } = useContext(GlobalContext);
   const [war, setWar] = useState("");
   const [response, setResponse] = useState({ attacks: [] });
   const [currentAttack, setCurrentAttack] = useState({

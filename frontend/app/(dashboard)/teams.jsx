@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useContext } from "react";
 import {
   View,
   Text,
@@ -15,9 +15,7 @@ import { get_country_mappings } from "../../api/country_functions";
 import { images } from "../../constants";
 import Loader from "../../components/Loader";
 
-import config from "../../api/config";
-import io from "socket.io-client";
-const socket = io(config.serverIP); // Replace with your server URL
+import { GlobalContext } from "../../context/GlobalProvider";
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
@@ -27,6 +25,8 @@ const Teams = () => {
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
