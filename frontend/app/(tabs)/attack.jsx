@@ -361,7 +361,7 @@ const Attack = () => {
             />
           }
         >
-          <View className="w-full min-h-[82.5vh] px-4 pt-4 mt-2 flex flex-col justify-start">
+          <View className="w-full min-h-[82.5vh] px-4 pt-4 mt-2 mb-8 flex flex-col justify-start">
             <View className="flex flex-col mb-6">
 
               <View className="flex flex-row justify-between pb-4">
