@@ -86,7 +86,7 @@ export default function App() {
         console.log(`Error getting token: ${error}`);
       }
     } else {
-      alert('Must use physical device for push notifications');
+      // alert('Must use physical device for push notifications');
     }
   };
 
@@ -200,7 +200,7 @@ export default function App() {
 
   return (
     <View
-      className=" h-full bg-black"
+      className="flex-1 bg-black"
       style={{
         paddingTop: insets.top,
         paddingRight: insets.right,
@@ -211,24 +211,24 @@ export default function App() {
         source={images.background}
         style={{ flex: 1, resizeMode: "cover" }}
       >
-        <View className="h-full justify-center mt-8">
-          <View className="w-full justify-around items-center min-h-[82.5vh] px-4">
-            <View className="w-full flex justify-center">
-              <View className="mt-5">
+        <View className="flex-1 justify-center pt-8">
+          <View className="w-full justify-center space-y-8 items-center px-4 py-8">
+            <View className="w-full flex flex-col space-y-8">
+              <View>
                 <Text className="text-8xl text-black font-montez text-center p-5">
                   Risk
                 </Text>
                 <Text className="text-5xl text-black font-montez p-2 text-center">
                   Camp Domination
                 </Text>
-              </View>
+                </View>
 
-              <View className="w-full flex flex-row justify-evenly text- items-center">
+              <View className="w-full flex flex-row justify-evenly items-center">
                 <CustomButton
                   title="Guest"
                   handlePress={() => guestLogin()}
                   textStyles={"font-montez text-3xl"}
-                  containerStyles={"mt-6 p-4"}
+                  containerStyles={"p-4"}
                 />
 
                 <CustomButton
@@ -236,19 +236,19 @@ export default function App() {
                   handlePress={() => checkLoggedIn()}
                   isLoading={isSubmitting}
                   textStyles={"font-montez text-3xl"}
-                  containerStyles={"mt-6 p-4"}
+                  containerStyles={"p-4"}
                 />
               </View>
             </View>
 
-            <View>
+            <View className="">
               <Image
                 source={images.papyrus_globe}
                 className="h-48"
                 resizeMode="contain"
               />
             </View>
-            <Text className="text-black text-2xl text-center font-montez mt-3 ">
+            <Text className="text-black text-2xl text-center font-montez">
               by Helio Sports Team
             </Text>
           </View>

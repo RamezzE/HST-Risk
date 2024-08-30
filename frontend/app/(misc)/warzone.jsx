@@ -7,7 +7,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import CustomButton from "../../components/CustomButton";
 import { useLocalSearchParams } from "expo-router";
 import { get_warzones } from "../../api/warzone_functions";

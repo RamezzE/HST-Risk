@@ -1,7 +1,6 @@
 import Admin from "../models/admin.js";
-import { MongoClient } from "mongodb";
+import { io } from "../app.js";
 
-const client = new MongoClient(process.env.MONGO_URI, {});
 const generatePassword = () => {
   return Math.random().toString(36).slice(-8);
 };
@@ -52,6 +51,9 @@ class AdminController {
 
     try {
       await newAdmin.save();
+
+      io.emit("add_admin", newAdmin);
+
       result.success = true;
       return res.json(result);
     } catch (error) {
@@ -83,6 +85,8 @@ class AdminController {
       admin.type = type;
 
       await admin.save();
+
+      io.emit("update_admin", admin);
 
       result.success = true;
       return res.json(result);
@@ -116,6 +120,9 @@ class AdminController {
 
     try {
       await Admin.deleteOne({ name });
+
+      io.emit("delete_admin", name);
+
       result.success = true;
       return res.json(result);
     } catch (error) {

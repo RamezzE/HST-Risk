@@ -118,7 +118,7 @@ mongooseConnectionPromise
       // Update team balances periodically
       TeamController.updateTeamBalances();
       setInterval(() => {
-        TeamController.updateTeamBalances(io); // Pass io to emit updates if necessary
+        TeamController.updateTeamBalances(); // Pass io to emit updates if necessary
       }, 1000 * 60 * 1);
     });
   })

@@ -14,6 +14,10 @@ import { get_admins } from "../../api/admin_functions";
 import { images } from "../../constants";
 import Loader from "../../components/Loader";
 
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
+
 const Admins = () => {
   const [admins, setAdmins] = useState([]);
   const [error, setError] = useState(null);
@@ -42,7 +46,25 @@ const Admins = () => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchData();
+      fetchData();      
+
+      socket.on("update_admin", (editedAdmin) => {
+        setAdmins((prevAdmins) =>
+          prevAdmins.map((admin) =>
+            admin._id === editedAdmin._id ? editedAdmin : admin
+          )
+        );
+      });
+
+      socket.on("delete_admin", (deletedAdmin) => {
+        setAdmins((prevAdmins) =>
+          prevAdmins.filter((admin) => admin.name !== deletedAdmin)
+        );
+      });
+
+      return () => {
+        socket.off("new_admin");
+      }
     }, [])
   );
 

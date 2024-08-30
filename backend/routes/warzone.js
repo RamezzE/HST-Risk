@@ -23,7 +23,7 @@ router.get("/", WarzoneController.get_warzones);
 router.get("/wars", WarzoneController.get_wars);
 
 router.post("/", WarzoneController.create_warzone);
-router.put("/", checkGameStatus, WarzoneController.update_warzone);
-router.delete("/:id", checkGameStatus, WarzoneController.delete_warzone);
+router.put("/", WarzoneController.update_warzone);
+router.delete("/:id", WarzoneController.delete_warzone);
 
 export default router;

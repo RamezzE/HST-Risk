@@ -351,6 +351,8 @@ class TeamController {
 
       await subteam.save();
 
+      io.emit("update_subteam", subteam);
+
       result.success = true;
       return res.json(result);
     } catch (error) {

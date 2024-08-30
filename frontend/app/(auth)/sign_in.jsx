@@ -121,14 +121,13 @@ const SignIn = () => {
         style={{ resizeMode: "cover" }}
         className="min-h-[100vh]"
       >
-        <ScrollView>
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
             <BackButton
               style="w-[20vw] mb-4"
               size={32}
               onPress={() => router.replace("/")}
             />
-            <Text className="text-5xl mt-10 py-1 text-center font-montez text-black">
+            <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
               Sign In
             </Text>
 
@@ -154,7 +153,6 @@ const SignIn = () => {
               isLoading={isSubmitting}
             />
           </View>
-        </ScrollView>
       </ImageBackground>
     </View>
   );

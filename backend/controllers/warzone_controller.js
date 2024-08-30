@@ -168,9 +168,7 @@ class WarzoneController {
       errorMsg: "",
     };
 
-    const { id } = req.body;
-
-    console.log("Warzone id: ", id);
+    const { id } = req.params;
 
     try {
       const warzone = await Warzone.findById(id);

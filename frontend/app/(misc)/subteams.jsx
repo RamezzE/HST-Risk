@@ -15,6 +15,10 @@ import { images } from "../../constants";
 import Loader from "../../components/Loader";
 import BackButton from "../../components/BackButton";
 
+import config from "../../api/config";
+import io from "socket.io-client";
+const socket = io(config.serverIP); // Replace with your server URL
+
 const SubTeams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
@@ -44,6 +48,15 @@ const SubTeams = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
+
+      socket.on("update_subteam", (editedSubteam) => {
+        setTeams((prevTeams) =>
+          prevTeams.map((team) =>
+            team.username === editedSubteam.username ? editedSubteam : team
+          )
+        );
+      });
+
     }, [])
   );
 
