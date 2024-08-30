@@ -5,7 +5,10 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import mongooseConnectionPromise from "./db.js";
 import { Server as SocketIOServer } from "socket.io";
-import { createServer } from "http";
+import { createServer as createHttpServer } from "http";
+import { createServer as createHttpsServer } from "https";
+import fs from "fs";
+import path from "path";
 import TeamController from "./controllers/team_controller.js";
 
 // Import routers
@@ -22,11 +25,39 @@ dotenv.config({ path: "./.env" });
 
 const app = express();
 
-// Create HTTP server
-const httpServer = createServer(app);
+// Determine if we are in production or development
+const isProduction = process.env.NODE_ENV === "production";
 
-// Set up Socket.io
-const io = new SocketIOServer(httpServer, {
+// Set up server (HTTP for development, HTTPS for production)
+let server;
+if (isProduction) {
+  // Set up SSL credentials for production
+  const privateKey = fs.readFileSync(
+    "/etc/letsencrypt/live/carmel-california.store/privkey.pem",
+    "utf8"
+  );
+  const certificate = fs.readFileSync(
+    "/etc/letsencrypt/live/carmel-california.store/fullchain.pem",
+    "utf8"
+  );
+  const ca = fs.readFileSync(
+    "/etc/letsencrypt/live/carmel-california.store/chain.pem",
+    "utf8"
+  );
+
+  const credentials = { key: privateKey, cert: certificate, ca: ca };
+
+  // Create HTTPS server
+  server = createHttpsServer(credentials, app);
+  console.log("Starting in production mode with HTTPS");
+} else {
+  // Create HTTP server for development
+  server = createHttpServer(app);
+  console.log("Starting in development mode with HTTP");
+}
+
+// Set up Socket.io with the appropriate server
+const io = new SocketIOServer(server, {
   cors: {
     origin: "*", // Allow all origins for simplicity, adjust as needed
     methods: ["GET"],
@@ -45,7 +76,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction, // Only secure cookies in production
       maxAge: 1000 * 60 * 60 * 24,
     },
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
@@ -61,16 +92,11 @@ app.set("host", process.env.HOST || "localhost");
 io.on("connection", (socket) => {
   console.log("New client connected", socket.id);
 
-  // Emit initial data or listen to specific events
   socket.on("get_initial_data", async () => {
     try {
       // Example: Fetch initial teams and countries data
-      // const teams = await TeamController.get_all_teams();
-      // const countries = await Country.find(); // Assuming Country model is imported
-      // socket.emit("update_teams", teams);
-      // socket.emit("update_countries", countries);
     } catch (error) {
-      // console.error("Error fetching initial data:", error);
+      console.error("Error fetching initial data:", error);
     }
   });
 
@@ -82,8 +108,12 @@ io.on("connection", (socket) => {
 // Start the server after database connection
 mongooseConnectionPromise
   .then(() => {
-    httpServer.listen(app.get("port"), () => {
-      console.log(`Server is up and running on http://${app.get("host")}:${app.get("port")}`);
+    server.listen(app.get("port"), () => {
+      console.log(
+        `Server is up and running on ${
+          isProduction ? "https" : "http"
+        }://${app.get("host")}:${app.get("port")}`
+      );
 
       // Update team balances periodically
       TeamController.updateTeamBalances();
@@ -98,7 +128,7 @@ mongooseConnectionPromise
 
 // Route to check server status and insert countries
 app.get("/", (req, res) => {
-  res.send("Server is up and running. HST");
+  res.send("Server is up and running.");
 });
 
 // Use routers
@@ -117,4 +147,3 @@ app.use((err, req, res, next) => {
 });
 
 export { io };
-
