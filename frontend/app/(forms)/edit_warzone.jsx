@@ -43,10 +43,11 @@ const EditWarzone = () => {
       return result;
     }
 
-    // Trim each war's name
+    // Trim each war's name and location
     const wars = form.wars.map((war) => ({
       ...war,
       name: war.name.trim(),
+      location: war.location.trim(),
     }));
     setForm({ ...form, wars });
 
@@ -63,35 +64,41 @@ const EditWarzone = () => {
       return result;
     }
 
+    const warLocations = wars.map((war) => war.location);
+    // if (warLocations.some((location) => !location)) {
+    //   result.errorMsg = "All wars must have a location";
+    //   return result;
+    // }
+
     return { success: true };
   };
 
   const submit = async () => {
     setIsSubmitting(true);
-  
+
     try {
       const validationResult = validateEditWarzone();
       if (!validationResult.success) {
         Alert.alert("Error", validationResult.errorMsg);
         return;
       }
-  
-      // Ensure each war has a name and an available property set to 'true'
+
+      // Ensure each war has a name, location, and an available property set to 'true'
       const updatedWars = form.wars.map((war) => ({
         ...war,
         available: true,
       }));
-  
+
       // Update the form with the new wars array
       const updatedForm = { ...form, wars: updatedWars };
-  
+
       const response = await update_warzone(updatedForm);
-  
+
       if (!response.success) {
         Alert.alert("Error", response.errorMsg);
         return;
       }
-  
+
       Alert.alert("Success", "Warzone updated successfully");
       router.navigate("/warzones");
     } catch (error) {
@@ -104,7 +111,6 @@ const EditWarzone = () => {
 
   const deleteWarzone = async () => {
     setIsSubmitting(true);
-    console.log("Deleting warzone", local.id);
     try {
       // Call your API to delete the warzone
       const response = await delete_warzone(local.id); // Assume delete_warzone is an API function you have
@@ -143,9 +149,9 @@ const EditWarzone = () => {
     );
   };
 
-  const handleWarChange = (index, newValue) => {
+  const handleWarChange = (index, field, newValue) => {
     const newWars = [...form.wars];
-    newWars[index].name = newValue;
+    newWars[index][field] = newValue;
     setForm({ ...form, wars: newWars });
   };
 
@@ -155,7 +161,7 @@ const EditWarzone = () => {
   };
 
   const addWar = () => {
-    setForm({ ...form, wars: [...form.wars, { name: "" }] });
+    setForm({ ...form, wars: [...form.wars, { name: "", location: "" }] });
   };
 
   const insets = useSafeAreaInsets();
@@ -192,16 +198,24 @@ const EditWarzone = () => {
             />
 
             {form.wars.map((war, index) => (
-              <View key={index} className="flex-row items-end mt-4">
+              <View key={index} className="mt-4 flex flex-row">
                 <FormField
-                  title={`War ${index + 1}`}
+                  title={`War ${index + 1} Name`}
                   value={war.name}
-                  handleChangeText={(e) => handleWarChange(index, e)}
-                  otherStyles="flex-1"
+                  handleChangeText={(e) => handleWarChange(index, "name", e)}
+                  otherStyles="flex-1 mr-3"
+                />
+                <FormField
+                  title={`Location`}
+                  value={war.location}
+                  handleChangeText={(e) =>
+                    handleWarChange(index, "location", e)
+                  }
+                  otherStyles="flex-1 mr-3"
                 />
                 <TouchableOpacity
                   onPress={() => removeWar(index)}
-                  className="bg-red-700 p-2 rounded-md ml-2"
+                  className="bg-red-700 p-2 rounded-md mt-2 self-end"
                 >
                   <Icon name="trash" size={24} color="white" />
                 </TouchableOpacity>

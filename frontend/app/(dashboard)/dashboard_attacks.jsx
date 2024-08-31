@@ -199,7 +199,8 @@ const DashboardAttacks = () => {
             <Text className="text-xl font-pregular">
               {item.attacking_zone} VS {item.defending_zone}
             </Text>
-            <Text className="text-xl font-pregular">War: {item.war}</Text>
+            <Text className="text-xl font-pregular">War: {item.war} </Text>
+            <Text className="text-xl font-pregular">Location: {item.location} </Text>
             <Timer attack_id={item._id} textStyles="text-red-800 font-psemibold"
               expiryMessage="Timer expired"
             />

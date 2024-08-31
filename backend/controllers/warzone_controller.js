@@ -30,6 +30,7 @@ class WarzoneController {
       const trimmedWars = wars.map((war) => ({
         ...war,
         name: war.name.trim(),
+        location: war.location.trim(),
       }));
   
       // Check if the warzone name already exists

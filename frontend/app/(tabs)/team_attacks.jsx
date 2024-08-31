@@ -158,9 +158,15 @@ const TeamAttacks = () => {
                             {attack.defending_zone} ({attack.defending_team}
                             {attack.defending_subteam})
                           </Text>
-                          <Text className="text-black text-xl font-pregular">
-                            {attack.war}
+                          <Text className="text-black text-xl font-pregular mr-2">
+                            {attack.war} 
                           </Text>
+                          {attack.location != "" && (
+                            <Text className="text-black text-xl font-pregular">
+                              Location: {attack.location}
+                            </Text>
+                          )}
+                         
                           <Timer
                             attack_id={attack._id}
                             textStyles={"font-pbold text-red-800 text-xl"}
@@ -194,9 +200,14 @@ const TeamAttacks = () => {
                             {attack.defending_zone} ({attack.defending_team}
                             {attack.defending_subteam})
                           </Text>
-                          <Text className="text-black text-xl font-pregular">
-                            {attack.war}
+                          <Text className="text-black text-xl font-pregular mr-2">
+                            {attack.war} 
                           </Text>
+                          {attack.location != "" && (
+                            <Text className="text-black text-xl font-pregular">
+                              Location: {attack.location}
+                            </Text>
+                          )}
                           <Timer
                             attack_id={attack._id}
                             textStyles={"font-pbold text-red-800 text-xl"}

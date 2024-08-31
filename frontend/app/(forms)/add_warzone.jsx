@@ -40,10 +40,11 @@ const AddWarzone = () => {
       return result;
     }
 
-    // Trim each war's name
+    // Trim each war's name and location
     const wars = form.wars.map((war) => ({
       ...war,
       name: war.name.trim(),
+      location: war.location.trim(),
     }));
     setForm({ ...form, wars });
 
@@ -56,9 +57,15 @@ const AddWarzone = () => {
     }
 
     if (warNames.some((name) => !name)) {
-      result.errorMsg = "Empty wars are not allowed";
+      result.errorMsg = "Empty war names are not allowed";
       return result;
     }
+
+    const warLocations = wars.map((war) => war.location);
+    // if (warLocations.some((location) => !location)) {
+    //   result.errorMsg = "All wars must have a location";
+    //   return result;
+    // }
 
     return { success: true };
   };
@@ -73,10 +80,11 @@ const AddWarzone = () => {
         return;
       }
 
-      // Ensure each war has a name and an available property set to 'true'
+      // Ensure each war has a name, location, and an available property set to 'true'
       const updatedWars = form.wars.map((war) => ({
         ...war,
         available: true,
+        location: war.location.trim(),
       }));
 
       // Update the form with the new wars array
@@ -99,9 +107,9 @@ const AddWarzone = () => {
     }
   };
 
-  const handleWarChange = (index, newValue) => {
+  const handleWarChange = (index, field, newValue) => {
     const newWars = [...form.wars];
-    newWars[index].name = newValue;
+    newWars[index][field] = newValue;
     setForm({ ...form, wars: newWars });
   };
 
@@ -111,7 +119,7 @@ const AddWarzone = () => {
   };
 
   const addWar = () => {
-    setForm({ ...form, wars: [...form.wars, { name: "" }] });
+    setForm({ ...form, wars: [...form.wars, { name: "", location: "" }] });
   };
 
   const insets = useSafeAreaInsets();
@@ -148,17 +156,25 @@ const AddWarzone = () => {
             />
 
             {form.wars.map((war, index) => (
-              <View key={index} className="flex-row items-end mt-4">
+              <View key={index} className="mt-4 flex flex-row">
                 <FormField
-                  title={`War ${index + 1}`}
+                  title={`War ${index + 1} Name`}
                   value={war.name}
-                  handleChangeText={(e) => handleWarChange(index, e)}
-                  otherStyles="flex-1"
+                  handleChangeText={(e) => handleWarChange(index, "name", e)}
+                  otherStyles="flex-1 mr-3"
+                />
+                <FormField
+                  title={`Location`}
+                  value={war.location}
+                  handleChangeText={(e) =>
+                    handleWarChange(index, "location", e)
+                  }
+                  otherStyles="flex-1 mr-3"
                 />
                 <TouchableOpacity
                   onPress={() => removeWar(index)}
-                  className="bg-red-700 p-2 rounded-md ml-2"
-                >
+                  className="bg-red-700 p-2 rounded-md mt-2 self-end"
+                  >
                   <Icon name="trash" size={24} color="white" />
                 </TouchableOpacity>
               </View>

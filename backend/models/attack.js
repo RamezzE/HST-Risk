@@ -33,6 +33,10 @@ const attackSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    location: {
+        type: String,
+        default: "",
+    },
     
 }, {
     timestamps: true

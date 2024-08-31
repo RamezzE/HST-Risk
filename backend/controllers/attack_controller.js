@@ -8,7 +8,6 @@ import Team from "../models/team.js";
 import UserController from "./user_controller.js";
 import { io } from "../app.js";
 
-
 class AttackController {
   static async get_attacks(req, res) {
     const attacks = await Attack.find();
@@ -360,6 +359,9 @@ class AttackController {
             return res.json(result);
           }
 
+          const warDetails = warzone.wars.find((w) => w.name === war);
+          const location = warDetails ? warDetails.location : "Unknown";
+
           // Proceed with creating the attack
           const attack = new Attack({
             attacking_zone: zone_1,
@@ -369,6 +371,7 @@ class AttackController {
             defending_team: real_team_2,
             warzone_id: warzone_id,
             war: war,
+            location: location,
           });
 
           await attack.save();
@@ -417,9 +420,7 @@ class AttackController {
               { number: team_2 },
               { $set: { locked: false } }
             );
-            console.log(
-              `Locks released for teams ${team_1} and ${team_2}`
-            );
+            console.log(`Locks released for teams ${team_1} and ${team_2}`);
           }
         }
       }

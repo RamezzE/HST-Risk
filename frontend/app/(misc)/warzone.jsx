@@ -217,18 +217,21 @@ const Warzone = () => {
                       }}
                       key={warzone._id}
                     >
-                      <Text className="text-black font-montez text-4xl">
+                      <Text className="text-black font-montez text-4xl mb-2">
                         {warzone.name}
                       </Text>
 
                       {Array.isArray(warzone.wars) &&
                         warzone.wars.map((war) => (
                           <View
-                            className="p-1 flex flex-wrap flex-row justify-evenly align-center"
+                            className="p-1 w-full flex flex-wrap flex-row justify-between items-center"
                             key={war.name}
                           >
-                            <Text className="text-black font-plight text-2xl">
+                            <Text className="text-black font-plight text-xl">
                               {war.name}
+                            </Text>
+                            <Text className="text-black font-plight text-l">
+                              {war.location}
                             </Text>
                           </View>
                         ))}

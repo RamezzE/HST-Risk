@@ -14,6 +14,10 @@ const warzoneSchema = new mongoose.Schema({
         available: {
             type: Boolean,
             required: true
+        },
+        location: {
+            type: String,
+            default: "",
         }
     }]
 }, {

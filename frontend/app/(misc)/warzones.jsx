@@ -50,12 +50,12 @@ const Warzones = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData(); // Fetch initial data
-  
+
       // Set up socket listeners for real-time updates
       socket.on("new_warzone", (newWarzone) => {
         setWarzones((prevWarzones) => [newWarzone, ...prevWarzones]);
       });
-  
+
       socket.on("update_warzone", (updatedWarzone) => {
         setWarzones((prevWarzones) =>
           prevWarzones.map((warzone) =>
@@ -63,13 +63,13 @@ const Warzones = () => {
           )
         );
       });
-  
+
       socket.on("delete_warzone", (deletedWarzoneId) => {
         setWarzones((prevWarzones) =>
           prevWarzones.filter((warzone) => warzone._id !== deletedWarzoneId)
         );
       });
-  
+
       return () => {
         socket.off("new_warzone");
         socket.off("update_warzone");
@@ -89,7 +89,13 @@ const Warzones = () => {
 
     const renderWars = (warzone) => {
       return warzone.wars.map((item, index) => (
-        <Text key={index} className="text-[16px] font-pregular">{item.name}</Text>
+        <View key={index} className="flex flex-row justify-between">
+          <Text className="text-[16px] font-pregular">{item.name}</Text>
+          {item.location != "" && (
+            
+            <Text className="text-[16px] font-pregular">{item.location}</Text>
+          )}
+        </View>
       ));
     };
 
@@ -99,7 +105,7 @@ const Warzones = () => {
         className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
         style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
       >
-        <View className="flex flex-col">
+        <View className="flex-1 mr-6 flex-col">
           <Text className="text-xl font-pmedium">{item.name}</Text>
           {renderWars(item)}
         </View>
@@ -110,9 +116,9 @@ const Warzones = () => {
             const jsonData = JSON.stringify(item.wars);
             router.push(
               `/edit_warzone?id=${item._id}&name=${item.name}&wars=${jsonData}`
-            )
+            );
           }}
-          containerStyles="w-1/4 h-2/3 mt-2"
+          containerStyles="w-1/4 h-2/3 mt-2 self-end"
           textStyles="text-xl font-pregular"
         />
       </View>
@@ -172,11 +178,11 @@ const Warzones = () => {
               Warzones
             </Text>
             <CustomButton
-                title="Add Warzone"
-                handlePress={() => router.navigate("/add_warzone")}
-                containerStyles="w-[45%] my-2 p-3"
-                textStyles={"text-2xl"}
-              />
+              title="Add Warzone"
+              handlePress={() => router.navigate("/add_warzone")}
+              containerStyles="w-[45%] my-2 p-3"
+              textStyles={"text-2xl"}
+            />
             {error ? (
               <Text style={{ color: "white", textAlign: "center" }}>
                 {error}
