@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,12 +19,21 @@ const DropdownField = ({
   ...props
 }) => {
   const [isPickerVisible, setPickerVisible] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(value || items[0]?.value); // Set initial value
+
+  useEffect(() => {
+    if (!value && items.length > 0) {
+      setSelectedValue(items[0].value); // Default to the first item
+    }
+  }, [items, value]);
 
   const openPicker = () => {
+    setSelectedValue(value || items[0]?.value); // Reset to current value or default to first item
     setPickerVisible(true);
   };
 
   const closePicker = () => {
+    handleChange(selectedValue); // Set the value when closing
     setPickerVisible(false);
   };
 
@@ -37,7 +46,10 @@ const DropdownField = ({
         style={{ backgroundColor: "rgba(75, 50, 12, 0.5)" }} // Transparent background
       >
         <TouchableWithoutFeedback onPress={openPicker}>
-          <View style={{ flex: 1 }} className="w-full h-16 px-4 rounded-md focus:border-secondary flex flex-row items-center">
+          <View
+            style={{ flex: 1 }}
+            className="w-full h-16 px-4 rounded-md focus:border-secondary flex flex-row items-center"
+          >
             <TextInput
               className="text-white font-psemibold text-[16px]"
               value={value ? value : placeholder}
@@ -60,10 +72,9 @@ const DropdownField = ({
         <View style={styles.modalContainer}>
           <View style={styles.pickerContainer}>
             <Picker
-              selectedValue={value}
+              selectedValue={selectedValue}
               onValueChange={(itemValue) => {
-                handleChange(itemValue);
-                closePicker();
+                setSelectedValue(itemValue);
               }}
               style={{ backgroundColor: "#F5F5F5" }} // Background color for the picker
               {...props}
