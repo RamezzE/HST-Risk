@@ -20,6 +20,7 @@ const DropdownField = ({
 }) => {
   const [isPickerVisible, setPickerVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState(value || items[0]?.value); // Set initial value
+  const [isFocused, setIsFocused] = useState(false); // Manage focus state
 
   useEffect(() => {
     if (!value && items.length > 0) {
@@ -30,11 +31,13 @@ const DropdownField = ({
   const openPicker = () => {
     setSelectedValue(value || items[0]?.value); // Reset to current value or default to first item
     setPickerVisible(true);
+    setIsFocused(true); // Set focus state when picker is opened
   };
 
   const closePicker = () => {
     handleChange(selectedValue); // Set the value when closing
     setPickerVisible(false);
+    setIsFocused(false); // Remove focus state when picker is closed
   };
 
   return (
@@ -42,13 +45,15 @@ const DropdownField = ({
       <Text className="font-montez text-black text-3xl">{title}</Text>
 
       <View
-        className="w-full h-16 bg- rounded-md focus:border-secondary flex flex-row items-center"
+        className={`w-full h-16 bg- rounded-md flex flex-row items-center ${
+          isFocused ? "border-2 border-black-100" : ""
+        }`}
         style={{ backgroundColor: "rgba(75, 50, 12, 0.5)" }} // Transparent background
       >
         <TouchableWithoutFeedback onPress={openPicker}>
           <View
             style={{ flex: 1 }}
-            className="w-full h-16 px-4 rounded-md focus:border-secondary flex flex-row items-center"
+            className="w-full h-16 px-4 rounded-md flex flex-row items-center"
           >
             <TextInput
               className="text-white font-psemibold text-[16px]"

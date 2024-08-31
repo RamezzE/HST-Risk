@@ -24,7 +24,7 @@ const FormField = ({
       <Text className="text-black text-3xl font-montez">{title}</Text>
 
       <View
-        className="w-full h-16 px-4 rounded-md flex flex-row items-center"
+        className="w-full h-16 px-4 rounded-md flex flex-row items-center focus:border-[2.5px]"
         style={{ backgroundColor }} // Apply the dynamic background color
       >
         <TextInput

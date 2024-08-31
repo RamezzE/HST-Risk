@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 const CustomButton = ({
@@ -8,11 +8,17 @@ const CustomButton = ({
   textStyles,
   isLoading,
 }) => {
+  const [isPressed, setIsPressed] = useState(false);
+
   return (
     <TouchableOpacity
       onPress={handlePress}
+      onPressIn={() => setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}
       activeOpacity={0.7}
-      className={`bg-primary opacity-90 rounded-xl min-h-[40px] flex flex-row justify-center items-center ${containerStyles}`}
+      className={`bg-primary opacity-90 rounded-xl min-h-[40px] flex flex-row justify-center items-center ${
+        isPressed ? "border-[0.5px] border-secondary" : ""
+      } ${containerStyles}`}
       disabled={isLoading}
     >
       <Text className={`text-white font-montez text-lg ${textStyles}`}>

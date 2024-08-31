@@ -60,41 +60,59 @@ const Attack = () => {
 
   const getTeamColor = (countryName) => {
     try {
-      const country = countryMappings.find((c) => c.name === countryName);
-      const team = country
-        ? teams.find((t) => t.number === country.teamNo)
-        : null;
-      return team ? team.color : "#000000";
+      if (form.your_zone === countryName || otherZones.includes(countryName)) {
+        // Retain original color for the selected country and countries that can be attacked
+        const country = countryMappings.find((c) => c.name === countryName);
+        const team = country
+          ? teams.find((t) => t.number === country.teamNo)
+          : null;
+        return team ? team.color : "#000000";
+      } else if (form.your_zone) {
+        return "#000000"; // All other zones turn black
+      } else {
+        const country = countryMappings.find((c) => c.name === countryName);
+        const team = country
+          ? teams.find((t) => t.number === country.teamNo)
+          : null;
+        return team ? team.color : "#000000";
+      }
     } catch (error) {
       return "#000000";
     }
   };
 
   const changeMapPreview = (zone) => {
-    if (!zone || zone === "Select Your Country" || zone === "Select Country to Attack") {
+    if (
+      !zone ||
+      zone === "Select Your Country" ||
+      zone === "Select Country to Attack"
+    ) {
       return;
     }
-  
+
     if (!Array.isArray(countries)) {
       return;
     }
-  
+
     const country = countries.find((c) => c.name === zone);
-  
-    if (!country || !Array.isArray(country.points) || country.points.length === 0) {
+
+    if (
+      !country ||
+      !Array.isArray(country.points) ||
+      country.points.length === 0
+    ) {
       return;
     }
-  
+
     const avgLat =
       country.points.reduce((acc, curr) => acc + curr.latitude, 0) /
       country.points.length;
     const avgLong =
       country.points.reduce((acc, curr) => acc + curr.longitude, 0) /
       country.points.length;
-  
+
     setInitialArea([avgLat, avgLong]);
   };
-  
 
   const validateAttack = (zone_1, zone_2) => {
     var result = {
@@ -113,27 +131,30 @@ const Attack = () => {
 
   const selectYourZone = (zone) => {
     setForm({ ...form, your_zone: zone, other_zone: "" });
-  
+
     if (!zone || zone === "") return;
-  
+
     changeMapPreview(zone);
-  
+
     if (!Array.isArray(countries)) return;
-  
+
     const country = countries.find((c) => c.name === zone);
-  
+
     if (!country || !Array.isArray(country.adjacent_zones)) return;
-  
+
     setOtherZones(country.adjacent_zones);
+
+    // Trigger a re-render to apply the color changes
+    setCountryMappings((prev) => [...prev]);
   };
-  
+
   const selectOtherZone = (zone) => {
     setForm({ ...form, other_zone: zone });
-  
+
     if (!zone || zone === "") return;
-  
+
     changeMapPreview(zone);
-  };  
+  };
 
   const fetchData = async () => {
     setError(null);
@@ -169,8 +190,7 @@ const Attack = () => {
         (setting) => setting.name === "Attack Cost"
       );
       setAttackCost(attackCost.value);
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err);
       setError("Failed to fetch settings data");
     }
@@ -181,7 +201,6 @@ const Attack = () => {
 
       const team = teamsResult.find((t) => t.number === parseInt(teamNo));
       setBalance(team.balance);
-
     } catch (err) {
       console.log(err);
       setError("Failed to fetch teams data");
@@ -198,7 +217,9 @@ const Attack = () => {
       socket.on("update_country", (updatedCountryMapping) => {
         setCountryMappings((prevMappings) =>
           prevMappings.map((mapping) =>
-            mapping.name === updatedCountryMapping.name ? updatedCountryMapping : mapping
+            mapping.name === updatedCountryMapping.name
+              ? updatedCountryMapping
+              : mapping
           )
         );
       });
@@ -222,7 +243,7 @@ const Attack = () => {
           prevDefences.filter((attack) => attack._id !== attackId)
         );
       });
-      
+
       return () => {
         socket.off("update_country");
         socket.off("update_team");
@@ -236,7 +257,6 @@ const Attack = () => {
     setZones(countries);
 
     fetchData();
-
   }, []);
 
   const attack_func = async (zone_1, team_1, zone_2) => {
@@ -258,7 +278,13 @@ const Attack = () => {
       console.log("Attacking", zone_1, team_1);
       console.log("Defending: ", zone_2, team_2);
 
-      const response = await attack_check(zone_1, team_1, subteam, zone_2, team_2);
+      const response = await attack_check(
+        zone_1,
+        team_1,
+        subteam,
+        zone_2,
+        team_2
+      );
 
       if (!response.success) {
         Alert.alert("Attack Failed", response.errorMsg);
@@ -266,7 +292,9 @@ const Attack = () => {
       }
 
       // setForm({ your_zone: "", other_zone: "" });
-      router.navigate(`/warzone?attacking_zone=${zone_1}&defending_zone=${zone_2}&attacking_team=${team_1}&defending_team=${team_2}&attacking_subteam=${subteam}`);
+      router.navigate(
+        `/warzone?attacking_zone=${zone_1}&defending_zone=${zone_2}&attacking_team=${team_1}&defending_team=${team_2}&attacking_subteam=${subteam}`
+      );
     } catch (error) {
       Alert.alert(
         "Attack Failed",
@@ -337,6 +365,7 @@ const Attack = () => {
               refreshing={isRefreshing}
               onRefresh={() => {
                 setIsRefreshing(true);
+                setForm({ your_zone: "", other_zone: "" });
                 fetchData();
               }}
               tintColor="#000"
@@ -345,13 +374,13 @@ const Attack = () => {
         >
           <View className="w-full min-h-[82.5vh] px-4 pt-4 mt-2 mb-8 flex flex-col justify-start">
             <View className="flex flex-col mb-6">
-
               <View className="flex flex-row justify-between pb-4">
                 <Text className="font-pmedium text-[16px]">
-                  Team money:{" "}
-                  {balance}
+                  Team money: {balance}
                 </Text>
-                <Text className="font-pmedium text-[16px]">Attack cost: {attackCost}</Text>
+                <Text className="font-pmedium text-[16px]">
+                  Attack cost: {attackCost}
+                </Text>
               </View>
 
               {!Array.isArray(myZones) || myZones.length === 0 ? (
@@ -392,35 +421,46 @@ const Attack = () => {
               region={{
                 latitude: initialArea[0],
                 longitude: initialArea[1],
-                latitudeDelta: 50,
+                latitudeDelta: 75,
                 longitudeDelta: 100,
               }}
-              provider= { Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
+              provider={
+                Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+              }
               mapType="satellite"
               rotateEnabled={false}
               pitchEnabled={false}
             >
-              {Array.isArray(zones) && zones.map((zone, index) => (
-                <MapZone
-                  key={index}
-                  points={zone.points}
-                  color={getTeamColor(zone.name)}
-                  label={zone.name}
-                  onMarkerPress={() => onMarkerPress(zone)}
-                />
-              ))}
+              {Array.isArray(zones) &&
+                zones.map((zone, index) => {
+                  const isSelectedOrCanAttack =
+                    form.your_zone === zone.name ||
+                    otherZones.includes(zone.name);
+                  const shouldHideLabel =
+                    form.your_zone && !isSelectedOrCanAttack;
 
-              {Array.isArray(CountryConnections) && CountryConnections.map((points, index) => (
-                <DottedLine
-                  key={index}
-                  startPoint={points.point1}
-                  endPoint={points.point2}
-                  color="#FFF"
-                  thickness={2}
-                  // dashLength={25}
-                  dashGap={2}
-                />
-              ))}
+                  return (
+                    <MapZone
+                      key={index}
+                      points={zone.points}
+                      color={getTeamColor(zone.name)}
+                      label={shouldHideLabel ? "" : zone.name} // Hide label only if selecting a zone and it's not the selected or attackable zone
+                      onMarkerPress={() => onMarkerPress(zone)}
+                    />
+                  );
+                })}
+
+              {Array.isArray(CountryConnections) &&
+                CountryConnections.map((points, index) => (
+                  <DottedLine
+                    key={index}
+                    startPoint={points.point1}
+                    endPoint={points.point2}
+                    color="#FFF"
+                    thickness={2}
+                    dashGap={2}
+                  />
+                ))}
             </MapView>
 
             <CustomButton
