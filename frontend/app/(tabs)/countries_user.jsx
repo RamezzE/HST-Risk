@@ -57,22 +57,8 @@ const Countries = () => {
         );
       });
 
-      socket.on("new_game", () => {
-        Alert.alert(
-          "New Game",
-          "A new game has started. You will be logged out automatically."
-        );
-      
-        setTimeout(async () => {
-          deletePushToken(expoPushToken, teamNo);
-          Logout();
-          router.replace("/");
-        }, 3000);
-      });
-
       return () => {
         socket.off("update_country");
-        socket.off("new_game");
       };
     }, [])
   );

@@ -71,23 +71,10 @@ const TeamAttacks = () => {
         );
       });
 
-      socket.on("new_game", () => {
-        Alert.alert(
-          "New Game",
-          "A new game has started. You will be logged out automatically."
-        );
-      
-        setTimeout(async () => {
-          deletePushToken(expoPushToken, teamNo);
-          router.replace("/");
-        }, 3000);
-      });
-  
       // Clean up the socket listeners when the component loses focus or unmounts
       return () => {
         socket.off("new_attack");
         socket.off("remove_attack");
-        socket.off("new_game");
       };
     }, [teamNo]) // Add teamNo as a dependency to re-run effect when teamNo changes
   );

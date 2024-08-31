@@ -222,25 +222,12 @@ const Attack = () => {
           prevDefences.filter((attack) => attack._id !== attackId)
         );
       });
-
-      socket.on("new_game", () => {
-        Alert.alert(
-          "New Game",
-          "A new game has started. You will be logged out automatically."
-        );
-      
-        setTimeout(async () => {
-          deletePushToken(expoPushToken, teamNo);
-          router.replace("/");
-        }, 3000);
-      });
       
       return () => {
         socket.off("update_country");
         socket.off("update_team");
         socket.off("new_attack");
         socket.off("remove_attack");
-        socket.off("new_game");
       };
     }, [teamNo, subteam])
   );

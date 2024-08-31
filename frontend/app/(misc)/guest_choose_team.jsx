@@ -22,7 +22,7 @@ import { get_all_teams } from "../../api/team_functions";
 import { addPushToken } from "../../api/user_functions";
 
 const GuestChooseTeam = () => {
-  const { setTeamNo, setSubteam, expoPushToken } = useContext(GlobalContext);
+  const { setTeamNo, setSubteam, setUserMode, expoPushToken } = useContext(GlobalContext);
   const [teams, setTeams] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,8 +54,9 @@ const GuestChooseTeam = () => {
     try {
       setTeamNo(teamNo);
       setSubteam('')
+      setUserMode("guest")
       await addPushToken(expoPushToken, teamNo);
-      router.replace("/guest_home");
+      router.replace("/home");
     }
     catch (error) {
       console.log(error);

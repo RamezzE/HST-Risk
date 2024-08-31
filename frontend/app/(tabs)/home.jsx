@@ -31,7 +31,6 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-
 const Home = () => {
   const [zones, setZones] = useState([]);
   const [countryMappings, setCountryMappings] = useState([]);
@@ -41,72 +40,35 @@ const Home = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const insets = useSafeAreaInsets();
-  const {
-    name,
-    teamNo,
-    subteam,
-    Logout,
-    expoPushToken,
-    currentAttack,
-    setCurrentAttack,
-    currentDefence,
-    setCurrentDefence,
-    socket,
-  } = useContext(GlobalContext); // Access currentAttack, currentDefence, setCurrentAttack, and setCurrentDefence
+  const { name, teamNo, subteam, Logout, expoPushToken, socket } =
+    useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
     setZones(countries);
-  
+
     try {
       const result = await get_country_mappings();
       setCountryMappings(result);
-  
-      const attacksResult = await get_all_attacks();
-      setAttacks(attacksResult);
-  
-      // Check for matching attack
-      const matchingAttack = attacksResult.find(
-        (attack) =>
-          attack.attacking_team === teamNo &&
-          attack.attacking_subteam === subteam
-      );
-  
-      // Check for defenses
-      const matchingDefenses = attacksResult.filter(
-        (attack) => attack.defending_team === teamNo
-      );
-
-      if (matchingDefenses.length === 0 && currentDefence.length > 0) {
-        setCurrentDefence([]);
-      }
-
-      // Only update if the attack has changed
-      if (!_.isEqual(matchingAttack, currentAttack)) {
-        console.log('Attack has changed');
-        setCurrentAttack(matchingAttack); // Update currentAttack in GlobalContext
-      } else {
-        console.log('Attack has not changed');
-      }
-  
-      // Only update if the defenses have changed
-      if (!_.isEqual(matchingDefenses, currentDefence)) {
-        console.log('Defenses have changed');
-        setCurrentDefence(matchingDefenses); // Update currentDefence in GlobalContext
-      } else {
-        console.log('Defenses have not changed');
-      }
     } catch (err) {
       console.log(err);
-      setError('Failed to fetch country mappings');
+      setError("Failed to fetch country mappings");
     }
-  
+
+    try {
+      const attacksResult = await get_all_attacks();
+      setAttacks(attacksResult);
+    } catch (err) {
+      console.log(err);
+      setError("Failed to fetch attacks data");
+    }
+
     try {
       const teamsResult = await get_all_teams();
       setTeams(teamsResult);
     } catch (err) {
       console.log(err);
-      setError('Failed to fetch teams data');
+      setError("Failed to fetch teams data");
     } finally {
       setIsRefreshing(false);
     }
@@ -115,16 +77,18 @@ const Home = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData(); // Fetch initial data
-  
+
       // Set up socket listeners for real-time updates
       socket.on("update_country", (updatedCountryMapping) => {
         setCountryMappings((prevMappings) =>
           prevMappings.map((mapping) =>
-            mapping.name === updatedCountryMapping.name ? updatedCountryMapping : mapping
+            mapping.name === updatedCountryMapping.name
+              ? updatedCountryMapping
+              : mapping
           )
         );
       });
-  
+
       socket.on("update_team", (updatedTeam) => {
         setTeams((prevTeams) =>
           prevTeams.map((team) =>
@@ -132,33 +96,17 @@ const Home = () => {
           )
         );
       });
-  
+
       socket.on("new_attack", (newAttack) => {
-        if (newAttack.defending_team === teamNo.toString()) {
-          setCurrentDefence((prevDefences) => [...prevDefences, newAttack]);
-        }
+        setAttacks((prevAttacks) => [...prevAttacks, newAttack]);
       });
-  
+
       socket.on("remove_attack", (attackId) => {
-        setCurrentDefence((prevDefences) =>
-          prevDefences.filter((attack) => attack._id !== attackId)
+        setAttacks((prevAttacks) =>
+          prevAttacks.filter((attack) => attack._id !== attackId)
         );
       });
 
-      socket.on("new_game", () => {
-        Alert.alert(
-          "New Game",
-          "A new game has started. You will be logged out automatically."
-        );
-      
-        setTimeout(async () => {
-          deletePushToken(expoPushToken, teamNo);
-          Logout();
-          router.replace("/");
-        }, 3000);
-      });
-      
-  
       return () => {
         socket.off("update_country");
         socket.off("update_team");
@@ -176,7 +124,9 @@ const Home = () => {
   const logoutFunc = () => {
     Alert.alert(
       "Logout",
-      "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
+      subteam === ""
+        ? "Are you sure you want to logout? You won't be able to receive notifications if your team is being attacked."
+        : "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
       [
         {
           text: "Cancel",
@@ -211,13 +161,15 @@ const Home = () => {
 
       Alert.alert(
         zone.name,
-        `Owned by: Team ${team ? team.number : "Unknown"}\n${
+        `Owned by Team ${team ? team.number : "Unknown"}\n${
           attack
-            ? `Under attack by: Team ${attack.attacking_team}`
+            ? `Under attack by Team ${attack.attacking_team}${attack.attacking_subteam}`
             : "Not under attack"
         }`
       );
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getTeamColor = (countryName) => {
@@ -305,9 +257,7 @@ const Home = () => {
         source={images.background}
         style={{ flex: 1, resizeMode: "cover" }}
       >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-        >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
             <BackButton
               style="w-[20vw]"
@@ -340,7 +290,9 @@ const Home = () => {
                   latitudeDelta: 100,
                   longitudeDelta: 180,
                 }}
-                provider= { Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
+                provider={
+                  Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+                }
                 mapType="satellite"
                 rotateEnabled={false}
                 pitchEnabled={false}

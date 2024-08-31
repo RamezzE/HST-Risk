@@ -35,7 +35,7 @@ const SignIn = () => {
     password: "",
   });
 
-  const { setName, setTeamNo, setSubteam, expoPushToken, setUserMode, setIsLoggedIn, setAdminType } = useContext(GlobalContext);
+  const { setName, setTeamNo, setSubteam, expoPushToken, setUserMode, setIsLoggedIn } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -71,12 +71,11 @@ const SignIn = () => {
           setName(form.username);
           setUserMode("admin");
           if (response.admin.type == "Wars") {
-            setAdminType("Wars");
             router.replace("/admin_home");
             return;
           }
           setIsLoggedIn(true)
-          setAdminType("Missions");
+
           router.replace("/admin_home2");
           return;
         }
@@ -121,6 +120,7 @@ const SignIn = () => {
         style={{ resizeMode: "cover" }}
         className="min-h-[100vh]"
       >
+        <ScrollView>
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
             <BackButton
               style="w-[20vw] mb-4"
@@ -153,6 +153,7 @@ const SignIn = () => {
               isLoading={isSubmitting}
             />
           </View>
+        </ScrollView>
       </ImageBackground>
     </View>
   );

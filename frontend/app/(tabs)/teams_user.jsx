@@ -69,22 +69,9 @@ const Teams = () => {
         );
       });
 
-      socket.on("new_game", () => {
-        Alert.alert(
-          "New Game",
-          "A new game has started. You will be logged out automatically."
-        );
-      
-        setTimeout(async () => {
-          deletePushToken(expoPushToken, teamNo);
-          router.replace("/");
-        }, 3000);
-      });
-
       return () => {
         socket.off("update_team"); // Cleanup socket listener on component unmount
         socket.off("update_country"); // Cleanup socket listener on component unmount
-        socket.off("new_game"); // Cleanup socket listener on component
       };
     }, [])
   );
