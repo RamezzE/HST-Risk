@@ -22,6 +22,14 @@ var router = Router();
 router.get("/", WarzoneController.get_warzones);
 router.get("/wars", WarzoneController.get_wars);
 
+router.use((req, res, next) => {
+  if (!req.session.user || req.session.user.mode !== "super_admin") {
+    res.json({ success: false, errorMsg: "Please log in" });
+  } else {
+    next();
+  }
+});
+
 router.post("/", WarzoneController.create_warzone);
 router.put("/", WarzoneController.update_warzone);
 router.delete("/:id", WarzoneController.delete_warzone);

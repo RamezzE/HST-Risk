@@ -26,9 +26,26 @@ router.get("/expiry/:attack_id", AttackController.get_attack_expiry_time);
 
 // Apply middleware to routes that need game status check
 
-router.delete("/", checkGameStatus, AttackController.delete_attack);
+router.use((req, res, next) => {
+  if (!req.session.user) {
+    res.json({ success: false, errorMsg: "Please log in" });
+  } else {
+    next();
+  }
+});
+
 router.post("/attack", checkGameStatus, AttackController.attack);
 router.post("/check", checkGameStatus, AttackController.attack_check);
+
+router.use((req, res, next) => {
+  if (req.session.user.mode != "super_admin" && req.session.user.mode != "admin") {
+    res.json({ success: false, errorMsg: "You cannot do this action" });
+  } else {
+    next();
+  }
+});
+
 router.post("/set_result", checkGameStatus, AttackController.set_attack_result);
+router.delete("/", checkGameStatus, AttackController.delete_attack);
 
 export default router;

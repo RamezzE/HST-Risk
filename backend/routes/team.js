@@ -23,12 +23,21 @@ router.get("/", TeamController.get_all_teams)
 router.get("/subteams", TeamController.get_all_subteams)
 router.get("/:number", TeamController.get_team);
 
-router.put("/", TeamController.add_team)
+// router.put("/", TeamController.add_team)
+
+router.use((req, res, next) => {
+  if (!req.session.user || (req.session.user.mode !== "admin" && req.session.user.mode !== "super_admin")) {
+    res.json({ success: false, errorMsg: "Please log in" });
+  } else {
+    next();
+  }
+});
+
 
 router.post("/update/:number", TeamController.update_team)
 router.post("/update-subteam", TeamController.update_subteam)
-router.post("/create-teams", TeamController.create_teams)
 router.post("/update-balance", checkGameStatus, TeamController.update_team_balance)
 
+router.post("/create-teams", TeamController.create_teams)
 
 export default router;
