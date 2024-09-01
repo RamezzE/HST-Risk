@@ -436,96 +436,90 @@ class AttackController {
       success: false,
       errorMsg: "",
     };
-
+  
     try {
-      const attacks = await Attack.find({
-        attacking_team: team,
-        // attacking_subteam: subteam,
-      });
-
+      // Fetch all attacks by the team
+      const attacks = await Attack.find({ attacking_team: team });
+  
+      // Filter attacks by the specific subteam
       const subteam_attacks = attacks.filter(
         (attack) => attack.attacking_subteam === subteam
       );
-
-      if (subteam_attacks.length === 0) {
-        const attack_limit = await Settings.findOne({
-          name: "Max concurrent attacks per team",
-        });
-
-        if (!attack_limit) {
-          result.errorMsg = "Attack limit setting not found";
-          return result;
-        }
-
-        if (attacks.length >= parseInt(attack_limit.value)) {
-          result.errorMsg = `Your team has reached the maximum attack limit of ${attack_limit.value}`;
-          return result;
-        }
-
-        const defence_limit = await Settings.findOne({
-          name: "Max concurrent defences per team",
-        });
-
-        if (!defence_limit) {
-          result.errorMsg = "Defence limit setting not found";
-          return result;
-        }
-
-        console.log(otherTeam);
-
-        const defence_attacks = await Attack.find({
-          defending_team: otherTeam,
-          // defending_subteam: subteam,
-        });
-
-        if (!defence_attacks) {
-          result.errorMsg = "Error getting defence attacks";
-          return result;
-        }
-
-        console.log("Defence attacks:", defence_attacks.length);
-        console.log(defence_limit.value);
-
-        if (defence_attacks.length >= parseInt(defence_limit.value)) {
-          result.errorMsg = `Team ${otherTeam} has reached the maximum defence limit of ${defence_limit.value}`;
-          return result;
-        }
-
-        result.success = true;
-        return result;
-      }
-
+  
+      // If the subteam is already attacking, return an error
       if (subteam_attacks.length > 0) {
-        result.errorMsg = `This subteam is already attacking ${attacks[0].defending_zone}`;
+        result.errorMsg = `This subteam is already attacking ${subteam_attacks[0].defending_zone}`;
         return result;
       }
+  
+      // Fetch the attack limit setting
+      const attack_limit_setting = await Settings.findOne({
+        name: "Max concurrent attacks per team",
+      });
+  
+      if (!attack_limit_setting) {
+        result.errorMsg = "Attack limit setting not found";
+        return result;
+      }
+  
+      const attack_limit = parseInt(attack_limit_setting.value);
+  
+      // Check if the team has reached the maximum number of concurrent attacks
+      if (attacks.length >= attack_limit) {
+        result.errorMsg = `Your team has reached the maximum attack limit of ${attack_limit}`;
+        return result;
+      }
+  
+      // Fetch the defence limit setting
+      const defence_limit_setting = await Settings.findOne({
+        name: "Max concurrent defences per team",
+      });
+  
+      if (!defence_limit_setting) {
+        result.errorMsg = "Defence limit setting not found";
+        return result;
+      }
+  
+      const defence_limit = parseInt(defence_limit_setting.value);
+  
+      // Fetch all attacks against the other team (defending team)
+      const defence_attacks = await Attack.find({
+        defending_team: otherTeam,
+      });
+  
+      if (defence_attacks.length >= defence_limit) {
+        result.errorMsg = `Team ${otherTeam} has reached the maximum defence limit of ${defence_limit}`;
+        return result;
+      }
+  
+      // If all checks pass, the subteam can attack
+      result.success = true;
+      return result;
     } catch (error) {
       console.error("Error checking if subteam can attack:", error);
       result.errorMsg = "Error checking if subteam can attack";
       return result;
     }
-  }
+  }  
 
   static async check_country_if_involved_in_attack(zone) {
     const result = {
       success: false,
       errorMsg: "",
     };
-
+  
     try {
-      const attacks = await Attack.find({
+      // Check if the zone is involved in any attack
+      const isInvolvedInAttack = await Attack.exists({
         $or: [{ attacking_zone: zone }, { defending_zone: zone }],
       });
-
-      if (attacks.length === 0) {
-        result.success = true;
-        return result;
-      }
-
-      if (attacks.length > 0) {
+  
+      if (isInvolvedInAttack) {
         result.errorMsg = `${zone} is already involved in an attack`;
-        return result;
+      } else {
+        result.success = true;
       }
+      return result;
     } catch (error) {
       console.error("Error checking if country is involved in attack:", error);
       result.errorMsg = "Error checking if country is involved in attack";
@@ -539,29 +533,30 @@ class AttackController {
       duplicate: false,
       errorMsg: "",
     };
-
+  
     try {
-      const attack = await Attack.findOne({
+      // Check if there's already an attack with the specified parameters
+      const isDuplicate = await Attack.exists({
         attacking_zone: zone_1,
         attacking_team: team_1,
         defending_zone: zone_2,
         defending_team: team_2,
       });
-
-      if (attack) {
+  
+      if (isDuplicate) {
         result.duplicate = true;
         result.errorMsg = `Your team is already attacking ${zone_2}`;
-        return result;
+      } else {
+        result.success = true;
       }
-
-      result.success = true;
+  
       return result;
     } catch (error) {
       console.error("Error checking duplicate attack:", error);
       result.errorMsg = "Error checking duplicate attack";
       return result;
     }
-  }
+  }  
 
   static async get_attacks_by_war(req, res) {
     const result = {
@@ -598,100 +593,102 @@ class AttackController {
       success: false,
       errorMsg: "",
     };
-
+  
     const { attack_id, winnerTeam } = req.body;
-
+  
     try {
       const attack = await Attack.findById(attack_id);
-
+  
       if (!attack) {
         result.errorMsg = "Attack not found";
         return res.json(result);
       }
-
+  
       const winnerZone = attack.attacking_zone;
       const loserZone = attack.defending_zone;
-
+  
       console.log("Winner Zone:", winnerZone);
       console.log("Loser Zone:", loserZone);
-
-      const country1 = await Country.findOne({ name: winnerZone });
-      try {
-        country1.teamNo = winnerTeam;
-        await country1.save();
-      } catch (error) {
-        console.log("Error saving country1:", error);
-      }
-
-      const country2 = await Country.findOne({ name: loserZone });
-      try {
-        country2.teamNo = winnerTeam;
-        await country2.save();
-      } catch (error) {
-        console.log("Error saving country2:", error);
-      }
-
-      const subteam_username =
-        attack.attacking_team.toString() + attack.attacking_subteam.toString();
-
-      const subteam = await SubTeam.findOne({ username: subteam_username });
-
+  
+      // Update the team number for the winner and loser zones
+      const updateZones = async () => {
+        try {
+          const country1 = await Country.findOneAndUpdate(
+            { name: winnerZone },
+            { $set: { teamNo: winnerTeam } },
+            { new: true }
+          );
+  
+          const country2 = await Country.findOneAndUpdate(
+            { name: loserZone },
+            { $set: { teamNo: winnerTeam } },
+            { new: true }
+          );
+  
+          return { country1, country2 };
+        } catch (error) {
+          console.error("Error updating zones:", error);
+          throw new Error("Error updating zones");
+        }
+      };
+  
+      const { country1, country2 } = await updateZones();
+  
+      // Find and update the subteam cooldown time
+      const subteam_username = `${attack.attacking_team}${attack.attacking_subteam}`;
+      const subteam = await SubTeam.findOneAndUpdate(
+        { username: subteam_username },
+        { $set: { cooldown_start_time: new Date() } },
+        { new: true }
+      );
+  
       if (!subteam) {
         result.errorMsg = "Subteam not found";
         return res.json(result);
       }
-
-      subteam.cooldown_start_time = new Date();
-      await subteam.save();
-
-      await Attack.deleteOne({ _id: attack_id })
-        .then(() => {
-          console.log("Attack deleted successfully.");
-        })
-        .catch((e) => {
-          console.log("Error deleting attack:", e);
-          result.errorMsg = "Error deleting attack";
-          return res.json(result);
-        });
-
+  
+      // Delete the attack after processing
+      try {
+        await Attack.deleteOne({ _id: attack_id });
+        console.log("Attack deleted successfully.");
+      } catch (e) {
+        console.error("Error deleting attack:", e);
+        result.errorMsg = "Error deleting attack";
+        return res.json(result);
+      }
+  
+      // Update the warzone
       const warzone = await Warzone.findById(attack.warzone_id);
-
+      if (!warzone) {
+        result.errorMsg = "Warzone not found";
+        return res.json(result);
+      }
+  
       const warIndex = warzone.wars.findIndex((war) => war.name === attack.war);
-
-      Attack.deleteOne({ _id: attack_id })
-        .then(() => {
-          console.log("Attack deleted successfully.");
-        })
-        .catch((e) => {
-          console.log("Error deleting attack:", e);
-        });
-
       if (warIndex !== -1) {
         warzone.wars[warIndex].available = true;
-
-        await warzone
-          .save()
-          .then(() => {
-            console.log(`${attack.war.name} is now marked as available.`);
-          })
-          .catch((e) => {
-            console.log("Error saving warzone:", e);
-            result.errorMsg = "Error saving warzone";
-            return res.json(result);
-          });
-
-        console.log(`${attack.war.name} is now marked as available.`);
-
+  
+        try {
+          await warzone.save();
+          console.log(`${attack.war} is now marked as available.`);
+        } catch (e) {
+          console.error("Error saving warzone:", e);
+          result.errorMsg = "Error saving warzone";
+          return res.json(result);
+        }
+  
+        // Emit updates to clients
         io.emit("update_country", country1);
         io.emit("update_country", country2);
-
         io.emit("remove_attack", attack_id);
         io.emit("update_warzone", warzone);
-
+  
         result.success = true;
         return res.json(result);
       } else {
-        console.log("War not found in the warzone.");
+        console.error("War not found in the warzone.");
+        result.errorMsg = "War not found in the warzone.";
+        return res.json(result);
       }
     } catch (error) {
       console.error("Error setting attack result:", error);
@@ -705,61 +702,66 @@ class AttackController {
       success: false,
       errorMsg: "",
     };
-
+  
     const { attack_id } = req.body;
-
+  
     try {
+      // Find the attack by ID
       const attack = await Attack.findById(attack_id);
-
+  
       if (!attack) {
         result.errorMsg = "Attack not found";
         return res.json(result);
       }
-
+  
+      // Find the associated warzone
       const warzone = await Warzone.findById(attack.warzone_id);
-
+      if (!warzone) {
+        result.errorMsg = "Warzone not found";
+        return res.json(result);
+      }
+  
+      // Find the war in the warzone and mark it as available
       const warIndex = warzone.wars.findIndex((war) => war.name === attack.war);
-
-      Attack.deleteOne({ _id: attack_id })
-        .then(() => {
-          console.log("Attack deleted successfully.");
-        })
-        .catch((e) => {
-          console.log("Error deleting attack:", e);
-          result.errorMsg = "Error deleting attack";
-          return res.json(result);
-        });
-
       if (warIndex !== -1) {
         warzone.wars[warIndex].available = true;
-
-        await warzone
-          .save()
-          .then(() => {
-            console.log(`${attack.war.name} is now marked as available.`);
-          })
-          .catch((e) => {
-            console.log("Error saving warzone:", e);
-            result.errorMsg = "Error saving warzone";
-            return res.json(result);
-          });
-
-        console.log(`${attack.war.name} is now marked as available.`);
-
-        io.emit("remove_attack", attack_id);
-        io.emit("update_warzone", warzone);
-
-        result.success = true;
-        return res.json(result);
+        
+        try {
+          await warzone.save();
+          console.log(`${attack.war} is now marked as available.`);
+        } catch (e) {
+          console.error("Error saving warzone:", e);
+          result.errorMsg = "Error saving warzone";
+          return res.json(result);
+        }
       } else {
-        console.log("War not found in the warzone.");
+        console.error("War not found in the warzone.");
+        result.errorMsg = "War not found in the warzone.";
+        return res.json(result);
       }
+  
+      // Delete the attack
+      try {
+        await Attack.deleteOne({ _id: attack_id });
+        console.log("Attack deleted successfully.");
+      } catch (e) {
+        console.error("Error deleting attack:", e);
+        result.errorMsg = "Error deleting attack";
+        return res.json(result);
+      }
+  
+      // Emit updates to the clients
+      io.emit("remove_attack", attack_id);
+      io.emit("update_warzone", warzone);
+  
+      result.success = true;
+      return res.json(result);
     } catch (error) {
       console.error("Error deleting attack:", error);
       result.errorMsg = "Error deleting attack";
       return res.json(result);
     }
-  }
+  }  
 
   static async get_attack_expiry_time(req, res) {
     const result = {

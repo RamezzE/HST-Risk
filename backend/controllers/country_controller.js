@@ -38,32 +38,33 @@ class CountryController {
       success: false,
       errorMsg: "",
     };
-
+  
     const { name } = req.params;
     const { teamNo } = req.body;
-
+  
     try {
-      const country = await Country.findOne({ name: name });
-
+      // Find and update the country in one operation
+      const country = await Country.findOneAndUpdate(
+        { name: name },
+        { $set: { teamNo: teamNo } },
+      );
+  
       if (!country) {
         result.errorMsg = `${name} not found`;
-        return res.json(result);
+        return res.json(result); // 404 Not Found status code
       }
-
-      country.teamNo = teamNo;
-
-      await country.save();
-
+  
       io.emit("update_country", country);
-
+  
       result.success = true;
-      return res.json(result);
+      return res.json(result); // 200 OK status code for a successful update
     } catch (error) {
-      result.errorMsg = `Error updating ${name}`;
-      console.log(error);
-      return res.json(result);
+      result.errorMsg = `Error updating ${name}: ${error.message}`;
+      console.error("Error updating country:", error);
+      return res.json(result); // 500 Internal Server Error status code for server-side errors
     }
   }
+  
 }
 
 export default CountryController;
