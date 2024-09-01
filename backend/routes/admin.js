@@ -8,7 +8,7 @@ router.get("/:name", AdminController.get_admin_by_name);
 
 // if no session abort
 router.use((req, res, next) => {
-  if (!req.session.user || req.session.user.mode == "super_admin") {
+  if (!req.session.user || req.session.user.mode != "super_admin") {
     res.json({ success: false, errorMsg: "Please log in" });
   } else {
     next();

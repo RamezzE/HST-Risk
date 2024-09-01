@@ -8,7 +8,7 @@ router.get("/:number", CountryController.get_countries_by_team);
 
 
 router.use((req, res, next) => {
-    if (!req.session.user || req.session.user.mode == "super_admin") {
+    if (!req.session.user || req.session.user.mode != "super_admin") {
       res.json({ success: false, errorMsg: "Please log in" });
     } else {
       next();
