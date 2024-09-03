@@ -226,6 +226,9 @@ class AttackController {
 
     let session;
     let lockAcquired = false;
+
+    let sessionCommited = false;
+
     try {
       session = await mongoose.startSession();
       session.startTransaction();
@@ -297,6 +300,10 @@ class AttackController {
         { new: true, session }
       );
 
+      const defending_team = await Team.findOne(
+        {number: team_2}
+      )
+
       if (!attacking_team) {
         result.errorMsg = "Error updating attacking team balance.";
         return res.json(result);
@@ -305,12 +312,13 @@ class AttackController {
       console.log(`${war} is now marked as unavailable.`);
 
       await session.commitTransaction();
+      sessionCommited = true;
 
       UserController.sendBatchPushNotifications(
         [attacking_team.expoPushTokens, defending_team.expoPushTokens],
         [`Your team is attacking!`, "Your team is under attack!!"],
         [
-          `Your team ${team_1}${subteam_1} is attacking team ${real_team_2}'s ${zone_2} in ${war}!`,
+          `Your team ${team_1}${subteam_1} is attacking team ${team_2}'s ${zone_2} in ${war}!`,
           `Your ${zone_1} is under attack by team ${team_1}${subteam_1} in ${war}!!`,
         ]
       );
@@ -320,13 +328,13 @@ class AttackController {
       io.emit("update_country", defending_country);
       io.emit("update_warzone", warzone);
 
-
-
       result.success = true;
       return res.json(result);
-
     } catch (error) {
-      session.abortTransaction();
+      console.log(error)
+      if (!sessionCommited) {
+        session.abortTransaction();
+      }
       if (result.errorMsg == "") {
         result.errorMsg = "Error processing attack";
       }
@@ -335,11 +343,11 @@ class AttackController {
       if (lockAcquired) {
         await Country.findOneAndUpdate(
           { name: zone_1 },
-          { $set: { locked: false } },
+          { $set: { locked: false } }
         );
         await Country.findOneAndUpdate(
           { name: zone_2 },
-          { $set: { locked: false } },
+          { $set: { locked: false } }
         );
         console.log(`Locks released for countries ${zone_1} and ${zone_2}`);
       }
