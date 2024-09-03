@@ -8,7 +8,6 @@ import { Server as SocketIOServer } from "socket.io";
 import { createServer as createHttpServer } from "http";
 import { createServer as createHttpsServer } from "https";
 import fs from "fs";
-import path from "path";
 import TeamController from "./controllers/team_controller.js";
 
 // Import routers

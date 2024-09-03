@@ -110,7 +110,7 @@ const Warzone = () => {
         randomWar.name
       );
 
-      if (!response.errorMsg) {
+      if (response.success == true) {
         Alert.alert(
           `${warzone.name}`,
           `You are assigned ${randomWar.name}\n\nAttacking from: ${local.attacking_zone} - Team ${local.attacking_team}${local.attacking_subteam}\nDefending Side: ${local.defending_zone} - Team ${local.defending_team}\n\nProceed to the warzone\n\nGood luck!`
@@ -123,10 +123,10 @@ const Warzone = () => {
         }
         router.replace("/team_attacks");
       } else {
-        Alert.alert("Attack", response.errorMsg);
+        Alert.alert("Attack Failed", response.errorMsg);
       }
     } catch (error) {
-      Alert.alert("Error", "Error making attack request");
+      Alert.alert("Error", "Error making attack request\nPlease retry");
       console.log(error);
     } finally {
       setIsSubmitting(false);

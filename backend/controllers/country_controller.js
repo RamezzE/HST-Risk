@@ -1,6 +1,7 @@
 import Country from "../models/country.js";
 import { io } from "../app.js"; 
 
+import mongoose from "mongoose";
 class CountryController {
   static async get_country_mappings(req, res) {
     const countries = await Country.find();
@@ -42,28 +43,51 @@ class CountryController {
     const { name } = req.params;
     const { teamNo } = req.body;
   
-    try {
-      // Find and update the country in one operation
-      const country = await Country.findOneAndUpdate(
-        { name: name },
-        { $set: { teamNo: teamNo } },
-      );
+    const maxRetries = 3;
+    const retryDelay = 1000; // 1 second delay between retries
   
-      if (!country) {
-        result.errorMsg = `${name} not found`;
-        return res.json(result); // 404 Not Found status code
+    let attempt = 0;
+    let updated = false;
+  
+    while (attempt < maxRetries && !updated) {
+      attempt++;
+  
+      try {
+        // Find the country and check if it's locked
+        const country = await Country.findOne({ name: name });
+  
+        if (!country) {
+          result.errorMsg = `${name} not found`;
+          return res.json(result); // 404 Not Found status code
+        }
+  
+        if (country.locked) {
+          result.errorMsg = `${name} is currently locked and cannot be updated`;
+          return res.json(result); // 403 Forbidden status code or 409 Conflict status code
+        }
+  
+        // Update the country if it's not locked
+        country.teamNo = teamNo;
+        await country.save();
+  
+        io.emit("update_country", country);
+  
+        result.success = true;
+        updated = true; // Mark as successfully updated
+        return res.json(result); // 200 OK status code for a successful update
+      } catch (error) {
+        console.error(`Error updating country on attempt ${attempt}:`, error);
+  
+        if (attempt >= maxRetries) {
+          result.errorMsg = `Error updating ${name} after ${maxRetries} attempts: ${error.message}`;
+          return res.json(result); // 500 Internal Server Error status code for server-side errors
+        }
+  
+        // Wait before retrying
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
       }
-  
-      io.emit("update_country", country);
-  
-      result.success = true;
-      return res.json(result); // 200 OK status code for a successful update
-    } catch (error) {
-      result.errorMsg = `Error updating ${name}: ${error.message}`;
-      console.error("Error updating country:", error);
-      return res.json(result); // 500 Internal Server Error status code for server-side errors
     }
-  }
+  }  
   
 }
 

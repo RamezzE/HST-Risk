@@ -1,41 +1,72 @@
-import { View, Text, Image } from "react-native";
+import React, { useContext, useEffect } from "react";
+import { View, Text, Image, Alert, Platform } from "react-native";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Platform } from 'react-native';
+import { GlobalContext } from "../../context/GlobalProvider"; // Import GlobalContext
+import { router } from "expo-router"; // Import router for navigation
+import { deletePushToken } from "../../api/user_functions"; // Import deletePushToken if needed
 
 import { icons } from "../../constants";
 
 const TabIcon = ({ icon, color, name, focused }) => {
-    return (
-      <View className = 'items-center justify-center'>
-        <Image
-          source = { icon }
-          resizeMode = "contain"
-          tintColor = {color}
-          className = {Platform.OS === 'ios' ? 'w-6 h-6 mt-2' : 'w-6 h-6 '}
-        />
-        <Text
-          className={`${focused ? 'font-psemibold' : 'font-pregular'} text-xs`} style = {{ color: color }}
-        >
-          {name}
-        </Text>
-      </View>
-    );
-  };
+  return (
+    <View className="items-center justify-center">
+      <Image
+        source={icon}
+        resizeMode="contain"
+        tintColor={color}
+        className={Platform.OS === "ios" ? "w-6 h-6 mt-2" : "w-6 h-6"}
+      />
+      <Text
+        className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
+        style={{ color: color }}
+      >
+        {name}
+      </Text>
+    </View>
+  );
+};
 
 const TabsLayout = () => {
+  const { socket, Logout, expoPushToken, teamNo } = useContext(GlobalContext); // Use the context
+
+  useEffect(() => {
+    const handleNewGame = () => {
+      Alert.alert(
+        "New Game",
+        "A new game has started. You will be logged out automatically."
+      );
+
+      setTimeout(async () => {
+        // If you want to delete the push token before logout
+        if (expoPushToken && teamNo) {
+          await deletePushToken(expoPushToken, teamNo);
+        }
+        Logout();
+        router.replace("/");
+      }, 3000);
+    };
+
+    socket.on("new_game", handleNewGame);
+
+    // Cleanup listener on component unmount
+    return () => {
+      socket.off("new_game", handleNewGame);
+    };
+  }, [socket, expoPushToken, teamNo]);
+
   return (
     <>
       <Tabs
-        screenOptions = {{
-          tabBarShowLabel : false,
+        screenOptions={{
+          tabBarShowLabel: false,
           tabBarActiveTintColor: "#FFF",
           tabBarInactiveTintColor: "#BBB",
           tabBarStyle: {
             backgroundColor: "#201402",
             borderTopWidth: 1,
             borderTopColor: "#000",
-            height: Platform.OS === 'ios' ? '12%' : '10%',
+            height: Platform.OS === "ios" ? "12%" : "10%",
           },
         }}
       >
@@ -114,7 +145,6 @@ const TabsLayout = () => {
             ),
           }}
         />
-        
       </Tabs>
       <StatusBar backgroundColor="#000" style="light" />
     </>

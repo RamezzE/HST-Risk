@@ -152,6 +152,8 @@ const TabsLayout = () => {
     try {
       const attacksResult = await get_all_attacks();
 
+      if (!attacksResult || attacksResult.length == 0 || attacksResult == []) return;
+
       const matchingAttack = attacksResult.find(
         (attack) =>
           attack.attacking_team === teamNo &&

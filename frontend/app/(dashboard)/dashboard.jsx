@@ -110,7 +110,7 @@ const Dashboard = () => {
       const result = await create_teams(noOfTeams, noOfSubteams);
 
       if (result.success) {
-        Alert.alert("Success", "New Game Created Successfully");
+        Alert.alert("Success", "New Game Created Successfully.\nAll users will be logged out automatically");
         router.navigate("/teams");
       } else {
         Alert.alert("Error", result.errorMsg);

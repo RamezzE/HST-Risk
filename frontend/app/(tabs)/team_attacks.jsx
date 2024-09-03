@@ -54,9 +54,10 @@ const TeamAttacks = () => {
   
       // Set up socket listeners for real-time updates
       socket.on("new_attack", (newAttack) => {
-        if (newAttack.attacking_team === teamNo.toString()) {
+        console.log("attack: ", newAttack);
+        if (newAttack.attacking_team.toString() === teamNo.toString()) {
           setAttackingAttacks((prevAttacks) => [...prevAttacks, newAttack]);
-        } else if (newAttack.defending_team === teamNo.toString()) {
+        } else if (newAttack.defending_team.toString() === teamNo.toString()) {
           setDefendingAttacks((prevAttacks) => [...prevAttacks, newAttack]);
         }
       });

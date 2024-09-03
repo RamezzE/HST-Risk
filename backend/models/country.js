@@ -10,6 +10,11 @@ const countrySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  locked: {
+    type: Boolean,
+    default: false,
+    required: true
+  },
 });
 
 const Country = mongoose.model('Country', countrySchema);

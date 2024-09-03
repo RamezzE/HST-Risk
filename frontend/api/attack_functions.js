@@ -42,8 +42,9 @@ export const attack = async (zone_1, team_1, subteam_1, zone_2, team_2, warzone_
 
     return response.data;
   } catch (error) {
+    console.log("API: ", error)
     return {
-      errorMsg: error.response?.data || "Error making attack request",
+      errorMsg: error.response?.data || "Error making attack request\nPlease retry",
     };
   }
 };

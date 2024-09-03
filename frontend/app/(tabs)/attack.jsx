@@ -58,6 +58,8 @@ const Attack = () => {
     other_zone: "",
   });
 
+  
+
   const getTeamColor = (countryName) => {
     try {
       if (form.your_zone === countryName || otherZones.includes(countryName)) {
