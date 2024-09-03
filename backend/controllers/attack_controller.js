@@ -306,11 +306,21 @@ class AttackController {
 
       await session.commitTransaction();
 
+      UserController.sendBatchPushNotifications(
+        [attacking_team.expoPushTokens, defending_team.expoPushTokens],
+        [`Your team is attacking!`, "Your team is under attack!!"],
+        [
+          `Your team ${team_1}${subteam_1} is attacking team ${real_team_2}'s ${zone_2} in ${war}!`,
+          `Your ${zone_1} is under attack by team ${team_1}${subteam_1} in ${war}!!`,
+        ]
+      );
 
       io.emit("new_attack", attack);
       io.emit("update_country", attacking_country);
       io.emit("update_country", defending_country);
       io.emit("update_warzone", warzone);
+
+
 
       result.success = true;
       return res.json(result);
