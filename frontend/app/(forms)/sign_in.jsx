@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ImageBackground, ScrollView, Alert } from "react-native";
+import { View, Text, ImageBackground, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
@@ -13,6 +13,8 @@ import { GlobalContext } from "../../context/GlobalProvider";
 import { images } from "../../constants";
 
 import BackButton from "../../components/BackButton";
+
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const validateSignIn = (username, password) => {
   var result = {
@@ -35,15 +37,21 @@ const SignIn = () => {
     password: "",
   });
 
-  const { setName, setTeamNo, setSubteam, expoPushToken, setUserMode, setIsLoggedIn } = useContext(GlobalContext);
+  const {
+    setName,
+    setTeamNo,
+    setSubteam,
+    expoPushToken,
+    setUserMode,
+    setIsLoggedIn,
+  } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      if (!isSubmitting)
-        return;
-      
+      if (!isSubmitting) return;
+
       try {
         const response = await login(
           form.username.trim(),
@@ -62,7 +70,7 @@ const SignIn = () => {
           setUserMode("subteam");
 
           await addPushToken(expoPushToken, response.subteam.number);
-          setIsLoggedIn(true)
+          setIsLoggedIn(true);
           router.replace("/home");
           return;
         }
@@ -74,7 +82,7 @@ const SignIn = () => {
             router.replace("/admin_home");
             return;
           }
-          setIsLoggedIn(true)
+          setIsLoggedIn(true);
 
           router.replace("/admin_home2");
           return;
@@ -82,7 +90,7 @@ const SignIn = () => {
 
         if (response.superAdmin != "") {
           setUserMode("super_admin");
-          setIsLoggedIn(true)
+          setIsLoggedIn(true);
 
           router.replace("/dashboard");
           return;
@@ -114,13 +122,23 @@ const SignIn = () => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ paddingTop: insets.top, paddingRight: insets.right, paddingLeft: insets.left}} className="bg-black h-full">
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+    <KeyboardAwareScrollView
+      extraScrollHeight={150} // Adds extra space between the keyboard and content
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingRight: insets.right,
+          paddingLeft: insets.left,
+        }}
+        className="bg-black h-full"
       >
-        <ScrollView>
+        <ImageBackground
+          source={images.background}
+          style={{ resizeMode: "cover" }}
+          className="min-h-[100vh]"
+        >
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
             <BackButton
               style="w-[20vw] mb-4"
@@ -153,9 +171,9 @@ const SignIn = () => {
               isLoading={isSubmitting}
             />
           </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+        </ImageBackground>
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 
