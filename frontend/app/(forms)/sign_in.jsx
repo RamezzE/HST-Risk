@@ -123,28 +123,28 @@ const SignIn = () => {
 
   return (
     <>
-    <KeyboardAwareScrollView
-      bottomOffset={175}
-      alwaysBounceHorizontal={false}
-      alwaysBounceVertical={false}
-      bounces={false}
-      disableScrollOnKeyboardHide={true}
-      
-    >
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="bg-black h-full"
+      <KeyboardAwareScrollView
+        bottomOffset={175}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+        overScrollMode="never"
       >
-        <ImageBackground
-          source={images.background}
-          style={{ resizeMode: "cover" }}
-          className="min-h-[100vh]"
+        <View
+          style={{
+            paddingTop: insets.top,
+            paddingRight: insets.right,
+            paddingLeft: insets.left,
+          }}
+          className="bg-black h-full"
         >
-          {/* <ScrollView> */}
+          <ImageBackground
+            source={images.background}
+            style={{ resizeMode: "cover" }}
+            className="min-h-[100vh]"
+          >
+            {/* <ScrollView> */}
             <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
               <BackButton
                 style="w-[20vw] mb-4"
@@ -177,10 +177,10 @@ const SignIn = () => {
                 isLoading={isSubmitting}
               />
             </View>
-          {/* </ScrollView> */}
-        </ImageBackground>
-      </View>
-    </KeyboardAwareScrollView>
+            {/* </ScrollView> */}
+          </ImageBackground>
+        </View>
+      </KeyboardAwareScrollView>
     </>
   );
 };
