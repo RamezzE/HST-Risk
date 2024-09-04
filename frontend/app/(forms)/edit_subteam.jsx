@@ -11,6 +11,8 @@ import BackButton from "../../components/BackButton";
 
 import { images } from "../../constants";
 
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+
 const validateEditTeam = (password) => {
   var result = {
     success: false,
@@ -71,55 +73,63 @@ const EditTeam = () => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black h-full"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+    <>
+      <KeyboardAwareScrollView
+        bottomOffset={175}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+        overScrollMode="never"
       >
-        <ScrollView>
-          <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-            <BackButton
-              style="w-[20vw]"
-              size={32}
-              onPress={() => router.navigate('/subteams')}
-            />
-            <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
-              Edit Subteam
-            </Text>
+        <View
+          style={{
+            paddingTop: insets.top,
+            paddingRight: insets.right,
+            paddingLeft: insets.left,
+          }}
+          className="bg-black h-full"
+        >
+          <ImageBackground
+            source={images.background}
+            style={{ resizeMode: "cover" }}
+            className="min-h-[100vh]"
+          >
+              <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+                <BackButton
+                  style="w-[20vw]"
+                  size={32}
+                  onPress={() => router.navigate("/subteams")}
+                />
+                <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+                  Edit Subteam
+                </Text>
 
-            <FormField
-              title="Subteam"
-              value={form.username}
-              otherStyles="mt-7"
-              editable={false}
-            />
+                <FormField
+                  title="Subteam"
+                  value={form.username}
+                  otherStyles="mt-7"
+                  editable={false}
+                />
 
-            <FormField
-              title="Password"
-              value={form.password}
-              handleChangeText={(e) => setForm({ ...form, password: e })}
-              otherStyles="mt-7"
-            />
+                <FormField
+                  title="Password"
+                  value={form.password}
+                  handleChangeText={(e) => setForm({ ...form, password: e })}
+                  otherStyles="mt-7"
+                />
 
-            <CustomButton
-              title="Update Subteam"
-              handlePress={() => submit()}
-              containerStyles="mt-7 p-3 bg-green-800"
-              textStyles={"text-3xl"}
-              isLoading={isSubmitting}
-            />
-          </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+                <CustomButton
+                  title="Update Subteam"
+                  handlePress={() => submit()}
+                  containerStyles="mt-7 p-3 bg-green-800"
+                  textStyles={"text-3xl"}
+                  isLoading={isSubmitting}
+                />
+              </View>
+          </ImageBackground>
+        </View>
+      </KeyboardAwareScrollView>
+    </>
   );
 };
 

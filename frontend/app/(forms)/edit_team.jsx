@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { View, Text, ScrollView, Alert, ImageBackground } from "react-native";
+import { View, Text, Alert, ImageBackground } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,6 +12,8 @@ import BackButton from "../../components/BackButton";
 import { images } from "../../constants";
 
 import { GlobalContext } from "../../context/GlobalProvider";
+
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 const EditTeam = () => {
   const local = useLocalSearchParams();
@@ -59,13 +61,17 @@ const EditTeam = () => {
     }
 
     if (amount > form.balance && type == "remove") {
-      Alert.alert("Error", "Insufficient balance to remove ")
+      Alert.alert("Error", "Insufficient balance to remove ");
     }
 
     setIsModifyingBalance(true);
     try {
       if (type === "add") {
-        const response = await update_team_balance(local.teamNo.trim(), amount, "add");
+        const response = await update_team_balance(
+          local.teamNo.trim(),
+          amount,
+          "add"
+        );
         if (!response.success) {
           Alert.alert("Error", response.errorMsg);
           return;
@@ -75,7 +81,11 @@ const EditTeam = () => {
           balance: prevForm.balance + amount,
         }));
       } else if (type === "remove") {
-        const response = await update_team_balance(local.teamNo.trim(), amount, "remove");
+        const response = await update_team_balance(
+          local.teamNo.trim(),
+          amount,
+          "remove"
+        );
         if (!response.success) {
           Alert.alert("Error", response.errorMsg);
           return;
@@ -89,8 +99,7 @@ const EditTeam = () => {
       Alert.alert("Success", "Team balance updated successfully");
       if (userMode == "super_admin") {
         router.navigate("/teams");
-      }
-      else if (userMode == "admin") {
+      } else if (userMode == "admin") {
         router.navigate("/admin_home2");
       }
     } catch (error) {
@@ -100,7 +109,7 @@ const EditTeam = () => {
       setIsModifyingBalance(false);
     }
   };
-  
+
   const submit = async () => {
     setIsSubmitting(true);
 
@@ -128,8 +137,7 @@ const EditTeam = () => {
       // router.dismiss(1);
       if (userMode == "super_admin") {
         router.navigate("/teams");
-      }
-      else if (userMode == "admin") {
+      } else if (userMode == "admin") {
         router.navigate("/admin_home2");
       }
     } catch (error) {
@@ -143,98 +151,108 @@ const EditTeam = () => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black h-full"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+    <>
+      <KeyboardAwareScrollView
+        bottomOffset={175}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+        overScrollMode="never"
       >
-        <ScrollView>
-          <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-            <BackButton
-              style="w-[20vw]"
-              size={32}
-              onPress={() => {
-                if (userMode == "super_admin") {
-                  router.navigate("/teams");
-                }
-                else if (userMode == "admin") {
-                  router.navigate("/admin_home2");
-                }
-``             }}
-            />
-            <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
-              Edit Team
-            </Text>
-            <FormField
-              title="Team Number"
-              value={teamNo}
-              otherStyles="mt-7"
-              editable={false}
-            />
+        <View
+          style={{
+            paddingTop: insets.top,
+            paddingRight: insets.right,
+            paddingLeft: insets.left,
+          }}
+          className="bg-black h-full"
+        >
+          <ImageBackground
+            source={images.background}
+            style={{ resizeMode: "cover" }}
+            className="min-h-[100vh]"
+          >
+              <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+                <BackButton
+                  style="w-[20vw]"
+                  size={32}
+                  onPress={() => {
+                    if (userMode == "super_admin") {
+                      router.navigate("/teams");
+                    } else if (userMode == "admin") {
+                      router.navigate("/admin_home2");
+                    }
+                    ``;
+                  }}
+                />
+                <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+                  Edit Team
+                </Text>
+                <FormField
+                  title="Team Number"
+                  value={teamNo}
+                  otherStyles="mt-7"
+                  editable={false}
+                />
 
-            {userMode == "super_admin" && (
-              <FormField
-                title="Team Name"
-                value={form.teamName}
-                handleChangeText={(e) => setForm({ ...form, teamName: e })}
-                otherStyles="mt-7"
-              />
-            )}
+                {userMode == "super_admin" && (
+                  <FormField
+                    title="Team Name"
+                    value={form.teamName}
+                    handleChangeText={(e) => setForm({ ...form, teamName: e })}
+                    otherStyles="mt-7"
+                  />
+                )}
 
-            <FormField
-              title="Running Money"
-              value={form.balance.toString()}
-              otherStyles="mt-7"
-              editable={false}
-            />
+                <FormField
+                  title="Running Money"
+                  value={form.balance.toString()}
+                  otherStyles="mt-7"
+                  editable={false}
+                />
 
-            <FormField
-              title="Modify Amount"
-              value={form.modifyAmount}
-              handleChangeText={(e) => setForm({ ...form, modifyAmount: e })}
-              otherStyles="mt-7"
-              keyboardType="numeric"
-              placeholder="Enter amount to add/remove"
-            />
+                <FormField
+                  title="Modify Amount"
+                  value={form.modifyAmount}
+                  handleChangeText={(e) =>
+                    setForm({ ...form, modifyAmount: e })
+                  }
+                  otherStyles="mt-7"
+                  keyboardType="numeric"
+                  placeholder="Enter amount to add/remove"
+                />
 
-            <View className="flex flex-row justify-between mt-4">
-              <CustomButton
-                title="Add"
-                handlePress={() => modifyBalance("add")}
-                containerStyles="w-[45%] p-3 bg-green-800"
-                textStyles="text-2xl"
-                isLoading={isModifyingBalance}
-              />
-              <CustomButton
-                title="Remove"
-                handlePress={() => modifyBalance("remove")}
-                containerStyles="w-[45%] p-3 bg-red-800"
-                textStyles="text-2xl"
-                isLoading={isModifyingBalance}
-              />
-            </View>
+                <View className="flex flex-row justify-between mt-4">
+                  <CustomButton
+                    title="Add"
+                    handlePress={() => modifyBalance("add")}
+                    containerStyles="w-[45%] p-3 bg-green-800"
+                    textStyles="text-2xl"
+                    isLoading={isModifyingBalance}
+                  />
+                  <CustomButton
+                    title="Remove"
+                    handlePress={() => modifyBalance("remove")}
+                    containerStyles="w-[45%] p-3 bg-red-800"
+                    textStyles="text-2xl"
+                    isLoading={isModifyingBalance}
+                  />
+                </View>
 
-            {userMode == "super_admin" && (
-              <CustomButton
-                title="Update Team"
-                handlePress={() => submit()}
-                containerStyles="mt-7 p-3 bg-green-800"
-                textStyles="text-3xl"
-                isLoading={isSubmitting}
-              />
-            )}
-          </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+                {userMode == "super_admin" && (
+                  <CustomButton
+                    title="Update Team"
+                    handlePress={() => submit()}
+                    containerStyles="mt-7 p-3 bg-green-800"
+                    textStyles="text-3xl"
+                    isLoading={isSubmitting}
+                  />
+                )}
+              </View>
+          </ImageBackground>
+        </View>
+      </KeyboardAwareScrollView>
+    </>
   );
 };
 

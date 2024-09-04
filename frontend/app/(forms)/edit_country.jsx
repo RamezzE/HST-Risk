@@ -14,10 +14,12 @@ import BackButton from "../../components/BackButton";
 
 import { images } from "../../constants";
 
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+
 const EditCountry = () => {
   const local = useLocalSearchParams();
 
-  const[isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [form, setForm] = useState({
     countryName: local.countryName,
@@ -40,10 +42,9 @@ const EditCountry = () => {
     } catch (error) {
       Alert.alert("Error", "Failed to update country");
       console.log(error);
-    }
-    finally {
+    } finally {
       setIsSubmitting(false);
-    } 
+    }
   };
 
   const [teams, setTeams] = useState([]);
@@ -65,71 +66,79 @@ const EditCountry = () => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black h-full"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+    <>
+      <KeyboardAwareScrollView
+        bottomOffset={175}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+        overScrollMode="never"
       >
-        <ScrollView>
-          <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-            <BackButton
-              style="w-[20vw] mb-4"
-              size={32}
-              onPress={() => {
-                router.navigate("/countries");
-              }}
-            />
-            <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
-              Edit Country
-            </Text>
-            <FormField
-              title="Country Name"
-              value={form.countryName}
-              otherStyles="mt-7"
-              editable={false}
-            />
+        <View
+          style={{
+            paddingTop: insets.top,
+            paddingRight: insets.right,
+            paddingLeft: insets.left,
+          }}
+          className="bg-black h-full"
+        >
+          <ImageBackground
+            source={images.background}
+            style={{ resizeMode: "cover" }}
+            className="min-h-[100vh]"
+          >
+              <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+                <BackButton
+                  style="w-[20vw] mb-4"
+                  size={32}
+                  onPress={() => {
+                    router.navigate("/countries");
+                  }}
+                />
+                <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+                  Edit Country
+                </Text>
+                <FormField
+                  title="Country Name"
+                  value={form.countryName}
+                  otherStyles="mt-7"
+                  editable={false}
+                />
 
-            {Array.isArray(teams) && (
-              <DropDownField
-                title="Owned by Team"
-                value={form.teamNo}
-                placeholder="Select Team"
-                items={teams.map((team) => ({
-                  label: `Team ${team.number} - ${team.name}`,
-                  value: team.number.toString(),
-                }))}
-                // items={[]}
-                handleChange={(e) => setForm({ ...form, teamNo: e })}
-                otherStyles="mt-7"
-              />
-            )}
+                {Array.isArray(teams) && (
+                  <DropDownField
+                    title="Owned by Team"
+                    value={form.teamNo}
+                    placeholder="Select Team"
+                    items={teams.map((team) => ({
+                      label: `Team ${team.number} - ${team.name}`,
+                      value: team.number.toString(),
+                    }))}
+                    // items={[]}
+                    handleChange={(e) => setForm({ ...form, teamNo: e })}
+                    otherStyles="mt-7"
+                  />
+                )}
 
-            {/* <FormField
+                {/* <FormField
             title="Team Owned"
             value={form.teamNo}
             handleChangeText={(e) => setForm({ ...form, teamName: e })}
             otherStyles="mt-7"
           /> */}
 
-            <CustomButton
-              title="Update Country"
-              handlePress={submit}
-              containerStyles="mt-7 p-3 bg-green-800"
-              textStyles={"text-3xl"}
-              isLoading={isSubmitting}
-            />
-          </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+                <CustomButton
+                  title="Update Country"
+                  handlePress={submit}
+                  containerStyles="mt-7 p-3 bg-green-800"
+                  textStyles={"text-3xl"}
+                  isLoading={isSubmitting}
+                />
+              </View>
+          </ImageBackground>
+        </View>
+      </KeyboardAwareScrollView>
+    </>
   );
 };
 
