@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
   TouchableWithoutFeedback,
-  Modal,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
@@ -18,9 +17,8 @@ const DropdownField = ({
   otherStyles,
   ...props
 }) => {
-  const [isPickerVisible, setPickerVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState(value || items[0]?.value); // Set initial value
-  const [isFocused, setIsFocused] = useState(false); // Manage focus state
+  const pickerRef = useRef(null); // Reference to the hidden picker
 
   useEffect(() => {
     if (!value && items.length > 0) {
@@ -29,15 +27,14 @@ const DropdownField = ({
   }, [items, value]);
 
   const openPicker = () => {
-    setSelectedValue(value || items[0]?.value); // Reset to current value or default to first item
-    setPickerVisible(true);
-    setIsFocused(true); // Set focus state when picker is opened
+    if (pickerRef.current) {
+      pickerRef.current.focus(); // Open the hidden picker
+    }
   };
 
-  const closePicker = () => {
-    handleChange(selectedValue); // Set the value when closing
-    setPickerVisible(false);
-    setIsFocused(false); // Remove focus state when picker is closed
+  const handleValueChange = (itemValue) => {
+    setSelectedValue(itemValue); // Update selected value
+    handleChange(itemValue); // Pass the new value to parent
   };
 
   return (
@@ -45,9 +42,7 @@ const DropdownField = ({
       <Text className="font-montez text-black text-3xl">{title}</Text>
 
       <View
-        className={`w-full h-16 bg- rounded-md flex flex-row items-center ${
-          isFocused ? "border-2 border-black-100" : ""
-        }`}
+        className={`w-full h-16 bg- rounded-md flex flex-row items-center`}
         style={{ backgroundColor: "rgba(75, 50, 12, 0.5)" }} // Transparent background
       >
         <TouchableWithoutFeedback onPress={openPicker}>
@@ -57,7 +52,7 @@ const DropdownField = ({
           >
             <TextInput
               className="text-white font-psemibold text-[16px]"
-              value={value ? value : placeholder}
+              value={selectedValue ? selectedValue : placeholder}
               placeholder={placeholder}
               placeholderTextColor="#F2E9D0"
               editable={false} // Disable editing
@@ -67,72 +62,20 @@ const DropdownField = ({
         </TouchableWithoutFeedback>
       </View>
 
-      <Modal
-        visible={isPickerVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={closePicker}
-        className="bg-black"
+      {/* Hidden Picker */}
+      <Picker
+        ref={pickerRef}
+        selectedValue={selectedValue}
+        onValueChange={handleValueChange}
+        style={{ opacity: 0, height: 0 }} // Make the picker invisible
+        {...props}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={selectedValue}
-              onValueChange={(itemValue) => {
-                setSelectedValue(itemValue);
-              }}
-              style={{ backgroundColor: "#F5F5F5" }} // Background color for the picker
-              {...props}
-            >
-              {items.map((item, index) => (
-                <Picker.Item
-                  label={item.label}
-                  value={item.value}
-                  key={index}
-                />
-              ))}
-            </Picker>
-            <TouchableWithoutFeedback onPress={closePicker}>
-              <View style={styles.doneButton}>
-                <Text style={styles.doneText}>Done</Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </View>
-      </Modal>
+        {items.map((item, index) => (
+          <Picker.Item label={item.label} value={item.value} key={index} />
+        ))}
+      </Picker>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-  },
-  textInput: {
-    color: "#FFF",
-    fontSize: 18,
-    fontFamily: "montez",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  pickerContainer: {
-    backgroundColor: "white",
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  doneButton: {
-    alignItems: "center",
-    paddingVertical: 10,
-  },
-  doneText: {
-    fontSize: 18,
-    color: "#007AFF",
-    fontFamily: "Poppins-SemiBold",
-  },
-});
 
 export default DropdownField;
