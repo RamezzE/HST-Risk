@@ -4,7 +4,7 @@ import { useFonts } from "expo-font";
 import { GlobalProvider } from "../context/GlobalProvider";
 import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 const RootLayout = () => {
 
@@ -35,6 +35,7 @@ const RootLayout = () => {
 
   return (
     <SafeAreaProvider>
+      <KeyboardProvider>
       <GlobalProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -44,6 +45,7 @@ const RootLayout = () => {
           <Stack.Screen name="(misc)" options={{ headerShown: false }} />
         </Stack>
       </GlobalProvider>
+      </KeyboardProvider>
     </SafeAreaProvider>
   );
 };

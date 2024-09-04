@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ImageBackground, Alert } from "react-native";
+import { View, Text, ImageBackground, ScrollView, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
@@ -14,7 +14,7 @@ import { images } from "../../constants";
 
 import BackButton from "../../components/BackButton";
 
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 const validateSignIn = (username, password) => {
   var result = {
@@ -122,11 +122,14 @@ const SignIn = () => {
   const insets = useSafeAreaInsets();
 
   return (
+    <>
     <KeyboardAwareScrollView
-      extraScrollHeight={125} // Adds extra space between the keyboard and content
-      enableOnAndroid={true}
-      contentContainerStyle={{ flexGrow: 1 }}
-      scrollEnabled={false}
+      bottomOffset={175}
+      alwaysBounceHorizontal={false}
+      alwaysBounceVertical={false}
+      bounces={false}
+      disableScrollOnKeyboardHide={true}
+      
     >
       <View
         style={{
@@ -141,41 +144,44 @@ const SignIn = () => {
           style={{ resizeMode: "cover" }}
           className="min-h-[100vh]"
         >
-          <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
-            <BackButton
-              style="w-[20vw] mb-4"
-              size={32}
-              onPress={() => router.replace("/")}
-            />
-            <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
-              Sign In
-            </Text>
+          {/* <ScrollView> */}
+            <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
+              <BackButton
+                style="w-[20vw] mb-4"
+                size={32}
+                onPress={() => router.replace("/")}
+              />
+              <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+                Sign In
+              </Text>
 
-            <FormField
-              title="Username"
-              value={form.username}
-              handleChangeText={(e) => setForm({ ...form, username: e })}
-              otherStyles="mt-7"
-            />
+              <FormField
+                title="Username"
+                value={form.username}
+                handleChangeText={(e) => setForm({ ...form, username: e })}
+                otherStyles="mt-7"
+              />
 
-            <FormField
-              title="Password"
-              value={form.password}
-              handleChangeText={(e) => setForm({ ...form, password: e })}
-              otherStyles="mt-7"
-            />
+              <FormField
+                title="Password"
+                value={form.password}
+                handleChangeText={(e) => setForm({ ...form, password: e })}
+                otherStyles="mt-7"
+              />
 
-            <CustomButton
-              title="Sign In"
-              handlePress={submit}
-              containerStyles="mt-7 p-3"
-              textStyles={"text-3xl"}
-              isLoading={isSubmitting}
-            />
-          </View>
+              <CustomButton
+                title="Sign In"
+                handlePress={submit}
+                containerStyles="mt-7 p-3"
+                textStyles={"text-3xl"}
+                isLoading={isSubmitting}
+              />
+            </View>
+          {/* </ScrollView> */}
         </ImageBackground>
       </View>
     </KeyboardAwareScrollView>
+    </>
   );
 };
 
