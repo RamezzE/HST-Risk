@@ -81,9 +81,7 @@ const Teams = () => {
   }, []);
 
   const toggleExpandTeam = (teamNumber) => {
-    setExpandedTeam((prev) =>
-      prev === teamNumber ? null : teamNumber
-    );
+    setExpandedTeam((prev) => (prev === teamNumber ? null : teamNumber));
   };
 
   const renderTeams = () => {
@@ -108,18 +106,26 @@ const Teams = () => {
         >
           <View className="flex flex-col justify-between">
             <View className="flex flex-row justify-between w-full">
-            <Text className="text-4xl font-montez">{item.name}</Text>
-            <Text className="text-2xl font-montez">Team Number: {item.number}</Text>
+              <Text className="text-4xl font-montez">{item.name}</Text>
+              <Text className="text-2xl font-montez">
+                Team Number: {item.number}
+              </Text>
             </View>
-            <Text className="text-[16px] font-pregular">Running Money: {item.balance}</Text>
+            <Text className="text-[16px] font-pregular">
+              Running Money: {item.balance}
+            </Text>
             <Text className="text-[16px] font-pregular">
               Countries Owned: {ownedCountries.length}
             </Text>
 
             {/* Button to toggle country names */}
 
-            <CustomButton 
-              title= {expandedTeam === item.number ? "Hide Countries" : "Show Countries"}
+            <CustomButton
+              title={
+                expandedTeam === item.number
+                  ? "Hide Countries"
+                  : "Show Countries"
+              }
               containerStyles="p-2 rounded-md mt-2 w-[50%] ml-auto"
               handlePress={() => toggleExpandTeam(item.number)}
               textStyles={"text-[12px] font-pregular"}
@@ -183,6 +189,8 @@ const Teams = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full justify-start p-4 mb-24">
