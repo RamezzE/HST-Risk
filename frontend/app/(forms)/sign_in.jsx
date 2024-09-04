@@ -123,8 +123,10 @@ const SignIn = () => {
 
   return (
     <KeyboardAwareScrollView
-      extraScrollHeight={150} // Adds extra space between the keyboard and content
+      extraScrollHeight={125} // Adds extra space between the keyboard and content
+      enableOnAndroid={true}
       contentContainerStyle={{ flexGrow: 1 }}
+      scrollEnabled={false}
     >
       <View
         style={{
