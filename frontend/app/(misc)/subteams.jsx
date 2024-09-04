@@ -56,7 +56,6 @@ const SubTeams = () => {
           )
         );
       });
-
     }, [])
   );
 
@@ -83,11 +82,13 @@ const SubTeams = () => {
         <CustomButton
           title="Edit"
           handlePress={() =>
-            router.push(`/edit_subteam?username=${item.username}&password=${item.password}`)
+            router.push(
+              `/edit_subteam?username=${item.username}&password=${item.password}`
+            )
           }
           containerStyles="w-1/4 h-2/3 mt-2"
           textStyles="text-xl font-pregular"
-          />
+        />
       </View>
     ));
   };
@@ -133,13 +134,15 @@ const SubTeams = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full justify-start p-4 mb-24">
-            <BackButton 
+            <BackButton
               style="w-[20vw]"
               size={32}
-              onPress={() => router.navigate('/teams')}
+              onPress={() => router.navigate("/teams")}
             />
             <Text className="text-6xl text-center font-montez py-2 mt-7">
               Subteams

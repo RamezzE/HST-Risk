@@ -22,7 +22,6 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-
 const Warzone = () => {
   const local = useLocalSearchParams();
   const [warzones, setWarzones] = useState([]);
@@ -50,12 +49,12 @@ const Warzone = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData(); // Fetch initial data
-  
+
       // Set up socket listeners for real-time updates
       socket.on("new_warzone", (newWarzone) => {
         setWarzones((prevWarzones) => [newWarzone, ...prevWarzones]);
       });
-  
+
       socket.on("update_warzone", (updatedWarzone) => {
         setWarzones((prevWarzones) =>
           prevWarzones.map((warzone) =>
@@ -63,13 +62,13 @@ const Warzone = () => {
           )
         );
       });
-  
+
       socket.on("delete_warzone", (deletedWarzoneId) => {
         setWarzones((prevWarzones) =>
           prevWarzones.filter((warzone) => warzone._id !== deletedWarzoneId)
         );
       });
-  
+
       return () => {
         socket.off("new_warzone");
         socket.off("update_warzone");
@@ -178,6 +177,8 @@ const Warzone = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">

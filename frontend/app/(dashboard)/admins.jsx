@@ -14,7 +14,7 @@ import { get_admins } from "../../api/admin_functions";
 import { images } from "../../constants";
 import Loader from "../../components/Loader";
 
-import { GlobalContext } from './../../context/GlobalProvider';
+import { GlobalContext } from "./../../context/GlobalProvider";
 
 const Admins = () => {
   const [admins, setAdmins] = useState([]);
@@ -46,7 +46,7 @@ const Admins = () => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchData();      
+      fetchData();
 
       socket.on("update_admin", (editedAdmin) => {
         setAdmins((prevAdmins) =>
@@ -65,12 +65,11 @@ const Admins = () => {
       return () => {
         socket.off("new_admin");
         socket.off("delete_admin");
-      }
+      };
     }, [])
   );
 
   const renderAdmins = () => {
-
     if (!Array.isArray(admins)) {
       return (
         <Text className="text-center">
@@ -88,7 +87,9 @@ const Admins = () => {
         <View className="flex flex-col">
           <Text className="text-2xl font-pmedium">{item.name}</Text>
           <Text className="text-xl font-pregular">Type: {item.type}</Text>
-          {item.type == "Wars" && <Text className="text-xl font-pregular">War: {item.war}</Text>}
+          {item.type == "Wars" && (
+            <Text className="text-xl font-pregular">War: {item.war}</Text>
+          )}
         </View>
 
         <CustomButton
@@ -96,12 +97,11 @@ const Admins = () => {
           handlePress={() =>
             router.push(
               `/edit_admin?name=${item.name.trim()}&password=${item.password.trim()}&war=${item.war.trim()}&type=${item.type.trim()}`
-
             )
           }
           containerStyles="p-2 px-4 mt-2"
           textStyles="text-xl font-pregular"
-          />
+        />
       </View>
     ));
   };
@@ -148,6 +148,8 @@ const Admins = () => {
             />
           }
           contentContainerStyle={{ paddingBottom: 20 }}
+          bounces={false}
+          overScrollMode="never"
         >
           <View className="w-full justify-start p-4 mb-24">
             <Text className="text-6xl text-center font-montez py-2 mt-7">

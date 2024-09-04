@@ -22,8 +22,6 @@ const Countries = () => {
 
   const { socket } = useContext(GlobalContext);
 
-  
-
   const fetchData = async () => {
     setError(null);
     setIsRefreshing(true);
@@ -155,6 +153,8 @@ const Countries = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full justify-center min-h-[82.5vh] p-4 mb-24">

@@ -20,7 +20,6 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import BackButton from "../../components/BackButton";
 
-
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
@@ -214,6 +213,8 @@ const Teams = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full justify-start p-4 mb-24">

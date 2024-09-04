@@ -257,7 +257,11 @@ const Home = () => {
         source={images.background}
         style={{ flex: 1, resizeMode: "cover" }}
       >
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          bounces={false}
+          overScrollMode="never"
+        >
           <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
             <BackButton
               style="w-[20vw]"

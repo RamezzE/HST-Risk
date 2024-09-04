@@ -20,7 +20,6 @@ import { create_teams } from "../../api/team_functions";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-
 const Dashboard = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
@@ -110,7 +109,10 @@ const Dashboard = () => {
       const result = await create_teams(noOfTeams, noOfSubteams);
 
       if (result.success) {
-        Alert.alert("Success", "New Game Created Successfully.\nAll users will be logged out automatically");
+        Alert.alert(
+          "Success",
+          "New Game Created Successfully.\nAll users will be logged out automatically"
+        );
         router.navigate("/teams");
       } else {
         Alert.alert("Error", result.errorMsg);
@@ -161,7 +163,6 @@ const Dashboard = () => {
         if (index === 6) return titles[3];
         return null;
       };
-
 
       return (
         <React.Fragment key={index}>
@@ -240,6 +241,8 @@ const Dashboard = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
         >
           <View className="w-full justify-start p-4 mb-24">
             <BackButton

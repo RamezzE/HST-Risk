@@ -84,7 +84,7 @@ const AdminHome = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData(); // Fetch initial data
-  
+
       // Set up socket listeners for real-time updates
       socket.on("new_attack", (newAttack) => {
         setResponse((prevResponse) => ({
@@ -92,7 +92,7 @@ const AdminHome = () => {
         }));
         setCurrentAttack(newAttack);
       });
-  
+
       socket.on("remove_attack", (attackId) => {
         setResponse((prevResponse) => ({
           attacks: prevResponse.attacks.filter(
@@ -111,7 +111,7 @@ const AdminHome = () => {
           });
         }
       });
-  
+
       socket.on("update_attack_result", (updatedAttack) => {
         setResponse((prevResponse) => ({
           attacks: prevResponse.attacks.map((attack) =>
@@ -122,19 +122,19 @@ const AdminHome = () => {
           setCurrentAttack(updatedAttack);
         }
       });
-  
+
       socket.on("new_game", () => {
         Alert.alert(
           "New Game",
           "A new game has started. You will be logged out automatically."
         );
-  
+
         setTimeout(async () => {
           Logout();
           router.replace("/");
         }, 3000);
       });
-  
+
       return () => {
         socket.off("new_attack");
         socket.off("remove_attack");
@@ -306,6 +306,8 @@ const AdminHome = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
         >
           <View className="w-full min-h-[100vh] px-4 py-5 flex flex-col justify-start">
             <View>
@@ -364,7 +366,6 @@ const AdminHome = () => {
                     "text-3xl text-red-800 mt-4 mb-2 text-center font-psemibold"
                   }
                   expiryMessage="Timer expired"
-
                 />
               )}
               <View className="flex flex-row justify-between mr-1 mt-3">

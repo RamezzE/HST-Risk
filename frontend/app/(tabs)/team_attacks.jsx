@@ -51,7 +51,7 @@ const TeamAttacks = () => {
     useCallback(() => {
       // Fetch initial data
       fetchData();
-  
+
       // Set up socket listeners for real-time updates
       socket.on("new_attack", (newAttack) => {
         console.log("attack: ", newAttack);
@@ -61,7 +61,7 @@ const TeamAttacks = () => {
           setDefendingAttacks((prevAttacks) => [...prevAttacks, newAttack]);
         }
       });
-  
+
       // Listen for attack removal
       socket.on("remove_attack", (attackId) => {
         setAttackingAttacks((prevAttacks) =>
@@ -128,6 +128,8 @@ const TeamAttacks = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
         >
           <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-start">
             <Text className="font-montez text-center text-5xl py-5">
@@ -160,14 +162,14 @@ const TeamAttacks = () => {
                             {attack.defending_subteam})
                           </Text>
                           <Text className="text-black text-xl font-pregular mr-2">
-                            {attack.war} 
+                            {attack.war}
                           </Text>
                           {attack.location != "" && (
                             <Text className="text-black text-xl font-pregular">
                               Location: {attack.location}
                             </Text>
                           )}
-                         
+
                           <Timer
                             attack_id={attack._id}
                             textStyles={"font-pbold text-red-800 text-xl"}
@@ -202,7 +204,7 @@ const TeamAttacks = () => {
                             {attack.defending_subteam})
                           </Text>
                           <Text className="text-black text-xl font-pregular mr-2">
-                            {attack.war} 
+                            {attack.war}
                           </Text>
                           {attack.location != "" && (
                             <Text className="text-black text-xl font-pregular">

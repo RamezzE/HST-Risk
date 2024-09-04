@@ -74,7 +74,6 @@ const Teams = () => {
         socket.off("update_team");
         socket.off("update_country");
       };
-
     }, [])
   );
 
@@ -108,9 +107,7 @@ const Teams = () => {
         >
           <View className="flex flex-col justify-start w-[70%]">
             <Text className="text-4xl font-montez">{item.name}</Text>
-            <Text className="text-xl font-pregular">
-              Team {item.number}
-            </Text>
+            <Text className="text-xl font-pregular">Team {item.number}</Text>
             <Text className="text-[16px] font-pregular">
               Running Money: {item.balance}
             </Text>
@@ -141,8 +138,12 @@ const Teams = () => {
               containerStyles="mt-2"
               textStyles="text-xl font-pregular"
             />
-            <CustomButton 
-              title= {expandedTeam === item.number ? "Hide Countries" : "Show Countries"}
+            <CustomButton
+              title={
+                expandedTeam === item.number
+                  ? "Hide Countries"
+                  : "Show Countries"
+              }
               containerStyles="p-2 rounded-md mt-2"
               handlePress={() => toggleExpandTeam(item.number)}
               textStyles={"text-[14px] font-pregular"}
@@ -194,6 +195,8 @@ const Teams = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full justify-start p-4 mb-24">

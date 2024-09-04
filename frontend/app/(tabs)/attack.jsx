@@ -58,8 +58,6 @@ const Attack = () => {
     other_zone: "",
   });
 
-  
-
   const getTeamColor = (countryName) => {
     try {
       if (form.your_zone === countryName || otherZones.includes(countryName)) {
@@ -373,6 +371,8 @@ const Attack = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
         >
           <View className="w-full min-h-[82.5vh] px-4 pt-4 mt-2 mb-8 flex flex-col justify-start">
             <View className="flex flex-col mb-6">

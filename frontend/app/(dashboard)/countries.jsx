@@ -63,8 +63,7 @@ const Countries = () => {
 
       return () => {
         socket.off("update_country");
-      }
-      
+      };
     }, [])
   );
 
@@ -178,6 +177,8 @@ const Countries = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
         >
           <View className="w-full justify-center p-4 mb-24">
             <Text className="text-6xl text-center font-montez py-2 mt-7">

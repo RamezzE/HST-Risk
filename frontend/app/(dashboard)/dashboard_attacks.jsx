@@ -22,7 +22,6 @@ import Timer from "../../components/Timer";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
-
 const DashboardAttacks = () => {
   const [attacks, setAttacks] = useState([]);
   const [error, setError] = useState(null);
@@ -56,18 +55,18 @@ const DashboardAttacks = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData(); // Fetch initial data
-  
+
       // Set up socket listeners for real-time updates
       socket.on("new_attack", (newAttack) => {
         setAttacks((prevAttacks) => [newAttack, ...prevAttacks]);
       });
-  
+
       socket.on("remove_attack", (attackId) => {
         setAttacks((prevAttacks) =>
           prevAttacks.filter((attack) => attack._id !== attackId)
         );
       });
-  
+
       return () => {
         socket.off("new_attack");
         socket.off("remove_attack");
@@ -174,7 +173,6 @@ const DashboardAttacks = () => {
   };
 
   const renderAttacks = () => {
-
     if (!Array.isArray(attacks)) {
       return (
         <Text className="text-center">
@@ -200,8 +198,12 @@ const DashboardAttacks = () => {
               {item.attacking_zone} VS {item.defending_zone}
             </Text>
             <Text className="text-xl font-pregular">War: {item.war} </Text>
-            <Text className="text-xl font-pregular">Location: {item.location} </Text>
-            <Timer attack_id={item._id} textStyles="text-red-800 font-psemibold"
+            <Text className="text-xl font-pregular">
+              Location: {item.location}{" "}
+            </Text>
+            <Timer
+              attack_id={item._id}
+              textStyles="text-red-800 font-psemibold"
               expiryMessage="Timer expired"
             />
           </View>
@@ -301,6 +303,8 @@ const DashboardAttacks = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
         >
           <View className="w-full justify-center p-4 mb-24">
             <Text className="text-6xl text-center font-montez py-2 mt-7">

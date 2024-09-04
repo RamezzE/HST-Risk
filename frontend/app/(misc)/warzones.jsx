@@ -92,7 +92,6 @@ const Warzones = () => {
         <View key={index} className="flex flex-row justify-between">
           <Text className="text-[16px] font-pregular">{item.name}</Text>
           {item.location != "" && (
-            
             <Text className="text-[16px] font-pregular">{item.location}</Text>
           )}
         </View>
@@ -166,6 +165,8 @@ const Warzones = () => {
               tintColor="#000"
             />
           }
+          bounces={false}
+          overScrollMode="never"
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View className="w-full justify-start p-4 mb-24">
