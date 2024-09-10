@@ -34,15 +34,15 @@ if (isProduction) {
   try {
     // Try to set up SSL credentials for production
     const privateKey = fs.readFileSync(
-      "/etc/letsencrypt/live/carmel-california.store/privkey.pem",
+      `/etc/letsencrypt/live/${process.env.DOMAIN}/privkey.pem`,
       "utf8"
     );
     const certificate = fs.readFileSync(
-      "/etc/letsencrypt/live/carmel-california.store/fullchain.pem",
+      `/etc/letsencrypt/live/${process.env.DOMAIN}/fullchain.pem`,
       "utf8"
     );
     const ca = fs.readFileSync(
-      "/etc/letsencrypt/live/carmel-california.store/chain.pem",
+      `/etc/letsencrypt/live/${process.env.DOMAIN}/chain.pem`,
       "utf8"
     );
 
