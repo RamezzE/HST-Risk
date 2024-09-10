@@ -26,5 +26,5 @@ android/
 .idea/
 
 tsconfig.json
-google-services.json
+# google-services.json
 hst-risk-firebase-key.json
