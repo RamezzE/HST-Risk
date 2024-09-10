@@ -27,33 +27,42 @@ const app = express();
 // Determine if we are in production or development
 const isProduction = process.env.NODE_ENV === "production";
 
+
 // Set up server (HTTP for development, HTTPS for production)
 let server;
 if (isProduction) {
-  // Set up SSL credentials for production
-  const privateKey = fs.readFileSync(
-    "/etc/letsencrypt/live/carmel-california.store/privkey.pem",
-    "utf8"
-  );
-  const certificate = fs.readFileSync(
-    "/etc/letsencrypt/live/carmel-california.store/fullchain.pem",
-    "utf8"
-  );
-  const ca = fs.readFileSync(
-    "/etc/letsencrypt/live/carmel-california.store/chain.pem",
-    "utf8"
-  );
+  try {
+    // Try to set up SSL credentials for production
+    const privateKey = fs.readFileSync(
+      "/etc/letsencrypt/live/carmel-california.store/privkey.pem",
+      "utf8"
+    );
+    const certificate = fs.readFileSync(
+      "/etc/letsencrypt/live/carmel-california.store/fullchain.pem",
+      "utf8"
+    );
+    const ca = fs.readFileSync(
+      "/etc/letsencrypt/live/carmel-california.store/chain.pem",
+      "utf8"
+    );
 
-  const credentials = { key: privateKey, cert: certificate, ca: ca };
+    const credentials = { key: privateKey, cert: certificate, ca: ca };
 
-  // Create HTTPS server
-  server = createHttpsServer(credentials, app);
-  console.log("Starting in production mode with HTTPS");
+    // Create HTTPS server
+    server = createHttpsServer(credentials, app);
+    console.log("Starting in production mode with HTTPS");
+  } catch (err) {
+    // If SSL files are not found or any other error occurs, fall back to HTTP
+    console.error("Error setting up HTTPS, falling back to HTTP:", err.message);
+    server = createHttpServer(app);
+    console.log("Starting in production mode with HTTP due to missing SSL files");
+  }
 } else {
   // Create HTTP server for development
   server = createHttpServer(app);
   console.log("Starting in development mode with HTTP");
 }
+
 
 // Set up Socket.io with the appropriate server
 const io = new SocketIOServer(server, {
