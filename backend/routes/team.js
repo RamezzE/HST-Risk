@@ -20,7 +20,10 @@ const checkGameStatus = async (req, res, next) => {
 };
 
 router.get("/", TeamController.get_all_teams)
+
 router.get("/subteams", TeamController.get_all_subteams)
+router.get("/subteam-letters", TeamController.get_subteam_letters)
+
 router.get("/:number", TeamController.get_team);
 
 // router.put("/", TeamController.add_team)
@@ -33,7 +36,6 @@ router.use((req, res, next) => {
   }
 });
 
-router.get("/subteam-letters", TeamController.get_subteam_letters)
 
 router.post("/update/:number", TeamController.update_team)
 router.post("/update-subteam", TeamController.update_subteam)

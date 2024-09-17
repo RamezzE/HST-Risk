@@ -208,7 +208,7 @@ const AddAttack = () => {
                   title="Attacking Subteam"
                   value={form.attackingSubteam}
                   placeholder="Select Subteam"
-                  items={["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"].map(
+                  items={subteamLetters.map(
                     (subteam) => ({
                       label: subteam,
                       value: subteam,

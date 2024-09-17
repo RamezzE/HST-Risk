@@ -121,7 +121,7 @@ class TeamController {
 
       await Team.deleteMany({});
       await SubTeam.deleteMany({});
-      await mongoose.connection.db.collection('sessions').deleteMany({});
+      await mongoose.connection.db.collection("sessions").deleteMany({});
 
       for (let i = 1; i <= numTeams; i++) {
         const teamNo = i.toString();
@@ -611,21 +611,22 @@ class TeamController {
     const subteamCounts = await SubTeam.aggregate([
       {
         $group: {
-          _id: "$number",
-          count: { $sum: 1 },
+          _id: "$team", // Group by team
+          count: { $sum: 1 }, // Count subteams for each team
         },
       },
     ]);
 
-    // return the number of subteams for each team with A, B, C, etc.
-    const subteamLetters = subteamCounts.map((subteam) => {
-      return {
-        number: subteam._id,
-        letters: Array.from({ length: subteam.count }, (_, i) =>
-          String.fromCharCode(65 + i)
-        ),
-      };
-    });
+    // Determine the maximum number of subteams for any single team
+    const maxSubteamsPerTeam = Math.max(
+      ...subteamCounts.map((subteam) => subteam.count)
+    );
+
+    // Generate the letters (A, B, C, ...) based on the max number of subteams per team
+    const subteamLetters = Array.from(
+      { length: maxSubteamsPerTeam },
+      (_, i) => String.fromCharCode(65 + i) // Generate letters from A based on maxSubteamsPerTeam
+    );
 
     return res.json(subteamLetters);
   }
