@@ -611,7 +611,7 @@ class TeamController {
     const totalSubteamCount = await SubTeam.countDocuments();
   
     // Get the total number of teams (assuming each subteam has a `team` field)
-    const totalTeamCount = await SubTeam.distinct("team").length;
+    const totalTeamCount = await Team.countDocuments();
   
     // Calculate the average number of subteams per team (rounded down)
     const averageSubteamsPerTeam = Math.floor(totalSubteamCount / totalTeamCount);
