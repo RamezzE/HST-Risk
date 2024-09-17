@@ -607,29 +607,22 @@ class TeamController {
   }
 
   static async get_subteam_letters(req, res) {
-    // Get the number of subteams for each team
-    const subteamCounts = await SubTeam.aggregate([
-      {
-        $group: {
-          _id: "$team", // Group by team
-          count: { $sum: 1 }, // Count subteams for each team
-        },
-      },
-    ]);
-
-    // Determine the maximum number of subteams for any single team
-    const maxSubteamsPerTeam = Math.max(
-      ...subteamCounts.map((subteam) => subteam.count)
+    // Get the total number of subteams
+    const totalSubteamCount = await SubTeam.countDocuments();
+  
+    // Get the total number of teams (assuming each subteam has a `team` field)
+    const totalTeamCount = await SubTeam.distinct("team").length;
+  
+    // Calculate the average number of subteams per team (rounded down)
+    const averageSubteamsPerTeam = Math.floor(totalSubteamCount / totalTeamCount);
+  
+    // Generate the letter array based on the average number of subteams per team
+    const subteamLetters = Array.from({ length: averageSubteamsPerTeam }, (_, i) =>
+      String.fromCharCode(65 + i)
     );
-
-    // Generate the letters (A, B, C, ...) based on the max number of subteams per team
-    const subteamLetters = Array.from(
-      { length: maxSubteamsPerTeam },
-      (_, i) => String.fromCharCode(65 + i) // Generate letters from A based on maxSubteamsPerTeam
-    );
-
+  
     return res.json(subteamLetters);
-  }
+  }  
 }
 
 export default TeamController;
