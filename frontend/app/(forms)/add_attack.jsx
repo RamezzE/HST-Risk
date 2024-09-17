@@ -5,7 +5,7 @@ import CustomButton from "../../components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
-import { get_all_teams } from "../../api/team_functions";
+import { get_all_teams, get_subteam_letters } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
 import { attack_check } from "../../api/attack_functions";
 
@@ -55,6 +55,7 @@ const AddAttack = () => {
 
   const [teams, setTeams] = useState([]);
   const [countries, setCountries] = useState([]);
+  const [subteamLetters, setSubteamLetters] = useState([]);
   const [error, setError] = useState(null);
 
   const submit = async () => {
@@ -110,6 +111,10 @@ const AddAttack = () => {
 
       const countriesResult = await get_country_mappings();
       setCountries(countriesResult);
+
+      const subteamLetters = await get_subteam_letters();
+      setSubteamLetters(subteamLetters);
+
     } catch (err) {
       setError("Failed to fetch data");
     } finally {

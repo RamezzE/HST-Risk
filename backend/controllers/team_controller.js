@@ -605,6 +605,30 @@ class TeamController {
       }
     }
   }
+
+  static async get_subteam_letters(req, res) {
+    // Get the number of subteams for each team
+    const subteamCounts = await SubTeam.aggregate([
+      {
+        $group: {
+          _id: "$number",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // return the number of subteams for each team with A, B, C, etc.
+    const subteamLetters = subteamCounts.map((subteam) => {
+      return {
+        number: subteam._id,
+        letters: Array.from({ length: subteam.count }, (_, i) =>
+          String.fromCharCode(65 + i)
+        ),
+      };
+    });
+
+    return res.json(subteamLetters);
+  }
 }
 
 export default TeamController;

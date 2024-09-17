@@ -33,6 +33,7 @@ router.use((req, res, next) => {
   }
 });
 
+router.get("/subteam-letters", TeamController.get_subteam_letters)
 
 router.post("/update/:number", TeamController.update_team)
 router.post("/update-subteam", TeamController.update_subteam)

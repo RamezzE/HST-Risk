@@ -103,3 +103,12 @@ export const update_team_balance = async (teamNo, amount, type) => {
     return { errorMsg: error.response?.data || "Error updating team balance" };
   }
 }
+
+export const get_subteam_letters = async () => {
+  try {
+    const response = await apiClient.get('/subteam-letters');
+    return response.data;
+  } catch (error) {
+    return { errorMsg: error.response?.data || "Error fetching subteam letters" };
+  }
+};
