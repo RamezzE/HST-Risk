@@ -159,6 +159,7 @@ const SignIn = () => {
                 value={form.username}
                 handleChangeText={(e) => setForm({ ...form, username: e })}
                 otherStyles="mt-7"
+                placeholder={"Username"}
               />
 
               <FormField
@@ -166,6 +167,7 @@ const SignIn = () => {
                 value={form.password}
                 handleChangeText={(e) => setForm({ ...form, password: e })}
                 otherStyles="mt-7"
+                placeholder={"Password"}
               />
 
               <CustomButton

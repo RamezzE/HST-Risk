@@ -144,7 +144,7 @@ const Teams = () => {
                   ? "Hide Countries"
                   : "Show Countries"
               }
-              containerStyles="p-2 rounded-md mt-2"
+              containerStyles="p-4 rounded-md mt-2"
               handlePress={() => toggleExpandTeam(item.number)}
               textStyles={"text-[14px] font-pregular"}
             />

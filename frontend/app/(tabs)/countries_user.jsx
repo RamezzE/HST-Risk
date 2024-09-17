@@ -73,7 +73,7 @@ const Countries = () => {
         </Text>
       );
     }
-    // Titles for different sections
+
     const titles = [
       "Africa",
       "Australia",
@@ -82,31 +82,36 @@ const Countries = () => {
       "Asia & Europe",
     ];
 
+    const showTitle = (index) => {
+      if (index === 0) return titles[0];
+      if (index === 6) return titles[1];
+      if (index === 11) return titles[2];
+      if (index === 18) return titles[3];
+      if (index === 28) return titles[4];
+      return null;
+    };
+
     return countries.map((item, index) => {
-      const showTitle = () => {
-        if (index === 0) return titles[0];
-        if (index === 6) return titles[1];
-        if (index === 11) return titles[2];
-        if (index === 18) return titles[3];
-        if (index === 28) return titles[4];
-        return null;
-      };
+      const title = showTitle(index);
 
       return (
-        <View key={index}>
-          {showTitle() && (
-            <Text className="text-3xl font-montez text-left my-4">
-              {showTitle()}
-            </Text>
+        <React.Fragment key={item.name}>
+          {title && (
+            <Text className="text-3xl font-montez text-left my-4">{title}</Text>
           )}
           <View
-            className="p-2 my-1 rounded-md flex flex-row justify-between items-center"
+            className="p-4 my-2 rounded-md flex flex-row justify-between items-center flex-wrap"
             style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
           >
-            <Text className="text-2xl font-montez">{item.name}</Text>
-            <Text className="text-xl font-montez">Team {item.teamNo}</Text>
+            <View className="flex flex-row justify-between items-center w-full">
+              <Text className="text-xl font-pmedium">{item.name}</Text>
+              <Text className="text-[16px] font-pregular">
+                Team {item.teamNo}
+              </Text>
+            </View>
+
           </View>
-        </View>
+        </React.Fragment>
       );
     });
   };
