@@ -10,6 +10,9 @@ import CustomButton from "../components/CustomButton";
 import { GlobalContext } from "../context/GlobalProvider";
 import { is_logged_in } from "../api/user_functions";
 import { images } from "../constants";
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 // Configure notification handler
 Notifications.setNotificationHandler({
@@ -166,6 +169,13 @@ export default function App() {
   }, [isSubmitting]);
 
   useEffect(() => {
+    const keepSplash = async () => {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await SplashScreen.hideAsync();
+    };
+
+    keepSplash();
+
     // Register for push notifications and save the token
     registerForPushNotificationsAsync();
 

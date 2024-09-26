@@ -17,8 +17,7 @@ export default {
     },
 
     ios: {
-      supportsTablet: false,
-      buildNumber: "2",
+      buildNumber: "3",
       bundleIdentifier: "com.ramezze.hstrisk"
     },
 
@@ -34,7 +33,7 @@ export default {
         backgroundColor: "#ffffff"
       },
       softwareKeyboardLayoutMode: "pan",
-      versionCode: 3,
+      versionCode: 4,
       package: "com.ramezze.hstrisk"
     },
 

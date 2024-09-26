@@ -117,7 +117,7 @@ const GuestChooseTeam = () => {
             <BackButton
               style="w-[20vw] mb-4"
               size={32}
-              onPress={() => router.replace("/")}
+              onPress={() => router.dismiss()}
             />
             <Text className="text-5xl mt-10 py-2 text-center font-montez text-black">
               Choose your team

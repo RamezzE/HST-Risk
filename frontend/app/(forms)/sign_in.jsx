@@ -148,7 +148,7 @@ const SignIn = () => {
               <BackButton
                 style="w-[20vw] mb-4"
                 size={32}
-                onPress={() => router.replace("/")}
+                onPress={() => router.dismiss(1)}
               />
               <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
                 Sign In
