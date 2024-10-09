@@ -2,14 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  ScrollView,
   Alert,
-  ImageBackground,
-  RefreshControl,
 } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import DropDownField from "../../components/DropDownField";
 
@@ -20,10 +16,6 @@ import { update_admin, delete_admin } from "../../api/admin_functions";
 import BackButton from "../../components/BackButton";
 
 import Loader from "../../components/Loader";
-
-import { images } from "../../constants";
-
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 const validateEditAdmin = (name, password, war, type) => {
   var result = {
@@ -160,130 +152,81 @@ const EditAdmin = () => {
     );
   };
 
-  const insets = useSafeAreaInsets();
 
   if (isRefreshing) {
     return (
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="flex-1 bg-black"
-      >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
           <Loader />
-        </ImageBackground>
-      </View>
     );
   }
 
   return (
-    <>
-      <KeyboardAwareScrollView
-        bottomOffset={175}
-        enableOnAndroid={true}
-        keyboardShouldPersistTaps="handled"
-        bounces={false}
-        overScrollMode="never"
-        refreshControl={
-          <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={() => {
-                setIsRefreshing(true)
-                fetchData()
-              }}
-              tintColor="#000"
-            />
-        }
-      >
-        <View
-          style={{
-            paddingTop: insets.top,
-            paddingRight: insets.right,
-            paddingLeft: insets.left,
-          }}
-          className="bg-black h-full"
-        >
-          <ImageBackground
-            source={images.background}
-            style={{ resizeMode: "cover" }}
-            className="min-h-[100vh]"
-          >
-              <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-                <BackButton
-                  style="w-[20vw]"
-                  size={32}
-                  onPress={() => router.navigate("/admins")}
-                />
-                <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
-                  Edit Admin
-                </Text>
-                <FormField
-                  title="Admin Name"
-                  value={form.name}
-                  otherStyles="mt-7"
-                  handleChangeText={(e) => setForm({ ...form, name: e })}
-                  // editable={false}
-                />
 
-                <FormField
-                  title="Password"
-                  value={form.password}
-                  handleChangeText={(e) => setForm({ ...form, password: e })}
-                  otherStyles="mt-7"
-                  textStyles=""
-                />
+    <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+      <BackButton
+        style="w-[20vw]"
+        size={32}
+        onPress={() => router.navigate("/admins")}
+      />
+      <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+        Edit Admin
+      </Text>
+      <FormField
+        title="Admin Name"
+        value={form.name}
+        otherStyles="mt-7"
+        handleChangeText={(e) => setForm({ ...form, name: e })}
+      // editable={false}
+      />
 
-                <DropDownField
-                  title="Admin Type"
-                  value={form.type}
-                  placeholder="Select Type"
-                  items={[
-                    { label: "Wars", value: "Wars" },
-                    { label: "Missions", value: "Missions" },
-                  ]}
-                  handleChange={(e) => setForm({ ...form, type: e })}
-                  otherStyles="mt-7"
-                />
+      <FormField
+        title="Password"
+        value={form.password}
+        handleChangeText={(e) => setForm({ ...form, password: e })}
+        otherStyles="mt-7"
+        textStyles=""
+      />
 
-                {Array.isArray(wars) && form.type == "Wars" && (
-                  <DropDownField
-                    title="Assigned War"
-                    value={form.war}
-                    placeholder="Select War"
-                    items={wars.map((war) => ({
-                      label: `${war.name}`,
-                      value: war.name,
-                    }))}
-                    handleChange={(e) => setForm({ ...form, war: e })}
-                    otherStyles="mt-7"
-                  />
-                )}
+      <DropDownField
+        title="Admin Type"
+        value={form.type}
+        placeholder="Select Type"
+        items={[
+          { label: "Wars", value: "Wars" },
+          { label: "Missions", value: "Missions" },
+        ]}
+        handleChange={(e) => setForm({ ...form, type: e })}
+        otherStyles="mt-7"
+      />
 
-                <CustomButton
-                  title="Update Admin"
-                  handlePress={() => submit()}
-                  containerStyles="mt-7 p-3 bg-green-800"
-                  textStyles={"text-3xl"}
-                  isLoading={isSubmitting}
-                />
-                <CustomButton
-                  title="Delete Admin"
-                  handlePress={() => deleteAdminAlert()}
-                  containerStyles="mt-7 p-3 bg-red-800"
-                  textStyles={"text-3xl"}
-                  isLoading={isSubmitting}
-                />
-              </View>
-          </ImageBackground>
-        </View>
-      </KeyboardAwareScrollView>
-    </>
+      {Array.isArray(wars) && form.type == "Wars" && (
+        <DropDownField
+          title="Assigned War"
+          value={form.war}
+          placeholder="Select War"
+          items={wars.map((war) => ({
+            label: `${war.name}`,
+            value: war.name,
+          }))}
+          handleChange={(e) => setForm({ ...form, war: e })}
+          otherStyles="mt-7"
+        />
+      )}
+
+      <CustomButton
+        title="Update Admin"
+        handlePress={() => submit()}
+        containerStyles="mt-7 p-3 bg-green-800"
+        textStyles={"text-3xl"}
+        isLoading={isSubmitting}
+      />
+      <CustomButton
+        title="Delete Admin"
+        handlePress={() => deleteAdminAlert()}
+        containerStyles="mt-7 p-3 bg-red-800"
+        textStyles={"text-3xl"}
+        isLoading={isSubmitting}
+      />
+    </View>
   );
 };
 

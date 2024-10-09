@@ -1,9 +1,10 @@
 import React, { useEffect, useContext } from "react";
-import { Stack } from "expo-router";
+import { Slot } from "expo-router";
 import { StatusBar, Alert } from "react-native";
 import { GlobalContext } from "../../context/GlobalProvider";
 import { router } from "expo-router";
 import { deletePushToken } from "../../api/user_functions";
+import FormWrapper from "../../components/FormWrapper";
 
 const FormsLayout = () => {
   const { socket, Logout, expoPushToken, teamNo } = useContext(GlobalContext);
@@ -33,68 +34,9 @@ const FormsLayout = () => {
 
   return (
     <>
-      <Stack>
-        <Stack.Screen
-          name="sign_in"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="add_admin"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="add_attack"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="add_warzone"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="edit_admin"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="edit_team"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="edit_subteam"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="edit_country"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="edit_setting"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="edit_warzone"
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack>
+      <FormWrapper >
+        <Slot />
+      </FormWrapper>
       <StatusBar backgroundColor="#000" style="light" />
     </>
   );

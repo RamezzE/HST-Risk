@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Alert, ImageBackground } from "react-native";
+import { View, Text, Alert } from "react-native";
 import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
 import { get_all_teams, get_subteam_letters } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
 import { attack_check } from "../../api/attack_functions";
 
-import { images } from "../../constants";
-
 import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
 
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 const validateAddAttack = (
   attackingTeam,
@@ -126,25 +122,10 @@ const AddAttack = () => {
     fetchData();
   }, []);
 
-  const insets = useSafeAreaInsets();
 
   if (isRefreshing) {
     return (
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="flex-1 bg-black"
-      >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
-          <Loader />
-        </ImageBackground>
-      </View>
+      <Loader />
     );
   }
 
@@ -155,137 +136,114 @@ const AddAttack = () => {
   };
 
   return (
-    <>
-      <KeyboardAwareScrollView
-        bottomOffset={175}
-        enableOnAndroid={true}
-        keyboardShouldPersistTaps="handled"
-        bounces={false}
-        overScrollMode="never"
-      >
-        <View
-          style={{
-            paddingTop: insets.top,
-            paddingRight: insets.right,
-            paddingLeft: insets.left,
-          }}
-          className="bg-black h-full"
-        >
-          <ImageBackground
-            source={images.background}
-            style={{ resizeMode: "cover" }}
-            className="min-h-[100vh]"
-          >
-              <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-                <BackButton
-                  style="w-[20vw]"
-                  size={32}
-                  onPress={() => router.navigate("/dashboard_attacks")}
-                />
-                <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
-                  Add Attack
-                </Text>
 
-                <DropDownField
-                  title="Attacking Team"
-                  value={form.attackingTeam}
-                  placeholder="Select Team"
-                  items={teams.map((team) => ({
-                    label: `Team ${team.number} - ${team.name}`,
-                    value: team.number.toString(),
-                  }))}
-                  handleChange={(e) => {
-                    setForm({
-                      ...form,
-                      attackingTeam: e,
-                      attackingCountry: "",
-                    });
-                  }}
-                  otherStyles="mt-7"
-                />
+    <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+      <BackButton
+        style="w-[20vw]"
+        size={32}
+        onPress={() => router.navigate("/dashboard_attacks")}
+      />
+      <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+        Add Attack
+      </Text>
 
-                <DropDownField
-                  title="Attacking Subteam"
-                  value={form.attackingSubteam}
-                  placeholder="Select Subteam"
-                  items={subteamLetters.map(
-                    (subteam) => ({
-                      label: subteam,
-                      value: subteam,
-                    })
-                  )}
-                  handleChange={(e) => {
-                    setForm({ ...form, attackingSubteam: e });
-                  }}
-                  otherStyles="mt-7"
-                />
+      <DropDownField
+        title="Attacking Team"
+        value={form.attackingTeam}
+        placeholder="Select Team"
+        items={teams.map((team) => ({
+          label: `Team ${team.number} - ${team.name}`,
+          value: team.number.toString(),
+        }))}
+        handleChange={(e) => {
+          setForm({
+            ...form,
+            attackingTeam: e,
+            attackingCountry: "",
+          });
+        }}
+        otherStyles="mt-7"
+      />
 
-                {form.attackingTeam && (
-                  <DropDownField
-                    title="Attacking Country"
-                    value={form.attackingCountry}
-                    placeholder="Select Country"
-                    items={filterCountriesByTeam(form.attackingTeam).map(
-                      (country) => ({
-                        label: country.name,
-                        value: country.name,
-                      })
-                    )}
-                    handleChange={(e) =>
-                      setForm({ ...form, attackingCountry: e })
-                    }
-                    otherStyles="mt-7"
-                  />
-                )}
+      <DropDownField
+        title="Attacking Subteam"
+        value={form.attackingSubteam}
+        placeholder="Select Subteam"
+        items={subteamLetters.map(
+          (subteam) => ({
+            label: subteam,
+            value: subteam,
+          })
+        )}
+        handleChange={(e) => {
+          setForm({ ...form, attackingSubteam: e });
+        }}
+        otherStyles="mt-7"
+      />
 
-                <DropDownField
-                  title="Defending Team"
-                  value={form.defendingTeam}
-                  placeholder="Select Team"
-                  items={teams.map((team) => ({
-                    label: `Team ${team.number} - ${team.name}`,
-                    value: team.number.toString(),
-                  }))}
-                  handleChange={(e) => {
-                    setForm({
-                      ...form,
-                      defendingTeam: e,
-                      defendingCountry: "",
-                    });
-                  }}
-                  otherStyles="mt-7"
-                />
+      {form.attackingTeam && (
+        <DropDownField
+          title="Attacking Country"
+          value={form.attackingCountry}
+          placeholder="Select Country"
+          items={filterCountriesByTeam(form.attackingTeam).map(
+            (country) => ({
+              label: country.name,
+              value: country.name,
+            })
+          )}
+          handleChange={(e) =>
+            setForm({ ...form, attackingCountry: e })
+          }
+          otherStyles="mt-7"
+        />
+      )}
 
-                {form.defendingTeam && (
-                  <DropDownField
-                    title="Defending Country"
-                    value={form.defendingCountry}
-                    placeholder="Select Defending Country"
-                    items={filterCountriesByTeam(form.defendingTeam).map(
-                      (country) => ({
-                        label: country.name,
-                        value: country.name,
-                      })
-                    )}
-                    handleChange={(e) =>
-                      setForm({ ...form, defendingCountry: e })
-                    }
-                    otherStyles="mt-7"
-                  />
-                )}
+      <DropDownField
+        title="Defending Team"
+        value={form.defendingTeam}
+        placeholder="Select Team"
+        items={teams.map((team) => ({
+          label: `Team ${team.number} - ${team.name}`,
+          value: team.number.toString(),
+        }))}
+        handleChange={(e) => {
+          setForm({
+            ...form,
+            defendingTeam: e,
+            defendingCountry: "",
+          });
+        }}
+        otherStyles="mt-7"
+      />
 
-                <CustomButton
-                  title="Initiate Attack"
-                  handlePress={() => submit()}
-                  containerStyles="mt-7 p-3 bg-green-800"
-                  textStyles={"text-3xl"}
-                  isLoading={isSubmitting}
-                />
-              </View>
-          </ImageBackground>
-        </View>
-      </KeyboardAwareScrollView>
-    </>
+      {form.defendingTeam && (
+        <DropDownField
+          title="Defending Country"
+          value={form.defendingCountry}
+          placeholder="Select Defending Country"
+          items={filterCountriesByTeam(form.defendingTeam).map(
+            (country) => ({
+              label: country.name,
+              value: country.name,
+            })
+          )}
+          handleChange={(e) =>
+            setForm({ ...form, defendingCountry: e })
+          }
+          otherStyles="mt-7"
+        />
+      )}
+
+      <CustomButton
+        title="Initiate Attack"
+        handlePress={() => submit()}
+        containerStyles="mt-7 p-3 bg-green-800"
+        textStyles={"text-3xl"}
+        isLoading={isSubmitting}
+      />
+    </View>
+
   );
 };
 

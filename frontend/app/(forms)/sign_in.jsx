@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ImageBackground, ScrollView, Alert } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View, Text, Alert } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
@@ -10,11 +9,7 @@ import { useContext } from "react";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
-import { images } from "../../constants";
-
 import BackButton from "../../components/BackButton";
-
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 const validateSignIn = (username, password) => {
   var result = {
@@ -119,69 +114,43 @@ const SignIn = () => {
     setIsSubmitting(true);
   };
 
-  const insets = useSafeAreaInsets();
-
   return (
-    <>
-      <KeyboardAwareScrollView
-        bottomOffset={175}
-        enableOnAndroid={true}
-        keyboardShouldPersistTaps="handled"
-        bounces={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-        overScrollMode="never"
-      >
-        <View
-          style={{
-            paddingTop: insets.top,
-            paddingRight: insets.right,
-            paddingLeft: insets.left,
-          }}
-          className="bg-black h-full"
-        >
-          <ImageBackground
-            source={images.background}
-            style={{ resizeMode: "cover" }}
-            className="min-h-[100vh]"
-          >
-            <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
-              <BackButton
-                style="w-[20vw] mb-4"
-                size={32}
-                onPress={() => router.dismiss(1)}
-              />
-              <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
-                Sign In
-              </Text>
 
-              <FormField
-                title="Username"
-                value={form.username}
-                handleChangeText={(e) => setForm({ ...form, username: e })}
-                otherStyles="mt-7"
-                placeholder={"Username"}
-              />
+    <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
+      <BackButton
+        style="w-[20vw] mb-4"
+        size={32}
+        onPress={() => router.dismiss(1)}
+      />
+      <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+        Sign In
+      </Text>
 
-              <FormField
-                title="Password"
-                value={form.password}
-                handleChangeText={(e) => setForm({ ...form, password: e })}
-                otherStyles="mt-7"
-                placeholder={"Password"}
-              />
+      <FormField
+        title="Username"
+        value={form.username}
+        handleChangeText={(e) => setForm({ ...form, username: e })}
+        otherStyles="mt-7"
+        placeholder={"Username"}
+      />
 
-              <CustomButton
-                title="Sign In"
-                handlePress={submit}
-                containerStyles="mt-7 p-3"
-                textStyles={"text-3xl"}
-                isLoading={isSubmitting}
-              />
-            </View>
-          </ImageBackground>
-        </View>
-      </KeyboardAwareScrollView>
-    </>
+      <FormField
+        title="Password"
+        value={form.password}
+        handleChangeText={(e) => setForm({ ...form, password: e })}
+        otherStyles="mt-7"
+        placeholder={"Password"}
+      />
+
+      <CustomButton
+        title="Sign In"
+        handlePress={submit}
+        containerStyles="mt-7 p-3"
+        textStyles={"text-3xl"}
+        isLoading={isSubmitting}
+      />
+    </View>
+
   );
 };
 
