@@ -1,9 +1,10 @@
-import React, { useEffect, useContext } from "react";
-import { Stack } from "expo-router";
+import { useEffect, useContext } from "react";
+import { Slot } from "expo-router";
 import { StatusBar, Alert } from "react-native";
 import { GlobalContext } from "../../context/GlobalProvider";
 import { router } from "expo-router";
 import { deletePushToken } from "../../api/user_functions";
+import PageWrapper from "../../components/PageWrapper";
 
 const MiscLayout = () => {
   const { socket, Logout, expoPushToken, teamNo } = useContext(GlobalContext);
@@ -33,44 +34,9 @@ const MiscLayout = () => {
 
   return (
     <>
-      <Stack>
-        <Stack.Screen
-          name="warzone"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="warzones"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="admin_home"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="admin_home2"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="guest_choose_team"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="subteams"
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack>
+      <PageWrapper>
+        <Slot />
+      </PageWrapper>
       <StatusBar backgroundColor="#000" style="light" />
     </>
   );
