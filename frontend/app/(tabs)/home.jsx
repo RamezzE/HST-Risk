@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useEffect, useContext, useCallback, useReducer } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import _ from "lodash";
 
 import { images } from "../../constants";
 import countries from "../../constants/countries";
+
 import CountryConnections from "../../constants/country_connections";
 
 import Loader from "../../components/Loader";
@@ -31,46 +32,88 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 import { useFocusEffect } from "@react-navigation/native";
 
+const initialState = {
+  zones: [],
+  countryMappings: [],
+  error: null,
+  teams: [],
+  attacks: [],
+  isRefreshing: false,
+}
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_ZONES":
+      return { ...state, zones: action.payload };
+    case "SET_COUNTRY_MAPPINGS":
+      return { ...state, countryMappings: action.payload };
+    case "SET_TEAMS":
+      return { ...state, teams: action.payload };
+    case "SET_ATTACKS":
+      return { ...state, attacks: action.payload };
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "SET_IS_REFRESHING":
+      return { ...state, isRefreshing: action.payload };
+    case "UPDATE_COUNTRY_MAPPING":
+      const updatedCountryMappings = state.countryMappings.map((country) => {
+        if (country.name === action.payload.name)
+          return action.payload;
+        return country;
+      });
+
+      return { ...state, countryMappings: updatedCountryMappings };
+
+    case "UPDATE_TEAM":
+      const updatedTeams = state.teams.map((team) => {
+        if (team.number === action.payload.number)
+          return action.payload;
+        return team;
+      });
+
+      return { ...state, teams: updatedTeams };
+    default:
+      return state;
+  }
+}
+
 const Home = () => {
-  const [zones, setZones] = useState([]);
-  const [countryMappings, setCountryMappings] = useState([]);
-  const [error, setError] = useState(null);
-  const [teams, setTeams] = useState([]);
-  const [attacks, setAttacks] = useState([]);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const insets = useSafeAreaInsets();
   const { name, teamNo, subteam, Logout, expoPushToken, socket } =
     useContext(GlobalContext);
 
   const fetchData = async () => {
-    setError(null);
-    setZones(countries);
+    dispatch({ type: "SET_ERROR", payload: null });
+    dispatch({ type: "SET_ZONES", payload: countries });
+    dispatch({ type: "SET_IS_REFRESHING", payload: true });
 
     try {
       const result = await get_country_mappings();
-      setCountryMappings(result);
+      dispatch({ type: "SET_COUNTRY_MAPPINGS", payload: result });
     } catch (err) {
       console.log(err);
-      setError("Failed to fetch country mappings");
+      dispatch({ type: "SET_ERROR", payload: "Failed to fetch country mappings" });
     }
 
     try {
       const attacksResult = await get_all_attacks();
-      setAttacks(attacksResult);
+      dispatch({ type: "SET_ATTACKS", payload: attacksResult });
     } catch (err) {
       console.log(err);
-      setError("Failed to fetch attacks data");
+      dispatch({ type: "SET_ERROR", payload: "Failed to fetch attacks data" });
     }
 
     try {
       const teamsResult = await get_all_teams();
-      setTeams(teamsResult);
+      dispatch({ type: "SET_TEAMS", payload: teamsResult });
     } catch (err) {
       console.log(err);
-      setError("Failed to fetch teams data");
+      dispatch({ type: "SET_ERROR", payload: "Failed to fetch teams data" });
     } finally {
-      setIsRefreshing(false);
+      dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
 
@@ -80,31 +123,26 @@ const Home = () => {
 
       // Set up socket listeners for real-time updates
       socket.on("update_country", (updatedCountryMapping) => {
-        setCountryMappings((prevMappings) =>
-          prevMappings.map((mapping) =>
-            mapping.name === updatedCountryMapping.name
-              ? updatedCountryMapping
-              : mapping
-          )
-        );
+        dispatch({ type: "UPDATE_COUNTRY_MAPPING", payload: updatedCountryMapping })
       });
 
       socket.on("update_team", (updatedTeam) => {
-        setTeams((prevTeams) =>
-          prevTeams.map((team) =>
-            team.number === updatedTeam.number ? updatedTeam : team
-          )
-        );
+        dispatch({ type: "UPDATE_TEAM", payload: updatedTeam })
       });
 
       socket.on("new_attack", (newAttack) => {
-        setAttacks((prevAttacks) => [...prevAttacks, newAttack]);
+        dispatch({ type: "SET_ATTACKS", payload: [...state.attacks, newAttack] });
       });
 
       socket.on("remove_attack", (attackId) => {
-        setAttacks((prevAttacks) =>
-          prevAttacks.filter((attack) => attack._id !== attackId)
-        );
+
+        dispatch({
+          type: "SET_ATTACKS",
+          payload: state.attacks.filter((attack) =>
+            attack._id !== attackId
+          )
+        });
+
       });
 
       return () => {
@@ -146,25 +184,24 @@ const Home = () => {
 
   const onMarkerPress = (zone) => {
     try {
-      const country = Array.isArray(countryMappings)
-        ? countryMappings.find((c) => c.name === zone.name)
+      const country = Array.isArray(state.countryMappings)
+        ? state.countryMappings.find((c) => c.name === zone.name)
         : null;
 
       const team =
-        country && Array.isArray(teams)
-          ? teams.find((t) => t.number === country.teamNo)
+        country && Array.isArray(state.teams)
+          ? state.teams.find((t) => t.number === country.teamNo)
           : null;
 
-      const attack = Array.isArray(attacks)
-        ? attacks.find((a) => a.defending_zone === zone.name)
+      const attack = Array.isArray(state.attacks)
+        ? state.attacks.find((a) => a.defending_zone === zone.name)
         : null;
 
       Alert.alert(
         zone.name,
-        `Owned by Team ${team ? team.number : "Unknown"}\n${
-          attack
-            ? `Under attack by Team ${attack.attacking_team}${attack.attacking_subteam}`
-            : "Not under attack"
+        `Owned by Team ${team ? team.number : "Unknown"}\n${attack
+          ? `Under attack by Team ${attack.attacking_team}${attack.attacking_subteam}`
+          : "Not under attack"
         }`
       );
     } catch (error) {
@@ -174,9 +211,9 @@ const Home = () => {
 
   const getTeamColor = (countryName) => {
     try {
-      const country = countryMappings.find((c) => c.name === countryName);
+      const country = state.countryMappings.find((c) => c.name === countryName);
       const team = country
-        ? teams.find((t) => t.number === country.teamNo)
+        ? state.teams.find((t) => t.number === country.teamNo)
         : null;
       return team ? team.color : "#000000";
     } catch (error) {
@@ -196,8 +233,8 @@ const Home = () => {
           borderRadius: 5,
         }}
       >
-        {Array.isArray(teams) &&
-          teams.map((team, index) => (
+        {Array.isArray(state.teams) &&
+          state.teams.map((team, index) => (
             <View
               key={index}
               style={{
@@ -224,7 +261,7 @@ const Home = () => {
     );
   };
 
-  if (isRefreshing) {
+  if (state.isRefreshing) {
     return (
       <View
         className="flex-1 bg-black"
@@ -301,8 +338,8 @@ const Home = () => {
                 rotateEnabled={false}
                 pitchEnabled={false}
               >
-                {Array.isArray(zones) &&
-                  zones.map((zone) => (
+                {Array.isArray(state.zones) &&
+                  state.zones.map((zone) => (
                     <MapZone
                       key={zone.name}
                       points={zone.points}
@@ -327,9 +364,9 @@ const Home = () => {
 
             {renderColorLegend()}
 
-            {error && (
+            {state.error && (
               <Text className="text-white text-center p-2 text-xl">
-                {error}
+                {state.error}
               </Text>
             )}
           </View>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useContext } from "react";
+import React, { useEffect, useReducer, useCallback, useContext } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   RefreshControl,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { get_all_teams } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
@@ -17,36 +16,74 @@ import CustomButton from "../../components/CustomButton";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
+const initialState = {
+  teams: [],
+  error: null,
+  isRefreshing: true,
+  countries: [],
+  expandedTeam: null,
+}
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_TEAMS":
+      return { ...state, teams: action.payload };
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "SET_IS_REFRESHING":
+      return { ...state, isRefreshing: action.payload };
+    case "SET_COUNTRIES":
+      return { ...state, countries: action.payload };
+    case "SET_EXPANDED_TEAM":
+      return { ...state, expandedTeam: action.payload(state.expandedTeam) };
+    case "UPDATE_TEAM":
+      const updatedTeams = state.teams.map((team) => {
+        if (team.number === action.payload.number)
+          return action.payload;
+        return team;
+      });
+
+      return { ...state, teams: updatedTeams };
+    case "UPDATE_COUNTRY":
+      const updatedCountries = state.countries.map((country) => {
+        if (country._id === action.payload._id)
+          return action.payload;
+        return country;
+      });
+
+      return { ...state, countries: updatedCountries };
+
+    default:
+      return state;
+  }
+}
+
 const Teams = () => {
-  const [teams, setTeams] = useState([]);
-  const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
-  const [countries, setCountries] = useState([]);
-  const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+
   const insets = useSafeAreaInsets();
-  const router = useRouter();
 
   const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
-    setError(null);
-    setIsRefreshing(true);
+    dispatch({ type: "SET_ERROR", payload: null })
+    dispatch({ type: "SET_IS_REFRESHING", payload: true })
     try {
       const result = await get_all_teams();
       const countriesR = await get_country_mappings();
-      setCountries(countriesR);
+      dispatch({ type: "SET_COUNTRIES", payload: countriesR })
 
-      if (result.success === false) {
-        setError(result.errorMsg);
-      } else if (Array.isArray(result)) {
-        setTeams(result);
-      } else {
-        setError("Unexpected response format");
-      }
+      if (result.success === false)
+        dispatch({ type: "SET_ERROR", payload: result.errorMsg })
+      else if (Array.isArray(result))
+        dispatch({ type: "SET_TEAMS", payload: result })
+      else
+        dispatch({ type: "SET_ERROR", payload: "Unexpected Response Format" })
     } catch (err) {
-      setError("Failed to fetch teams");
+      dispatch({ type: "SET_ERROR", payload: "Failed to fetch teams" })
     } finally {
-      setIsRefreshing(false);
+      dispatch({ type: "SET_IS_REFRESHING", payload: false })
     }
   };
 
@@ -54,19 +91,11 @@ const Teams = () => {
     useCallback(() => {
       fetchData();
       socket.on("update_team", (updatedTeam) => {
-        setTeams((prevTeams) =>
-          prevTeams.map((team) =>
-            team.number === updatedTeam.number ? updatedTeam : team
-          )
-        );
+        dispatch({ type: "UPDATE_TEAM", payload: updatedTeam });
       });
 
       socket.on("update_country", (updatedCountry) => {
-        setCountries((prevCountries) =>
-          prevCountries.map((country) =>
-            country._id === updatedCountry._id ? updatedCountry : country
-          )
-        );
+        dispatch({ type: "UPDATE_COUNTRY", payload: updatedCountry });
       });
 
       return () => {
@@ -81,11 +110,14 @@ const Teams = () => {
   }, []);
 
   const toggleExpandTeam = (teamNumber) => {
-    setExpandedTeam((prev) => (prev === teamNumber ? null : teamNumber));
+    dispatch({
+      type: "SET_EXPANDED_TEAM",
+      payload: (prevExpandedTeam) => (prevExpandedTeam === teamNumber ? null : teamNumber),
+    });
   };
 
   const renderTeams = () => {
-    if (!Array.isArray(teams)) {
+    if (!Array.isArray(state.teams)) {
       return (
         <Text className="text-center">
           No teams available or unexpected data format.
@@ -93,8 +125,8 @@ const Teams = () => {
       );
     }
 
-    return teams.map((item, index) => {
-      const ownedCountries = countries.filter(
+    return state.teams.map((item, index) => {
+      const ownedCountries = state.countries.filter(
         (country) => country.teamNo === item.number
       );
 
@@ -122,7 +154,7 @@ const Teams = () => {
 
             <CustomButton
               title={
-                expandedTeam === item.number
+                state.expandedTeam === item.number
                   ? "Hide Countries"
                   : "Show Countries"
               }
@@ -132,7 +164,7 @@ const Teams = () => {
             />
 
             {/* Conditional rendering of countries */}
-            {expandedTeam === item.number && (
+            {state.expandedTeam === item.number && (
               <View className="mt-2">
                 {ownedCountries.map((country, index) => (
                   <Text key={index} className="text-l font-pmedium">
@@ -147,7 +179,7 @@ const Teams = () => {
     });
   };
 
-  if (isRefreshing) {
+  if (state.isRefreshing) {
     return (
       <View
         style={{
@@ -184,7 +216,7 @@ const Teams = () => {
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={isRefreshing}
+              refreshing={state.isRefreshing}
               onRefresh={fetchData}
               tintColor="#000"
             />
@@ -198,9 +230,9 @@ const Teams = () => {
               Teams
             </Text>
 
-            {error ? (
+            {state.error ? (
               <Text style={{ color: "black", textAlign: "center" }}>
-                {error}
+                {state.error}
               </Text>
             ) : (
               renderTeams()

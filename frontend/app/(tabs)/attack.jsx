@@ -8,7 +8,7 @@ import {
   Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect, useState, useContext, useCallback } from "react";
+import { useState, useEffect, useContext, useCallback, useReducer } from "react";
 import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import { router } from "expo-router";
 
@@ -34,21 +34,73 @@ import CustomButton from "../../components/CustomButton";
 
 import { useFocusEffect } from "@react-navigation/native";
 
+const initialState = {
+  countryMappings: [],
+  initialArea: [30, 30],
+  zones: [],
+  teams: [],
+  myZones: [],
+  otherZones: [],
+  isSubmitting: false,
+  error: null,
+  isRefreshing: true,
+  attacks: [],
+  attackCost: 0,
+  balance: 0,
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_COUNTRY_MAPPINGS":
+      return { ...state, countryMappings: action.payload };
+    case "SET_INITIAL_AREA":
+      return { ...state, initialArea: action.payload };
+    case "SET_ZONES":
+      return { ...state, zones: action.payload };
+    case "SET_TEAMS":
+      return { ...state, teams: action.payload };
+    case "SET_MY_ZONES":
+      return { ...state, myZones: action.payload };
+    case "SET_OTHER_ZONES":
+      return { ...state, otherZones: action.payload };
+    case "SET_IS_SUBMITTING":
+      return { ...state, isSubmitting: action.payload };
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "SET_IS_REFRESHING":
+      return { ...state, isRefreshing: action.payload };
+    case "SET_ATTACKS":
+      return { ...state, attacks: action.payload };
+    case "SET_ATTACK_COST":
+      return { ...state, attackCost: action.payload };
+    case "SET_BALANCE":
+      return { ...state, balance: action.payload };
+    case "UPDATE_COUNTRY_MAPPING":
+      const updatedCountryMappings = state.countryMappings.map((country) => {
+        if (country.name === action.payload.name)
+          return action.payload;
+        return country;
+      });
+
+      return { ...state, countryMappings: updatedCountryMappings };
+
+    case "UPDATE_TEAM":
+      const updatedTeams = state.teams.map((team) => {
+        if (team.number === action.payload.number)
+          return action.payload;
+        return team;
+      });
+
+      return { ...state, teams: updatedTeams };
+    default:
+      return state;
+  }
+};
+
 const Attack = () => {
   const { name, teamNo, subteam, socket } = useContext(GlobalContext);
 
-  const [countryMappings, setCountryMappings] = useState([]);
-  const [initialArea, setInitialArea] = useState([30, 30]);
-  const [zones, setZones] = useState([]);
-  const [teams, setTeams] = useState([]);
-  const [myZones, setMyZones] = useState([]);
-  const [otherZones, setOtherZones] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
-  const [attacks, setAttacks] = useState([]);
-  const [attackCost, setAttackCost] = useState(0);
-  const [balance, setBalance] = useState(0);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const insets = useSafeAreaInsets();
 
@@ -60,19 +112,19 @@ const Attack = () => {
 
   const getTeamColor = (countryName) => {
     try {
-      if (form.your_zone === countryName || otherZones.includes(countryName)) {
+      if (form.your_zone === countryName || state.otherZones.includes(countryName)) {
         // Retain original color for the selected country and countries that can be attacked
-        const country = countryMappings.find((c) => c.name === countryName);
+        const country = state.countryMappings.find((c) => c.name === countryName);
         const team = country
-          ? teams.find((t) => t.number === country.teamNo)
+          ? state.teams.find((t) => t.number === country.teamNo)
           : null;
         return team ? team.color : "#000000";
       } else if (form.your_zone) {
         return "#000000"; // All other zones turn black
       } else {
-        const country = countryMappings.find((c) => c.name === countryName);
+        const country = state.countryMappings.find((c) => c.name === countryName);
         const team = country
-          ? teams.find((t) => t.number === country.teamNo)
+          ? state.teams.find((t) => t.number === country.teamNo)
           : null;
         return team ? team.color : "#000000";
       }
@@ -111,7 +163,7 @@ const Attack = () => {
       country.points.reduce((acc, curr) => acc + curr.longitude, 0) /
       country.points.length;
 
-    setInitialArea([avgLat, avgLong]);
+    dispatch({ type: "SET_INITIAL_AREA", payload: [avgLat, avgLong] });
   };
 
   const validateAttack = (zone_1, zone_2) => {
@@ -142,10 +194,10 @@ const Attack = () => {
 
     if (!country || !Array.isArray(country.adjacent_zones)) return;
 
-    setOtherZones(country.adjacent_zones);
+    dispatch({ type: "SET_OTHER_ZONES", payload: country.adjacent_zones });
 
     // Trigger a re-render to apply the color changes
-    setCountryMappings((prev) => [...prev]);
+    dispatch({ type: "SET_COUNTRY_MAPPINGS", payload: state.countryMappings });
   };
 
   const selectOtherZone = (zone) => {
@@ -157,31 +209,29 @@ const Attack = () => {
   };
 
   const fetchData = async () => {
-    setError(null);
-    // setIsRefreshing(true);
 
     try {
       const result = await get_country_mappings();
-      setCountryMappings(result);
+      dispatch({ type: "SET_COUNTRY_MAPPINGS", payload: result });
     } catch (err) {
       console.log(err);
-      setError("Failed to fetch country mappings");
+      // setError("Failed to fetch country mappings");
     }
 
     try {
       const result1 = await get_countries_by_team(parseInt(teamNo));
-      setMyZones(result1.countries);
+      dispatch({ type: "SET_MY_ZONES", payload: result1.countries });
     } catch (err) {
       console.log(err);
-      setError("Failed to fetch your team's countries");
+      // setError("Failed to fetch your team's countries");
     }
 
     try {
       const attacksResult = await get_all_attacks();
-      setAttacks(attacksResult);
+      dispatch({ type: "SET_ATTACKS", payload: attacksResult });
     } catch (err) {
       console.log(err);
-      setError("Failed to fetch attacks data");
+      // setError("Failed to fetch attacks data");
     }
 
     try {
@@ -189,23 +239,23 @@ const Attack = () => {
       const attackCost = settingsResult.find(
         (setting) => setting.name === "Attack Cost"
       );
-      setAttackCost(attackCost.value);
+      dispatch({ type: "SET_ATTACK_COST", payload: attackCost.value });
     } catch (err) {
       console.log(err);
-      setError("Failed to fetch settings data");
+      // setError("Failed to fetch settings data");
     }
 
     try {
       const teamsResult = await get_all_teams();
-      setTeams(teamsResult);
+      dispatch({ type: "SET_TEAMS", payload: teamsResult });
 
       const team = teamsResult.find((t) => t.number === parseInt(teamNo));
-      setBalance(team.balance);
+      dispatch({type: "SET_BALANCE", payload: team.balance})
     } catch (err) {
       console.log(err);
-      setError("Failed to fetch teams data");
+      // setError("Failed to fetch teams data");
     } finally {
-      setIsRefreshing(false);
+      dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
 
@@ -215,21 +265,11 @@ const Attack = () => {
 
       // Set up socket listeners for real-time updates
       socket.on("update_country", (updatedCountryMapping) => {
-        setCountryMappings((prevMappings) =>
-          prevMappings.map((mapping) =>
-            mapping.name === updatedCountryMapping.name
-              ? updatedCountryMapping
-              : mapping
-          )
-        );
+        dispatch({ type: "UPDATE_COUNTRY_MAPPING", payload: updatedCountryMapping });
       });
 
       socket.on("update_team", (updatedTeam) => {
-        setTeams((prevTeams) =>
-          prevTeams.map((team) =>
-            team.number === updatedTeam.number ? updatedTeam : team
-          )
-        );
+        dispatch({ type: "UPDATE_TEAM", payload: updatedTeam });
       });
 
       socket.on("new_attack", (newAttack) => {
@@ -254,18 +294,15 @@ const Attack = () => {
   );
 
   useEffect(() => {
-    setZones(countries);
+    dispatch({ type: "SET_ZONES", payload: countries });
 
     fetchData();
   }, []);
 
   const attack_func = async (zone_1, team_1, zone_2) => {
-    setIsSubmitting(true);
+    dispatch({ type: "SET_IS_SUBMITTING", payload: true });
     try {
       var result = validateAttack(form.your_zone, form.other_zone);
-
-      // setForm({ ...form, your_zone: "", other_zone: "" });
-      // setOtherZones([]);
 
       if (!result.success) {
         Alert.alert("Attack Failed", result.errorMsg);
@@ -273,7 +310,7 @@ const Attack = () => {
         return;
       }
 
-      team_2 = parseInt(countryMappings.find((c) => c.name === zone_2).teamNo);
+      team_2 = parseInt(state.countryMappings.find((c) => c.name === zone_2).teamNo);
 
       console.log("Attacking", zone_1, team_1);
       console.log("Defending: ", zone_2, team_2);
@@ -301,24 +338,23 @@ const Attack = () => {
         error.response?.data || "Error checking attack"
       );
     } finally {
-      setIsSubmitting(false);
+      dispatch({ type: "SET_IS_SUBMITTING", payload: false });
     }
   };
 
   const onMarkerPress = (zone) => {
     try {
-      const country = countryMappings.find((c) => c.name === zone.name);
+      const country = state.countryMappings.find((c) => c.name === zone.name);
       const team = country
-        ? teams.find((t) => t.number === country.teamNo)
+        ? state.teams.find((t) => t.number === country.teamNo)
         : null;
-      const attack = attacks.find((a) => a.defending_zone === zone.name);
+      const attack = state.attacks.find((a) => a.defending_zone === zone.name);
 
       Alert.alert(
         zone.name,
-        `Owned by: Team ${team.number}\n${
-          attack
-            ? `Under attack by: Team ${attack.attacking_team}`
-            : "Not under attack"
+        `Owned by: Team ${team.number}\n${attack
+          ? `Under attack by: Team ${attack.attacking_team}`
+          : "Not under attack"
         }`
       );
     } catch (error) {
@@ -326,7 +362,7 @@ const Attack = () => {
     }
   };
 
-  if (isRefreshing) {
+  if (state.isRefreshing) {
     return (
       <View
         className="flex-1 bg-black"
@@ -362,9 +398,9 @@ const Attack = () => {
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={isRefreshing}
+              refreshing={state.isRefreshing}
               onRefresh={() => {
-                setIsRefreshing(true);
+                dispatch({ type: "SET_IS_REFRESHING", payload: true });
                 setForm({ your_zone: "", other_zone: "" });
                 fetchData();
               }}
@@ -378,21 +414,21 @@ const Attack = () => {
             <View className="flex flex-col mb-6">
               <View className="flex flex-row justify-between pb-4">
                 <Text className="font-pmedium text-[16px]">
-                  Team money: {balance}
+                  Team money: {state.balance}
                 </Text>
                 <Text className="font-pmedium text-[16px]">
-                  Attack cost: {attackCost}
+                  Attack cost: {state.attackCost}
                 </Text>
               </View>
 
-              {!Array.isArray(myZones) || myZones.length === 0 ? (
+              {!Array.isArray(state.myZones) || state.myZones.length === 0 ? (
                 <View></View>
               ) : (
                 <DropDownField
                   title="Select Your Country"
                   value={form.your_zone}
                   placeholder="Select Your Country"
-                  items={myZones.map((zone) => ({
+                  items={state.myZones.map((zone) => ({
                     label: `${zone.name}`,
                     value: zone.name,
                   }))}
@@ -401,14 +437,14 @@ const Attack = () => {
                 />
               )}
 
-              {!Array.isArray(otherZones) || otherZones.length === 0 ? (
+              {!Array.isArray(state.otherZones) || state.otherZones.length === 0 ? (
                 <View></View>
               ) : (
                 <DropDownField
                   title="Select Country to Attack"
                   value={form.other_zone}
                   placeholder="Select Country to Attack"
-                  items={otherZones.map((zone) => ({
+                  items={state.otherZones.map((zone) => ({
                     label: `${zone}`,
                     value: zone,
                   }))}
@@ -421,8 +457,8 @@ const Attack = () => {
             <MapView
               className="flex-1"
               region={{
-                latitude: initialArea[0],
-                longitude: initialArea[1],
+                latitude: state.initialArea[0],
+                longitude: state.initialArea[1],
                 latitudeDelta: 75,
                 longitudeDelta: 100,
               }}
@@ -433,11 +469,11 @@ const Attack = () => {
               rotateEnabled={false}
               pitchEnabled={false}
             >
-              {Array.isArray(zones) &&
-                zones.map((zone, index) => {
+              {Array.isArray(state.zones) &&
+                state.zones.map((zone, index) => {
                   const isSelectedOrCanAttack =
                     form.your_zone === zone.name ||
-                    otherZones.includes(zone.name);
+                    state.otherZones.includes(zone.name);
                   const shouldHideLabel =
                     form.your_zone && !isSelectedOrCanAttack;
 
@@ -472,7 +508,7 @@ const Attack = () => {
               }
               containerStyles="mt-5 mb-5 p-3"
               textStyles={"text-xl font-pregular"}
-              isLoading={isSubmitting}
+              isLoading={state.isSubmitting}
             />
           </View>
         </ScrollView>

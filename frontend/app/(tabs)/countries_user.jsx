@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useContext } from "react";
+import React, { useEffect, useCallback, useContext, useReducer } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
@@ -14,32 +14,59 @@ import { images } from "../../constants";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
+const initialState = {
+  countries: [],
+  error: null,
+  isRefreshing: true,
+}
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_COUNTRIES":
+      return { ...state, countries: action.payload };
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "SET_IS_REFRESHING":
+      return { ...state, isRefreshing: action.payload };
+    case "UPDATE_COUNTRY":
+      const updatedCountries = state.countries.map((country) => {
+        if (country.name === action.payload.name)
+          return action.payload;
+        return country;
+      });
+
+      return { ...state, countries: updatedCountries };
+    default:
+      return state;
+  }
+}
+
 const Countries = () => {
-  const [countries, setCountries] = useState([]);
-  const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+
+  const [state, dispatch] = useReducer(reducer, initialState)
+
   const insets = useSafeAreaInsets();
 
   const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
-    setError(null);
-    setIsRefreshing(true);
+    dispatch({ type: "SET_ERROR", payload: null })
+    dispatch({ type: "SET_IS_REFRESHING", payload: true })
 
     try {
       const result = await get_country_mappings();
 
-      if (result.success === false) {
-        setError(result.errorMsg);
-      } else if (Array.isArray(result)) {
-        setCountries(result);
-      } else {
-        setError("Unexpected response format");
-      }
+      if (result.success === false)
+        dispatch({ type: "SET_ERROR", payload: result.errorMsg })
+      else if (Array.isArray(result))
+        dispatch({ type: "SET_COUNTRIES", payload: result })
+      else
+        dispatch({ type: "SET_ERROR", payload: "Unexpected response format" })
+
     } catch (err) {
-      setError("Failed to fetch countries");
+      dispatch({ type: "SET_ERROR", payload: "Failed to fetch countries" })
     } finally {
-      setIsRefreshing(false);
+      dispatch({ type: "SET_IS_REFRESHING", payload: false })
     }
   };
 
@@ -48,11 +75,7 @@ const Countries = () => {
       fetchData();
 
       socket.on("update_country", (updatedCountry) => {
-        setCountries((prevCountries) =>
-          prevCountries.map((country) =>
-            country.name === updatedCountry.name ? updatedCountry : country
-          )
-        );
+        dispatch({ type: "UPDATE_COUNTRY", payload: updatedCountry })
       });
 
       return () => {
@@ -66,7 +89,7 @@ const Countries = () => {
   }, []);
 
   const renderCountries = () => {
-    if (!Array.isArray(countries)) {
+    if (!Array.isArray(state.countries)) {
       return (
         <Text className="text-center">
           No countries available or unexpected data format.
@@ -91,7 +114,7 @@ const Countries = () => {
       return null;
     };
 
-    return countries.map((item, index) => {
+    return state.countries.map((item, index) => {
       const title = showTitle(index);
 
       return (
@@ -116,7 +139,7 @@ const Countries = () => {
     });
   };
 
-  if (isRefreshing) {
+  if (state.isRefreshing) {
     return (
       <View
         style={{
@@ -153,7 +176,7 @@ const Countries = () => {
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={isRefreshing}
+              refreshing={state.isRefreshing}
               onRefresh={fetchData}
               tintColor="#000"
             />
@@ -167,9 +190,9 @@ const Countries = () => {
               Countries
             </Text>
 
-            {error ? (
+            {state.error ? (
               <Text style={{ color: "white", textAlign: "center" }}>
-                {error}
+                {state.error}
               </Text>
             ) : (
               renderCountries()

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from "react";
+import React, { useEffect, useReducer, useContext, useCallback } from "react";
 import {
   View,
   Text,
@@ -15,17 +15,39 @@ import Timer from "../../components/Timer";
 
 import { useFocusEffect } from "@react-navigation/native";
 
+const initialState = {
+  error: null,
+  attackingAttacks: [],
+  defendingAttacks: [],
+  isRefreshing: true
+}
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "SET_ATTACKING_ATTACKS":
+      return { ...state, attackingAttacks: action.payload };
+    case "SET_DEFENDING_ATTACKS":
+      return { ...state, defendingAttacks: action.payload };
+    case "SET_IS_REFRESHING":
+      return { ...state, isRefreshing: action.payload };
+    default:
+      return state;
+  }
+}
+
 const TeamAttacks = () => {
-  const [error, setError] = useState(null);
-  const [attackingAttacks, setAttackingAttacks] = useState([]);
-  const [defendingAttacks, setDefendingAttacks] = useState([]);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+
+  const [state, dispatch] = useReducer(reducer, initialState)
 
   const { teamNo, socket } = useContext(GlobalContext);
   const insets = useSafeAreaInsets();
 
   const fetchData = async () => {
-    setError(null);
+    
+
+    dispatch({ type: "SET_ERROR", payload: null })
     try {
       const result = await get_all_attacks();
 
@@ -37,13 +59,14 @@ const TeamAttacks = () => {
         ? result.filter((attack) => attack.defending_team === teamNo.toString())
         : [];
 
-      setAttackingAttacks(filteredAttackingAttacks);
-      setDefendingAttacks(filteredDefendingAttacks);
+      dispatch({ type: "SET_ATTACKING_ATTACKS", payload: filteredAttackingAttacks })
+      dispatch({ type: "SET_DEFENDING_ATTACKS", payload: filteredDefendingAttacks })
+
     } catch (err) {
-      setError("Failed to fetch data");
+      dispatch({ type: "SET_ERROR", payload: "Failed to fetch data" })
       console.error("Error fetching attacks:", err);
     } finally {
-      setIsRefreshing(false);
+      dispatch({ type: "SET_IS_REFRESHING", payload: false })
     }
   };
 
@@ -54,22 +77,27 @@ const TeamAttacks = () => {
 
       // Set up socket listeners for real-time updates
       socket.on("new_attack", (newAttack) => {
-        console.log("attack: ", newAttack);
-        if (newAttack.attacking_team.toString() === teamNo.toString()) {
-          setAttackingAttacks((prevAttacks) => [...prevAttacks, newAttack]);
-        } else if (newAttack.defending_team.toString() === teamNo.toString()) {
-          setDefendingAttacks((prevAttacks) => [...prevAttacks, newAttack]);
-        }
+
+        if (newAttack.attacking_team.toString() === teamNo.toString())
+          dispatch({ type: "SET_ATTACKING_ATTACKS", payload: [...state.attackingAttacks, newAttack] })
+
+        else if (newAttack.defending_team.toString() === teamNo.toString())
+          dispatch({ type: "SET_DEFENDING_ATTACKS", payload: [...state.defendingAttacks, newAttack] })
+
       });
 
-      // Listen for attack removal
       socket.on("remove_attack", (attackId) => {
-        setAttackingAttacks((prevAttacks) =>
-          prevAttacks.filter((attack) => attack._id !== attackId)
-        );
-        setDefendingAttacks((prevAttacks) =>
-          prevAttacks.filter((attack) => attack._id !== attackId)
-        );
+
+        dispatch({
+          type: "SET_ATTACKING_ATTACKS",
+          payload: state.attackingAttacks.filter((attack) => attack._id !== attackId)
+        });
+
+        dispatch({
+          type: "SET_DEFENDING_ATTACKS",
+          payload: state.defendingAttacks.filter((attack) => attack._id !== attackId)
+        });
+
       });
 
       // Clean up the socket listeners when the component loses focus or unmounts
@@ -77,14 +105,14 @@ const TeamAttacks = () => {
         socket.off("new_attack");
         socket.off("remove_attack");
       };
-    }, [teamNo]) // Add teamNo as a dependency to re-run effect when teamNo changes
+    }, [teamNo])
   );
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  if (isRefreshing) {
+  if (state.isRefreshing) {
     return (
       <View
         className="bg-black h-full"
@@ -120,9 +148,9 @@ const TeamAttacks = () => {
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={isRefreshing}
+              refreshing={state.isRefreshing}
               onRefresh={() => {
-                setIsRefreshing(true);
+                dispatch({ type: "SET_IS_REFRESHING", payload: true })
                 fetchData();
               }}
               tintColor="#000"
@@ -136,9 +164,9 @@ const TeamAttacks = () => {
               Team {teamNo} Wars
             </Text>
 
-            {error ? (
+            {state.error ? (
               <Text className="text-red-500 text-center p-2 text-xl">
-                {error}
+                {state.error}
               </Text>
             ) : (
               <View style={{ backgroundColor: "rgb(75,50,12,1)" }}>
@@ -146,9 +174,9 @@ const TeamAttacks = () => {
                   Ongoing Attacks
                 </Text>
                 <View className="mb-4">
-                  {Array.isArray(attackingAttacks) &&
-                  attackingAttacks.length > 0 ? (
-                    attackingAttacks.map((attack, index) => (
+                  {Array.isArray(state.attackingAttacks) &&
+                    state.attackingAttacks.length > 0 ? (
+                    state.attackingAttacks.map((attack, index) => (
                       <View
                         key={index}
                         className="px-2 rounded-md mb-3"
@@ -188,9 +216,9 @@ const TeamAttacks = () => {
                   Ongoing Defense
                 </Text>
                 <View className="mb-4">
-                  {Array.isArray(defendingAttacks) &&
-                  defendingAttacks.length > 0 ? (
-                    defendingAttacks.map((attack, index) => (
+                  {Array.isArray(state.defendingAttacks) &&
+                    state.defendingAttacks.length > 0 ? (
+                    state.defendingAttacks.map((attack, index) => (
                       <View
                         key={index}
                         className="px-2 rounded-md mb-3"
