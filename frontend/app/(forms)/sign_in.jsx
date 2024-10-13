@@ -32,14 +32,7 @@ const SignIn = () => {
     password: "",
   });
 
-  const {
-    setName,
-    setTeamNo,
-    setSubteam,
-    expoPushToken,
-    setUserMode,
-    setIsLoggedIn,
-  } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,33 +52,35 @@ const SignIn = () => {
         }
 
         if (response.subteam != "") {
-          setTeamNo(response.subteam.number);
-          setName(response.subteam.name);
-          setSubteam(response.subteam.letter);
-          setUserMode("subteam");
 
-          await addPushToken(expoPushToken, response.subteam.number);
-          setIsLoggedIn(true);
+          globalDispatch({ type: "SET_TEAM_NO", payload: response.subteam.number });
+          globalDispatch({ type: "SET_SUBTEAM", payload: response.subteam.letter });
+          globalDispatch({ type: "SET_NAME", payload: response.subteam.name });
+          globalDispatch({ type: "SET_USER_MODE", payload: "subteam" });
+
+          await addPushToken(globalState.expoPushToken, response.subteam.number);
+          globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
           router.replace("/home");
           return;
         }
 
         if (response.admin != "") {
-          setName(form.username);
-          setUserMode("admin");
+          globalDispatch({ type: "SET_NAME", payload: form.username });
+          globalDispatch({ type: "SET_USER_MODE", payload: "admin" });
+          globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
+
           if (response.admin.type == "Wars") {
             router.replace("/admin_home");
             return;
           }
-          setIsLoggedIn(true);
 
           router.replace("/admin_home2");
           return;
         }
 
         if (response.superAdmin != "") {
-          setUserMode("super_admin");
-          setIsLoggedIn(true);
+          globalDispatch({ type: "SET_USER_MODE", payload: "super_admin" });
+          globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
 
           router.replace("/dashboard");
           return;

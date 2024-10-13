@@ -20,7 +20,7 @@ import Timer from "../../components/Timer";
 import { useFocusEffect } from "@react-navigation/native";
 
 const AdminHome = () => {
-  const { name, Logout, socket } = useContext(GlobalContext);
+  const { globalState, Logout } = useContext(GlobalContext);
   const [war, setWar] = useState("");
   const [response, setResponse] = useState({ attacks: [] });
   const [currentAttack, setCurrentAttack] = useState({
@@ -38,7 +38,7 @@ const AdminHome = () => {
   const fetchData = async () => {
     console.log("Fetching data");
     try {
-      const admin = await get_admin_by_name(name);
+      const admin = await get_admin_by_name(globalState.name);
       setWar(admin.admin.war);
       const response = await get_attacks_by_war(admin.admin.war);
 
@@ -81,14 +81,14 @@ const AdminHome = () => {
       fetchData(); // Fetch initial data
 
       // Set up socket listeners for real-time updates
-      socket.on("new_attack", (newAttack) => {
+      globalState.socket.on("new_attack", (newAttack) => {
         setResponse((prevResponse) => ({
           attacks: [newAttack, ...prevResponse.attacks],
         }));
         setCurrentAttack(newAttack);
       });
 
-      socket.on("remove_attack", (attackId) => {
+      globalState.socket.on("remove_attack", (attackId) => {
         setResponse((prevResponse) => ({
           attacks: prevResponse.attacks.filter(
             (attack) => attack._id !== attackId
@@ -107,7 +107,7 @@ const AdminHome = () => {
         }
       });
 
-      socket.on("update_attack_result", (updatedAttack) => {
+      globalState.socket.on("update_attack_result", (updatedAttack) => {
         setResponse((prevResponse) => ({
           attacks: prevResponse.attacks.map((attack) =>
             attack._id === updatedAttack._id ? updatedAttack : attack
@@ -118,7 +118,7 @@ const AdminHome = () => {
         }
       });
 
-      socket.on("new_game", () => {
+      globalState.socket.on("new_game", () => {
         Alert.alert(
           "New Game",
           "A new game has started. You will be logged out automatically."
@@ -131,10 +131,10 @@ const AdminHome = () => {
       });
 
       return () => {
-        socket.off("new_attack");
-        socket.off("remove_attack");
-        socket.off("update_attack_result");
-        socket.off("new_game");
+        globalState.socket.off("new_attack");
+        globalState.socket.off("remove_attack");
+        globalState.socket.off("update_attack_result");
+        globalState.socket.off("new_game");
       };
     }, [currentAttack._id])
   );
@@ -271,7 +271,7 @@ const AdminHome = () => {
         />
 
         <Text className="font-montez text-black text-5xl px-5 pt-1 text-center">
-          Welcome, {name}
+          Welcome, {globalState.name}
         </Text>
 
         <Text className="font-montez text-black text-center mt-1 text-4xl ">

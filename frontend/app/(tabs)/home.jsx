@@ -3,14 +3,12 @@ import {
   View,
   Text,
   Alert,
-  ImageBackground,
   Platform,
 } from "react-native";
 import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import { router } from "expo-router";
 import _ from "lodash";
 
-import { images } from "../../constants";
 import countries from "../../constants/countries";
 
 import CountryConnections from "../../constants/country_connections";
@@ -79,8 +77,7 @@ const Home = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const { name, teamNo, subteam, Logout, expoPushToken, socket } =
-    useContext(GlobalContext);
+  const { globalState, Logout } = useContext(GlobalContext);
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null });
@@ -118,20 +115,20 @@ const Home = () => {
     useCallback(() => {
       fetchData(); // Fetch initial data
 
-      // Set up socket listeners for real-time updates
-      socket.on("update_country", (updatedCountryMapping) => {
+      // Set up globalState.socket listeners for real-time updates
+      globalState.socket.on("update_country", (updatedCountryMapping) => {
         dispatch({ type: "UPDATE_COUNTRY_MAPPING", payload: updatedCountryMapping })
       });
 
-      socket.on("update_team", (updatedTeam) => {
+      globalState.socket.on("update_team", (updatedTeam) => {
         dispatch({ type: "UPDATE_TEAM", payload: updatedTeam })
       });
 
-      socket.on("new_attack", (newAttack) => {
+      globalState.socket.on("new_attack", (newAttack) => {
         dispatch({ type: "SET_ATTACKS", payload: [...state.attacks, newAttack] });
       });
 
-      socket.on("remove_attack", (attackId) => {
+      globalState.socket.on("remove_attack", (attackId) => {
 
         dispatch({
           type: "SET_ATTACKS",
@@ -143,13 +140,13 @@ const Home = () => {
       });
 
       return () => {
-        socket.off("update_country");
-        socket.off("update_team");
-        socket.off("new_attack");
-        socket.off("remove_attack");
-        socket.off("new_game");
+        globalState.socket.off("update_country");
+        globalState.socket.off("update_team");
+        globalState.socket.off("new_attack");
+        globalState.socket.off("remove_attack");
+        globalState.socket.off("new_game");
       };
-    }, [teamNo])
+    }, [globalState.teamNo])
   );
 
   useEffect(() => {
@@ -159,7 +156,7 @@ const Home = () => {
   const logoutFunc = () => {
     Alert.alert(
       "Logout",
-      subteam === ""
+      globalState.subteam === ""
         ? "Are you sure you want to logout? You won't be able to receive notifications if your team is being attacked."
         : "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
       [
@@ -170,7 +167,7 @@ const Home = () => {
         {
           text: "Logout",
           onPress: async () => {
-            deletePushToken(expoPushToken, teamNo);
+            deletePushToken(globalState.expoPushToken, globalState.teamNo);
             Logout();
             router.replace("/");
           },
@@ -277,10 +274,10 @@ const Home = () => {
 
         <View className="flex flex-row pt-2 justify-center gap-0">
           <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
-            {name}, Team {teamNo}
+            {globalState.name}, Team {globalState.teamNo}
           </Text>
           <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">
-            {subteam}
+            {globalState.subteam}
           </Text>
         </View>
         <View

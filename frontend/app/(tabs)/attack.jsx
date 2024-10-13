@@ -96,12 +96,13 @@ const reducer = (state, action) => {
 };
 
 const Attack = () => {
-  const { name, teamNo, subteam, socket } = useContext(GlobalContext);
 
+  const { globalState } = useContext(GlobalContext);
+  
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const [form, setForm] = useState({
-    teamNo: teamNo,
+    teamNo: globalState.teamNo,
     your_zone: "",
     other_zone: "",
   });
@@ -215,7 +216,7 @@ const Attack = () => {
     }
 
     try {
-      const result1 = await get_countries_by_team(parseInt(teamNo));
+      const result1 = await get_countries_by_team(parseInt(globalState.teamNo));
       dispatch({ type: "SET_MY_ZONES", payload: result1.countries });
     } catch (err) {
       console.log(err);
@@ -245,7 +246,7 @@ const Attack = () => {
       const teamsResult = await get_all_teams();
       dispatch({ type: "SET_TEAMS", payload: teamsResult });
 
-      const team = teamsResult.find((t) => t.number === parseInt(teamNo));
+      const team = teamsResult.find((t) => t.number === parseInt(globalState.teamNo));
       dispatch({ type: "SET_BALANCE", payload: team.balance })
     } catch (err) {
       console.log(err);
@@ -260,33 +261,33 @@ const Attack = () => {
       fetchData(); // Fetch initial data
 
       // Set up socket listeners for real-time updates
-      socket.on("update_country", (updatedCountryMapping) => {
+      globalState.socket.on("update_country", (updatedCountryMapping) => {
         dispatch({ type: "UPDATE_COUNTRY_MAPPING", payload: updatedCountryMapping });
       });
 
-      socket.on("update_team", (updatedTeam) => {
+      globalState.socket.on("update_team", (updatedTeam) => {
         dispatch({ type: "UPDATE_TEAM", payload: updatedTeam });
       });
 
-      socket.on("new_attack", (newAttack) => {
-        if (newAttack.defending_team === teamNo.toString()) {
+      globalState.socket.on("new_attack", (newAttack) => {
+        if (newAttack.defending_team === globalState.teamNo.toString()) {
           setCurrentDefence((prevDefences) => [...prevDefences, newAttack]);
         }
       });
 
-      socket.on("remove_attack", (attackId) => {
+      globalState.socket.on("remove_attack", (attackId) => {
         setCurrentDefence((prevDefences) =>
           prevDefences.filter((attack) => attack._id !== attackId)
         );
       });
 
       return () => {
-        socket.off("update_country");
-        socket.off("update_team");
-        socket.off("new_attack");
-        socket.off("remove_attack");
+        globalState.socket.off("update_country");
+        globalState.socket.off("update_team");
+        globalState.socket.off("new_attack");
+        globalState.socket.off("remove_attack");
       };
-    }, [teamNo, subteam])
+    }, [globalState.teamNo, globalState.subteam])
   );
 
   useEffect(() => {
@@ -314,7 +315,7 @@ const Attack = () => {
       const response = await attack_check(
         zone_1,
         team_1,
-        subteam,
+        globalState.subteam,
         zone_2,
         team_2
       );
@@ -326,7 +327,7 @@ const Attack = () => {
 
       // setForm({ your_zone: "", other_zone: "" });
       router.navigate(
-        `/warzone?attacking_zone=${zone_1}&defending_zone=${zone_2}&attacking_team=${team_1}&defending_team=${team_2}&attacking_subteam=${subteam}`
+        `/warzone?attacking_zone=${zone_1}&defending_zone=${zone_2}&attacking_team=${team_1}&defending_team=${team_2}&attacking_subteam=${globalState.subteam}`
       );
     } catch (error) {
       Alert.alert(
@@ -477,7 +478,7 @@ const Attack = () => {
           <CustomButton
             title={form.other_zone ? `Attack ${form.other_zone}` : "Attack"}
             handlePress={() =>
-              attack_func(form.your_zone, parseInt(teamNo), form.other_zone)
+              attack_func(form.your_zone, parseInt(globalState.teamNo), form.other_zone)
             }
             containerStyles="mt-5 mb-5 p-3"
             textStyles={"text-xl font-pregular"}

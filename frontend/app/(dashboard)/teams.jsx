@@ -22,7 +22,7 @@ const Teams = () => {
   const [countries, setCountries] = useState([]);
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
 
-  const { socket } = useContext(GlobalContext);
+  const { globalState } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -50,7 +50,7 @@ const Teams = () => {
     useCallback(() => {
       fetchData();
 
-      socket.on("update_team", (updatedTeam) => {
+      globalState.socket.on("update_team", (updatedTeam) => {
         setTeams((prevTeams) =>
           prevTeams.map((team) =>
             team.number === updatedTeam.number ? updatedTeam : team
@@ -58,7 +58,7 @@ const Teams = () => {
         );
       });
 
-      socket.on("update_country", (updatedCountry) => {
+      globalState.socket.on("update_country", (updatedCountry) => {
         setCountries((prevCountries) =>
           prevCountries.map((country) =>
             country.name === updatedCountry.name ? updatedCountry : country
@@ -67,8 +67,8 @@ const Teams = () => {
       });
 
       return () => {
-        socket.off("update_team");
-        socket.off("update_country");
+        globalState.socket.off("update_team");
+        globalState.socket.off("update_country");
       };
     }, [])
   );

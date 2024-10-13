@@ -38,17 +38,7 @@ const TabIcon = ({ icon, color, name, focused }) => {
 
 const TabsLayout = () => {
 
-  const {
-    teamNo,
-    subteam,
-    currentAttack,
-    setCurrentAttack,
-    currentDefence,
-    setCurrentDefence,
-    socket,
-    Logout,
-    expoPushToken,
-  } = useContext(GlobalContext);
+  const { globalState, globalDispatch, Logout } = useContext(GlobalContext);
 
   const fetchData = async () => {
     try {
@@ -58,19 +48,20 @@ const TabsLayout = () => {
 
       const matchingAttack = attacksResult.find(
         (attack) =>
-          attack.attacking_team === teamNo &&
-          attack.attacking_subteam === subteam
+          attack.attacking_team === globalState.teamNo &&
+          attack.attacking_subteam === globalState.subteam
       );
 
       const matchingDefenses = attacksResult.filter(
-        (attack) => attack.defending_team.toString() === teamNo.toString()
+        (attack) => attack.defending_team.toString() === globalState.teamNo.toString()
       );
 
-      if (!_.isEqual(matchingAttack, currentAttack) && subteam !== "")
-        setCurrentAttack(matchingAttack);
+      if (!_.isEqual(matchingAttack, globalState.currentAttack) && globalState.subteam !== "")
+        globalDispatch({ type: "SET_CURRENT_ATTACK", payload: matchingAttack });
 
-      if (!_.isEqual(matchingDefenses, currentDefence))
-        setCurrentDefence(matchingDefenses);
+      if (!_.isEqual(matchingDefenses, globalState.currentDefence))
+        globalDispatch({ type: "SET_CURRENT_DEFENCE", payload: matchingDefenses });
+
     } catch (err) {
       console.error("Failed to fetch attacks:", err);
     }
@@ -78,53 +69,53 @@ const TabsLayout = () => {
 
   useFocusEffect(
     useCallback(() => {
-      
+
       fetchData();
 
-      socket.on("new_attack", (newAttack) => {
-        if (newAttack.defending_team.toString() === teamNo.toString())
-          setCurrentDefence((prevDefences) => [...prevDefences, newAttack]);
+      globalState.socket.on("new_attack", (newAttack) => {
+        if (newAttack.defending_team.toString() === globalState.teamNo.toString())
+          globalDispatch({ type: "ADD_CURRENT_DEFENCE", payload: newAttack });
 
-        if (subteam !== "") {
+        if (globalState.subteam !== "") {
           if (
-            newAttack.attacking_team.toString() === teamNo.toString() &&
-            newAttack.attacking_subteam.toString() === subteam.toString()
+            newAttack.attacking_team.toString() === globalState.teamNo.toString() &&
+            newAttack.attacking_subteam.toString() === globalState.subteam.toString()
           )
-            setCurrentAttack(newAttack);
+            globalDispatch({ type: "SET_CURRENT_ATTACK", payload: newAttack });
         }
       });
 
-      socket.on("remove_attack", (attackId) => {
-        setCurrentDefence((prevDefences) =>
-          prevDefences.filter((attack) => attack._id !== attackId)
-        );
-        setCurrentAttack((prevAttack) => {
-          if (prevAttack && prevAttack._id === attackId) {
-            return null;
-          }
-          return prevAttack;
+      globalState.socket.on("remove_attack", (attackId) => {
+        globalDispatch({
+          type: SET_CURRENT_DEFENCE,
+          payload: currentDefence.filter((attack) => attack._id !== attackId),
+        });
+
+        globalDispatch({
+          type: SET_CURRENT_ATTACK,
+          payload: currentAttack && currentAttack._id === attackId ? null : currentAttack,
         });
       });
 
-      socket.on("new_game", () => {
+      globalState.socket.on("new_game", () => {
         Alert.alert(
           "New Game",
           "A new game has started. You will be logged out automatically."
         );
 
         setTimeout(async () => {
-          deletePushToken(expoPushToken, teamNo);
+          deletePushToken(globalState.expoPushToken, globalState.teamNo);
           Logout();
           router.replace("/");
         }, 3000);
       });
 
       return () => {
-        socket.off("new_attack");
-        socket.off("remove_attack");
-        socket.off("new_game");
+        globalState.socket.off("new_attack");
+        globalState.socket.off("remove_attack");
+        globalState.socket.off("new_game");
       };
-    }, [teamNo, subteam])
+    }, [globalState.teamNo, globalState.subteam])
   );
 
   return (
@@ -161,7 +152,7 @@ const TabsLayout = () => {
           name="attack"
           options={{
             title: "Attack",
-            href: subteam == "" ? null : "/attack",
+            href: globalState.subteam == "" ? null : "/attack",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
@@ -220,11 +211,11 @@ const TabsLayout = () => {
         />
       </Tabs>
 
-      {/* {(currentAttack || currentDefence.length > 0) && ( */}
+      {/* {(globalState.currentAttack || globalState.currentDefence.length > 0) && ( */}
       <StickyPopup
-        currentAttack={currentAttack}
-        currentDefence={currentDefence}
-        subteam={subteam}
+        currentAttack={globalState.currentAttack}
+        currentDefence={globalState.currentDefence}
+        subteam={globalState.subteam}
       />
       {/* )} */}
 

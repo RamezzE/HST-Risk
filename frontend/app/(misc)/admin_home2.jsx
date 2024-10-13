@@ -23,7 +23,7 @@ const Teams = () => {
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
   const router = useRouter();
 
-  const { Logout, socket } = useContext(GlobalContext);
+  const { globalState, Logout } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -51,7 +51,7 @@ const Teams = () => {
     useCallback(() => {
       fetchData();
 
-      socket.on("update_team", (updatedTeam) => {
+      globalState.socket.on("update_team", (updatedTeam) => {
         setTeams((prevTeams) =>
           prevTeams.map((team) =>
             team.number === updatedTeam.number ? updatedTeam : team
@@ -59,7 +59,7 @@ const Teams = () => {
         );
       });
 
-      socket.on("update_country", (updatedCountry) => {
+      globalState.socket.on("update_country", (updatedCountry) => {
         setCountries((prevCountries) =>
           prevCountries.map((country) =>
             country._id === updatedCountry._id ? updatedCountry : country

@@ -7,7 +7,7 @@ import { deletePushToken } from "../../api/user_functions";
 import FormWrapper from "../../components/FormWrapper";
 
 const FormsLayout = () => {
-  const { socket, Logout, expoPushToken, teamNo } = useContext(GlobalContext);
+  const { globalState, Logout } = useContext(GlobalContext);
 
   useEffect(() => {
     const handleNewGame = () => {
@@ -17,20 +17,20 @@ const FormsLayout = () => {
       );
 
       setTimeout(async () => {
-        if (expoPushToken && teamNo) {
-          await deletePushToken(expoPushToken, teamNo);
+        if (globalState.expoPushToken && globalState.teamNo) {
+          await deletePushToken(globalState.expoPushToken, globalState.teamNo);
         }
         Logout();
         router.replace("/");
       }, 3000);
     };
 
-    socket.on("new_game", handleNewGame);
+    globalState.socket.on("new_game", handleNewGame);
 
     return () => {
-      socket.off("new_game", handleNewGame);
+      globalState.socket.off("new_game", handleNewGame);
     };
-  }, [socket, expoPushToken, teamNo]);
+  }, [globalState.socket, globalState.expoPushToken, globalState.teamNo]);
 
   return (
     <>

@@ -28,7 +28,7 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 const TabsLayout = () => {
-  const { socket, Logout, expoPushToken, teamNo } = useContext(GlobalContext); // Use the context
+  const { globalState, Logout } = useContext(GlobalContext); // Use the context
 
   useEffect(() => {
     const handleNewGame = () => {
@@ -39,21 +39,21 @@ const TabsLayout = () => {
 
       setTimeout(async () => {
         // If you want to delete the push token before logout
-        if (expoPushToken && teamNo) {
-          await deletePushToken(expoPushToken, teamNo);
+        if (globalState.expoPushToken && globalState.teamNo) {
+          await deletePushToken(globalState.expoPushToken, globalState.teamNo);
         }
         Logout();
         router.replace("/");
       }, 3000);
     };
 
-    socket.on("new_game", handleNewGame);
+    globalState.socket.on("new_game", handleNewGame);
 
     // Cleanup listener on component unmount
     return () => {
-      socket.off("new_game", handleNewGame);
+      globalState.socket.off("new_game", handleNewGame);
     };
-  }, [socket, expoPushToken, teamNo]);
+  }, [globalState.socket, globalState.expoPushToken, globalState.teamNo]);
 
   return (
     <>

@@ -26,7 +26,7 @@ const DashboardAttacks = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { socket } = useContext(GlobalContext);
+  const { globalState } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -52,20 +52,20 @@ const DashboardAttacks = () => {
     useCallback(() => {
       fetchData(); // Fetch initial data
 
-      // Set up socket listeners for real-time updates
-      socket.on("new_attack", (newAttack) => {
+      // Set up globalState.socket listeners for real-time updates
+      globalState.socket.on("new_attack", (newAttack) => {
         setAttacks((prevAttacks) => [newAttack, ...prevAttacks]);
       });
 
-      socket.on("remove_attack", (attackId) => {
+      globalState.socket.on("remove_attack", (attackId) => {
         setAttacks((prevAttacks) =>
           prevAttacks.filter((attack) => attack._id !== attackId)
         );
       });
 
       return () => {
-        socket.off("new_attack");
-        socket.off("remove_attack");
+        globalState.socket.off("new_attack");
+        globalState.socket.off("remove_attack");
       };
     }, [])
   );

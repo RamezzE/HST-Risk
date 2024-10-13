@@ -18,7 +18,7 @@ const SubTeams = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
   const router = useRouter();
 
-  const { socket } = useContext(GlobalContext);
+  const { globalState } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -43,7 +43,7 @@ const SubTeams = () => {
     useCallback(() => {
       fetchData();
 
-      socket.on("update_subteam", (editedSubteam) => {
+      globalState.socket.on("update_subteam", (editedSubteam) => {
         setTeams((prevTeams) =>
           prevTeams.map((team) =>
             team.username === editedSubteam.username ? editedSubteam : team

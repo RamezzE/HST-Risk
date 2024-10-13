@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useContext } from 'react';
-import { Text, View, Image, ImageBackground, Platform } from "react-native";
+import { Text, View, Image, Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Notifications from "expo-notifications";
 import * as Device from 'expo-device';
 import { router } from "expo-router";
@@ -11,6 +10,7 @@ import { GlobalContext } from "../context/GlobalProvider";
 import { is_logged_in } from "../api/user_functions";
 import { images } from "../constants";
 import * as SplashScreen from 'expo-splash-screen';
+import PageWrapper from "../components/PageWrapper";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,23 +24,13 @@ Notifications.setNotificationHandler({
 });
 
 export default function App() {
-  const {
-    adminType,
-    setName,
-    setTeamNo,
-    setIsLoggedIn,
-    isLoggedIn,
-    userMode,
-    setUserMode,
-    setSubteam,
-    setExpoPushToken
-  } = useContext(GlobalContext);
+
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState(null);
   const notificationListener = useRef();
   const responseListener = useRef();
-  const insets = useSafeAreaInsets();
 
   const registerForPushNotificationsAsync = async () => {
     let token;
@@ -83,7 +73,7 @@ export default function App() {
           })
         ).data;
         console.log("Expo Push Token: ", pushTokenString);
-        setExpoPushToken(pushTokenString);
+        globalDispatch({ type: "SET_EXPO_PUSH_TOKEN", payload: pushTokenString });
         return pushTokenString;
       } catch (error) {
         console.log(`Error getting token: ${error}`);
@@ -98,14 +88,14 @@ export default function App() {
       return;
     }
     try {
-      if (isLoggedIn) {
-        if (userMode === "subteam") {
+      if (globalState.isLoggedIn) {
+        if (globalState.userMode === "subteam") {
           router.navigate("/home");
           return;
         }
 
-        if (userMode === "admin") {
-          if (adminType === "Wars") {
+        if (globalState.userMode === "admin") {
+          if (globalState.adminType === "Wars") {
             router.navigate("/admin_home");
             return;
           }
@@ -113,7 +103,7 @@ export default function App() {
           return;
         }
 
-        if (userMode === "super_admin") {
+        if (globalState.userMode === "super_admin") {
           router.navigate("/dashboard");
           return;
         }
@@ -127,19 +117,22 @@ export default function App() {
       }
 
       if (response.subteam !== "") {
-        setIsLoggedIn(true);
-        setTeamNo(response.subteam.number);
-        setSubteam(response.subteam.letter);
-        setName(response.subteam.name);
-        setUserMode("subteam");
+        globalDispatch({ type: "SET_TEAM_NO", payload: response.subteam.number });
+        globalDispatch({ type: "SET_SUBTEAM", payload: response.subteam.letter });
+        globalDispatch({ type: "SET_NAME", payload: response.subteam.name });
+        globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
+        globalDispatch({ type: "SET_USER_MODE", payload: "subteam" });
+
         router.navigate("/home");
         return;
       }
 
       if (response.admin !== "") {
-        setIsLoggedIn(true);
-        setName(response.admin.name);
-        setUserMode("admin");
+
+        globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
+        globalDispatch({ type: "SET_NAME", payload: response.admin.name });
+        globalDispatch({ type: "SET_USER_MODE", payload: "admin" });
+
         if (response.admin.type === "Wars") {
           router.navigate("/admin_home");
           return;
@@ -149,9 +142,11 @@ export default function App() {
       }
 
       if (response.superAdmin !== "") {
-        setIsLoggedIn(true);
-        setName(response.superAdmin.name);
-        setUserMode("super_admin");
+
+        globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
+        globalDispatch({ type: "SET_NAME", payload: response.superAdmin.name });
+        globalDispatch({ type: "SET_USER_MODE", payload: "super_admin" });
+
         router.navigate("/dashboard");
         return;
       }
@@ -204,67 +199,55 @@ export default function App() {
   };
 
   const guestLogin = () => {
-    setName("Guest");
+    globalDispatch({ type: "SET_NAME", payload: "Guest" });
     router.navigate("/guest_choose_team");
   };
 
   return (
-    <View
-      className="flex-1 bg-black"
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ flex: 1, resizeMode: "cover" }}
-      >
-        <View className="flex-1 justify-center pt-8">
-          <View className="w-full justify-center space-y-8 items-center px-4 py-8">
-            <View className="w-full flex flex-col space-y-8">
-              <View>
-                <Text className="text-8xl text-black font-montez text-center p-5">
-                  Risk
-                </Text>
-                <Text className="text-5xl text-black font-montez p-2 text-center">
-                  Camp Domination
-                </Text>
-                </View>
-
-              <View className="w-full flex flex-row justify-evenly items-center">
-                <CustomButton
-                  title="Guest"
-                  handlePress={() => guestLogin()}
-                  textStyles={"font-montez text-3xl"}
-                  containerStyles={"p-4"}
-                />
-
-                <CustomButton
-                  title="Sign in"
-                  handlePress={() => checkLoggedIn()}
-                  isLoading={isSubmitting}
-                  textStyles={"font-montez text-3xl"}
-                  containerStyles={"p-4"}
-                />
-              </View>
+    <PageWrapper>
+      <View className="flex-1 justify-center pt-8">
+        <View className="w-full justify-center space-y-8 items-center px-4 py-8">
+          <View className="w-full flex flex-col space-y-8">
+            <View>
+              <Text className="text-8xl text-black font-montez text-center p-5">
+                Risk
+              </Text>
+              <Text className="text-5xl text-black font-montez p-2 text-center">
+                Camp Domination
+              </Text>
             </View>
 
-            <View className="">
-              <Image
-                source={images.papyrus_globe}
-                className="h-48"
-                resizeMode="contain"
+            <View className="w-full flex flex-row justify-evenly items-center">
+              <CustomButton
+                title="Guest"
+                handlePress={() => guestLogin()}
+                textStyles={"font-montez text-3xl"}
+                containerStyles={"p-4"}
+              />
+
+              <CustomButton
+                title="Sign in"
+                handlePress={() => checkLoggedIn()}
+                isLoading={isSubmitting}
+                textStyles={"font-montez text-3xl"}
+                containerStyles={"p-4"}
               />
             </View>
-            <Text className="text-black text-2xl text-center font-montez">
-              by Helio Sports Team
-            </Text>
           </View>
+
+          <View className="">
+            <Image
+              source={images.papyrus_globe}
+              className="h-48"
+              resizeMode="contain"
+            />
+          </View>
+          <Text className="text-black text-2xl text-center font-montez">
+            by Helio Sports Team
+          </Text>
         </View>
-        <StatusBar backgroundColor="#000" style="light" />
-      </ImageBackground>
-    </View>
+      </View>
+      <StatusBar backgroundColor="#000" style="light" />
+    </PageWrapper>
   );
 }

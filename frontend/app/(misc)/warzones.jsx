@@ -20,7 +20,7 @@ const Warzones = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
   const router = useRouter();
 
-  const { socket } = useContext(GlobalContext);
+  const { globalState } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -45,12 +45,12 @@ const Warzones = () => {
     useCallback(() => {
       fetchData(); // Fetch initial data
 
-      // Set up socket listeners for real-time updates
-      socket.on("new_warzone", (newWarzone) => {
+      // Set up globalState.socket listeners for real-time updates
+      globalState.socket.on("new_warzone", (newWarzone) => {
         setWarzones((prevWarzones) => [newWarzone, ...prevWarzones]);
       });
 
-      socket.on("update_warzone", (updatedWarzone) => {
+      globalState.socket.on("update_warzone", (updatedWarzone) => {
         setWarzones((prevWarzones) =>
           prevWarzones.map((warzone) =>
             warzone._id === updatedWarzone._id ? updatedWarzone : warzone
@@ -58,16 +58,16 @@ const Warzones = () => {
         );
       });
 
-      socket.on("delete_warzone", (deletedWarzoneId) => {
+      globalState.socket.on("delete_warzone", (deletedWarzoneId) => {
         setWarzones((prevWarzones) =>
           prevWarzones.filter((warzone) => warzone._id !== deletedWarzoneId)
         );
       });
 
       return () => {
-        socket.off("new_warzone");
-        socket.off("update_warzone");
-        socket.off("delete_warzone");
+        globalState.socket.off("new_warzone");
+        globalState.socket.off("update_warzone");
+        globalState.socket.off("delete_warzone");
       };
     }, [])
   );

@@ -15,7 +15,7 @@ const EditTeam = () => {
   const local = useLocalSearchParams();
   const teamNo = local.teamNo;
 
-  const { userMode } = useContext(GlobalContext);
+  const { globalState } = useContext(GlobalContext);
 
   const [form, setForm] = useState({
     teamNo: teamNo,
@@ -93,9 +93,9 @@ const EditTeam = () => {
       }
 
       Alert.alert("Success", "Team balance updated successfully");
-      if (userMode == "super_admin") {
+      if (globalState.userMode == "super_admin") {
         router.navigate("/teams");
-      } else if (userMode == "admin") {
+      } else if (globalState.userMode == "admin") {
         router.navigate("/admin_home2");
       }
     } catch (error) {
@@ -131,9 +131,9 @@ const EditTeam = () => {
       Alert.alert("Success", "Team updated successfully");
 
       // router.dismiss(1);
-      if (userMode == "super_admin") {
+      if (globalState.userMode == "super_admin") {
         router.navigate("/teams");
-      } else if (userMode == "admin") {
+      } else if (globalState.userMode == "admin") {
         router.navigate("/admin_home2");
       }
     } catch (error) {
@@ -151,9 +151,9 @@ const EditTeam = () => {
         style="w-[20vw]"
         size={32}
         onPress={() => {
-          if (userMode == "super_admin") {
+          if (globalState.userMode == "super_admin") {
             router.navigate("/teams");
-          } else if (userMode == "admin") {
+          } else if (globalState.userMode == "admin") {
             router.navigate("/admin_home2");
           }
           ``;
@@ -169,7 +169,7 @@ const EditTeam = () => {
         editable={false}
       />
 
-      {userMode == "super_admin" && (
+      {globalState.userMode == "super_admin" && (
         <FormField
           title="Team Name"
           value={form.teamName}
@@ -213,7 +213,7 @@ const EditTeam = () => {
         />
       </View>
 
-      {userMode == "super_admin" && (
+      {globalState.userMode == "super_admin" && (
         <CustomButton
           title="Update Team"
           handlePress={() => submit()}

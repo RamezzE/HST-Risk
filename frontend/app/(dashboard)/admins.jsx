@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useReducer, useCallback, useContext } from "react";
 import {
   View,
   Text,
@@ -14,29 +14,57 @@ import Loader from "../../components/Loader";
 import { GlobalContext } from "./../../context/GlobalProvider";
 import PageWrapper from "../../components/PageWrapper";
 
-const Admins = () => {
-  const [admins, setAdmins] = useState([]);
-  const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+const initialState = {
+  admins: [],
+  error: null,
+  isRefreshing: true,
+}
 
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_ADMINS":
+      return { ...state, admins: action.payload };
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "SET_IS_REFRESHING":
+      return { ...state, isRefreshing: action.payload };
+    case "UPDATE_ADMIN":
+      return {
+        ...state,
+        admins: state.admins.map((admin) =>
+          admin._id === action.payload._id ? action.payload : admin
+        ),
+      };
+    case "DELETE_ADMIN":
+      return {
+        ...state,
+        admins: state.admins.filter((admin) => admin.name !== action.payload),
+      };
+    default:
+      return state;
+  }
+};
+
+const Admins = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
   const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
-    setError(null);
-    setIsRefreshing(true);
+    dispatch({ type: "SET_ERROR", payload: null });
+    dispatch({ type: "SET_IS_REFRESHING", payload: true });
     try {
       const result = await get_admins();
-      if (result.success === false) {
-        setError(result.errorMsg);
-      } else if (Array.isArray(result.admins)) {
-        setAdmins(result.admins);
-      } else {
-        setError("Unexpected response format");
-      }
+      if (result.success === false)
+        dispatch({ type: "SET_ERROR", payload: result.errorMsg });
+      else if (Array.isArray(result.admins))
+        dispatch({ type: "SET_ADMINS", payload: result.admins });
+      else
+        dispatch({ type: "SET_ERROR", payload: "Unexpected response format" });
+
     } catch (err) {
-      setError("Failed to fetch admins");
+      dispatch({ type: "SET_ERROR", payload: "Failed to fetch admins" });
     } finally {
-      setIsRefreshing(false);
+      dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
 
@@ -45,17 +73,11 @@ const Admins = () => {
       fetchData();
 
       socket.on("update_admin", (editedAdmin) => {
-        setAdmins((prevAdmins) =>
-          prevAdmins.map((admin) =>
-            admin._id === editedAdmin._id ? editedAdmin : admin
-          )
-        );
+        dispatch({ type: "UPDATE_ADMIN", payload: editedAdmin });
       });
 
       socket.on("delete_admin", (deletedAdmin) => {
-        setAdmins((prevAdmins) =>
-          prevAdmins.filter((admin) => admin.name !== deletedAdmin)
-        );
+        dispatch({ type: "DELETE_ADMIN", payload: deletedAdmin });
       });
 
       return () => {
@@ -66,7 +88,7 @@ const Admins = () => {
   );
 
   const renderAdmins = () => {
-    if (!Array.isArray(admins)) {
+    if (!Array.isArray(state.admins)) {
       return (
         <Text className="text-center">
           No admins available or unexpected data format.
@@ -74,7 +96,7 @@ const Admins = () => {
       );
     }
 
-    return admins.map((item, index) => (
+    return state.admins.map((item, index) => (
       <View
         key={index}
         className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
@@ -102,7 +124,7 @@ const Admins = () => {
     ));
   };
 
-  if (isRefreshing) {
+  if (state.isRefreshing) {
     return (
       <PageWrapper>
         <Loader />
@@ -115,7 +137,7 @@ const Admins = () => {
       <ScrollView
         refreshControl={
           <RefreshControl
-            refreshing={isRefreshing}
+            refreshing={state.isRefreshing}
             onRefresh={fetchData}
             tintColor="#000"
           />
@@ -138,9 +160,9 @@ const Admins = () => {
             />
           </View>
 
-          {error ? (
+          {state.error ? (
             <Text style={{ color: "white", textAlign: "center" }}>
-              {error}
+              {state.error}
             </Text>
           ) : (
             renderAdmins()

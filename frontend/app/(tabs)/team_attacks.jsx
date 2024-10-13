@@ -40,7 +40,7 @@ const TeamAttacks = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const { teamNo, socket } = useContext(GlobalContext);
+  const { globalState } = useContext(GlobalContext);
 
   const fetchData = async () => {
 
@@ -50,11 +50,11 @@ const TeamAttacks = () => {
       const result = await get_all_attacks();
 
       const filteredAttackingAttacks = Array.isArray(result)
-        ? result.filter((attack) => attack.attacking_team === teamNo.toString())
+        ? result.filter((attack) => attack.attacking_team === globalState.teamNo.toString())
         : [];
 
       const filteredDefendingAttacks = Array.isArray(result)
-        ? result.filter((attack) => attack.defending_team === teamNo.toString())
+        ? result.filter((attack) => attack.defending_team === globalState.teamNo.toString())
         : [];
 
       dispatch({ type: "SET_ATTACKING_ATTACKS", payload: filteredAttackingAttacks })
@@ -74,17 +74,17 @@ const TeamAttacks = () => {
       fetchData();
 
       // Set up socket listeners for real-time updates
-      socket.on("new_attack", (newAttack) => {
+      globalState.socket.on("new_attack", (newAttack) => {
 
-        if (newAttack.attacking_team.toString() === teamNo.toString())
+        if (newAttack.attacking_team.toString() === globalState.teamNo.toString())
           dispatch({ type: "SET_ATTACKING_ATTACKS", payload: [...state.attackingAttacks, newAttack] })
 
-        else if (newAttack.defending_team.toString() === teamNo.toString())
+        else if (newAttack.defending_team.toString() === globalState.teamNo.toString())
           dispatch({ type: "SET_DEFENDING_ATTACKS", payload: [...state.defendingAttacks, newAttack] })
 
       });
 
-      socket.on("remove_attack", (attackId) => {
+      globalState.socket.on("remove_attack", (attackId) => {
 
         dispatch({
           type: "SET_ATTACKING_ATTACKS",
@@ -100,10 +100,10 @@ const TeamAttacks = () => {
 
       // Clean up the socket listeners when the component loses focus or unmounts
       return () => {
-        socket.off("new_attack");
-        socket.off("remove_attack");
+        globalState.socket.off("new_attack");
+        globalState.socket.off("remove_attack");
       };
-    }, [teamNo])
+    }, [globalState.teamNo])
   );
 
   useEffect(() => {
@@ -136,7 +136,7 @@ const TeamAttacks = () => {
       >
         <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-start">
           <Text className="font-montez text-center text-5xl py-5">
-            Team {teamNo} Wars
+            Team {globalState.teamNo} Wars
           </Text>
 
           {state.error ? (
