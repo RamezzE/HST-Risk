@@ -2,15 +2,12 @@ import React, { useEffect, useReducer, useCallback, useContext } from "react";
 import {
   View,
   Text,
-  ImageBackground,
   ScrollView,
   RefreshControl,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { get_all_teams } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
-import { images } from "../../constants";
 import Loader from "../../components/Loader";
 import CustomButton from "../../components/CustomButton";
 
@@ -63,9 +60,7 @@ const Teams = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const insets = useSafeAreaInsets();
-
-  const { socket } = useContext(GlobalContext);
+  const { globalState } = useContext(GlobalContext);
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null })
@@ -91,17 +86,17 @@ const Teams = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-      socket.on("update_team", (updatedTeam) => {
+      globalState.socket.on("update_team", (updatedTeam) => {
         dispatch({ type: "UPDATE_TEAM", payload: updatedTeam });
       });
 
-      socket.on("update_country", (updatedCountry) => {
+      globalState.socket.on("update_country", (updatedCountry) => {
         dispatch({ type: "UPDATE_COUNTRY", payload: updatedCountry });
       });
 
       return () => {
-        socket.off("update_team"); // Cleanup socket listener on component unmount
-        socket.off("update_country"); // Cleanup socket listener on component unmount
+        globalState.socket.off("update_team"); // Cleanup socket listener on component unmount
+        globalState.socket.off("update_country"); // Cleanup socket listener on component unmount
       };
     }, [])
   );
