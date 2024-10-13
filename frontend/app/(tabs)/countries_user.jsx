@@ -3,16 +3,14 @@ import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
-  ImageBackground,
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Loader from "../../components/Loader";
 import { get_country_mappings } from "../../api/country_functions";
-import { images } from "../../constants";
 
 import { GlobalContext } from "../../context/GlobalProvider";
+import PageWrapper from "../../components/PageWrapper";
 
 const initialState = {
   countries: [],
@@ -44,8 +42,6 @@ const reducer = (state, action) => {
 const Countries = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState)
-
-  const insets = useSafeAreaInsets();
 
   const { socket } = useContext(GlobalContext);
 
@@ -141,66 +137,41 @@ const Countries = () => {
 
   if (state.isRefreshing) {
     return (
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="flex-1 bg-black"
-      >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
-          <Loader />
-        </ImageBackground>
-      </View>
+      <PageWrapper>
+        <Loader />
+      </PageWrapper>
     );
   }
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black h-full"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+    <PageWrapper>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={state.isRefreshing}
+            onRefresh={fetchData}
+            tintColor="#000"
+          />
+        }
+        bounces={false}
+        overScrollMode="never"
+        contentContainerStyle={{ paddingBottom: 20 }}
       >
-        <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={state.isRefreshing}
-              onRefresh={fetchData}
-              tintColor="#000"
-            />
-          }
-          bounces={false}
-          overScrollMode="never"
-          contentContainerStyle={{ paddingBottom: 20 }}
-        >
-          <View className="w-full justify-center min-h-[82.5vh] p-4 mb-24">
-            <Text className="text-6xl text-center font-montez py-2 mt-7">
-              Countries
-            </Text>
+        <View className="w-full justify-center min-h-[82.5vh] p-4 mb-24">
+          <Text className="text-6xl text-center font-montez py-2 mt-7">
+            Countries
+          </Text>
 
-            {state.error ? (
-              <Text style={{ color: "white", textAlign: "center" }}>
-                {state.error}
-              </Text>
-            ) : (
-              renderCountries()
-            )}
-          </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+          {state.error ? (
+            <Text style={{ color: "white", textAlign: "center" }}>
+              {state.error}
+            </Text>
+          ) : (
+            renderCountries()
+          )}
+        </View>
+      </ScrollView>
+    </PageWrapper>
   );
 };
 

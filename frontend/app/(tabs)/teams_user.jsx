@@ -15,6 +15,7 @@ import Loader from "../../components/Loader";
 import CustomButton from "../../components/CustomButton";
 
 import { GlobalContext } from "../../context/GlobalProvider";
+import PageWrapper from "../../components/PageWrapper";
 
 const initialState = {
   teams: [],
@@ -181,66 +182,41 @@ const Teams = () => {
 
   if (state.isRefreshing) {
     return (
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="flex-1 bg-black"
-      >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
-          <Loader />
-        </ImageBackground>
-      </View>
+      <PageWrapper>
+        <Loader />
+      </PageWrapper>
     );
   }
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black h-full"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+    <PageWrapper>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={state.isRefreshing}
+            onRefresh={fetchData}
+            tintColor="#000"
+          />
+        }
+        bounces={false}
+        overScrollMode="never"
+        contentContainerStyle={{ paddingBottom: 20 }}
       >
-        <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={state.isRefreshing}
-              onRefresh={fetchData}
-              tintColor="#000"
-            />
-          }
-          bounces={false}
-          overScrollMode="never"
-          contentContainerStyle={{ paddingBottom: 20 }}
-        >
-          <View className="w-full justify-start p-4 mb-24">
-            <Text className="text-6xl text-center font-montez py-2 mt-7">
-              Teams
-            </Text>
+        <View className="w-full justify-start p-4 mb-24">
+          <Text className="text-6xl text-center font-montez py-2 mt-7">
+            Teams
+          </Text>
 
-            {state.error ? (
-              <Text style={{ color: "black", textAlign: "center" }}>
-                {state.error}
-              </Text>
-            ) : (
-              renderTeams()
-            )}
-          </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+          {state.error ? (
+            <Text style={{ color: "black", textAlign: "center" }}>
+              {state.error}
+            </Text>
+          ) : (
+            renderTeams()
+          )}
+        </View>
+      </ScrollView>
+    </PageWrapper>
   );
 };
 
