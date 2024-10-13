@@ -2,20 +2,18 @@ import React, { useEffect, useState, useCallback, useContext } from "react";
 import {
   View,
   Text,
-  ImageBackground,
   ScrollView,
   RefreshControl,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../components/CustomButton";
-import { useRouter } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
 import { get_all_teams } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
-import { images } from "../../constants";
 import Loader from "../../components/Loader";
 
 import { GlobalContext } from "../../context/GlobalProvider";
+import PageWrapper from "../../components/PageWrapper";
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
@@ -23,8 +21,6 @@ const Teams = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [countries, setCountries] = useState([]);
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
 
   const { socket } = useContext(GlobalContext);
 
@@ -156,74 +152,50 @@ const Teams = () => {
 
   if (isRefreshing) {
     return (
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="flex-1 bg-black"
-      >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
-          <Loader />
-        </ImageBackground>
-      </View>
+      <PageWrapper>
+        <Loader />
+      </PageWrapper>
     );
   }
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black flex-1"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ flex: 1, resizeMode: "cover" }}
+    <PageWrapper>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={fetchData}
+            tintColor="#000"
+          />
+        }
+        bounces={false}
+        overScrollMode="never"
+        contentContainerStyle={{ paddingBottom: 20 }}
       >
-        <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={fetchData}
-              tintColor="#000"
+        <View className="w-full justify-start p-4 mb-24">
+          <Text className="text-6xl text-center font-montez py-2 mt-7">
+            Teams
+          </Text>
+
+          <View className="flex flex-row justify-between">
+            <CustomButton
+              title="View Subteams"
+              handlePress={() => router.navigate("/subteams")}
+              containerStyles="w-[45%] my-2 p-3"
+              textStyles={"text-2xl"}
             />
-          }
-          bounces={false}
-          overScrollMode="never"
-          contentContainerStyle={{ paddingBottom: 20 }}
-        >
-          <View className="w-full justify-start p-4 mb-24">
-            <Text className="text-6xl text-center font-montez py-2 mt-7">
-              Teams
-            </Text>
-
-            <View className="flex flex-row justify-between">
-              <CustomButton
-                title="View Subteams"
-                handlePress={() => router.navigate("/subteams")}
-                containerStyles="w-[45%] my-2 p-3"
-                textStyles={"text-2xl"}
-              />
-            </View>
-
-            {error ? (
-              <Text style={{ color: "white", textAlign: "center" }}>
-                {error}
-              </Text>
-            ) : (
-              renderTeams()
-            )}
           </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+
+          {error ? (
+            <Text style={{ color: "white", textAlign: "center" }}>
+              {error}
+            </Text>
+          ) : (
+            renderTeams()
+          )}
+        </View>
+      </ScrollView>
+    </PageWrapper>
   );
 };
 

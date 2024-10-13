@@ -2,26 +2,22 @@ import React, { useState, useCallback, useContext } from "react";
 import {
   View,
   Text,
-  ImageBackground,
   ScrollView,
   RefreshControl,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../components/CustomButton";
-import { useRouter } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
 import { get_admins } from "../../api/admin_functions";
-import { images } from "../../constants";
 import Loader from "../../components/Loader";
 
 import { GlobalContext } from "./../../context/GlobalProvider";
+import PageWrapper from "../../components/PageWrapper";
 
 const Admins = () => {
   const [admins, setAdmins] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
 
   const { socket } = useContext(GlobalContext);
 
@@ -108,74 +104,50 @@ const Admins = () => {
 
   if (isRefreshing) {
     return (
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="flex-1 bg-black"
-      >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
-          <Loader />
-        </ImageBackground>
-      </View>
+      <PageWrapper>
+        <Loader />
+      </PageWrapper>
     );
   }
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black flex-1"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ flex: 1, resizeMode: "cover" }}
+    <PageWrapper>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={fetchData}
+            tintColor="#000"
+          />
+        }
+        contentContainerStyle={{ paddingBottom: 20 }}
+        bounces={false}
+        overScrollMode="never"
       >
-        <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={fetchData}
-              tintColor="#000"
+        <View className="w-full justify-start p-4 mb-24">
+          <Text className="text-6xl text-center font-montez py-2 mt-7">
+            Admins
+          </Text>
+
+          <View className="flex flex-row justify-between">
+            <CustomButton
+              title="Add Admin"
+              handlePress={() => router.replace("/add_admin")}
+              containerStyles="w-[45%] my-2 p-3"
+              textStyles={"text-2xl"}
             />
-          }
-          contentContainerStyle={{ paddingBottom: 20 }}
-          bounces={false}
-          overScrollMode="never"
-        >
-          <View className="w-full justify-start p-4 mb-24">
-            <Text className="text-6xl text-center font-montez py-2 mt-7">
-              Admins
-            </Text>
-
-            <View className="flex flex-row justify-between">
-              <CustomButton
-                title="Add Admin"
-                handlePress={() => router.replace("/add_admin")}
-                containerStyles="w-[45%] my-2 p-3"
-                textStyles={"text-2xl"}
-              />
-            </View>
-
-            {error ? (
-              <Text style={{ color: "white", textAlign: "center" }}>
-                {error}
-              </Text>
-            ) : (
-              renderAdmins()
-            )}
           </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+
+          {error ? (
+            <Text style={{ color: "white", textAlign: "center" }}>
+              {error}
+            </Text>
+          ) : (
+            renderAdmins()
+          )}
+        </View>
+      </ScrollView>
+    </PageWrapper>
   );
 };
 

@@ -2,7 +2,6 @@ import React, { useState, useContext, useCallback } from "react";
 import {
   View,
   Text,
-  ImageBackground,
   ScrollView,
   RefreshControl,
   Alert,
@@ -10,22 +9,20 @@ import {
 
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { get_settings } from "../../api/settings_functions";
 import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
-import { images } from "../../constants";
 import { GlobalContext } from "../../context/GlobalProvider";
 import { create_teams } from "../../api/team_functions";
 
 import { useFocusEffect } from "@react-navigation/native";
+import PageWrapper from "../../components/PageWrapper";
 
 const Dashboard = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [settings, setSettings] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const insets = useSafeAreaInsets();
 
   const { Logout, socket } = useContext(GlobalContext);
 
@@ -91,9 +88,9 @@ const Dashboard = () => {
 
     const filteredSettings = Array.isArray(settings)
       ? settings.filter(
-          (setting) =>
-            setting.name === "No of Teams" || setting.name === "No of Subteams"
-        )
+        (setting) =>
+          setting.name === "No of Teams" || setting.name === "No of Subteams"
+      )
       : [];
 
     // Find the values, ensuring the result is defined before accessing .value
@@ -200,87 +197,62 @@ const Dashboard = () => {
 
   if (isRefreshing) {
     return (
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="flex-1 bg-black"
-      >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
-          <Loader />
-        </ImageBackground>
-      </View>
+      <PageWrapper>
+        <Loader />
+      </PageWrapper>
     );
   }
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black h-full"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+    <PageWrapper>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 20 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => fetchData()}
+            tintColor="#000"
+          />
+        }
+        bounces={false}
+        overScrollMode="never"
       >
-        <ScrollView
-          contentContainerStyle={{ paddingBottom: 20 }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={() => fetchData()}
-              tintColor="#000"
-            />
-          }
-          bounces={false}
-          overScrollMode="never"
-        >
-          <View className="w-full justify-start p-4 mb-24">
-            <BackButton
-              style="w-[20vw]"
-              size={32}
-              onPress={() => {
-                logoutFunc();
-              }}
-            />
+        <View className="w-full justify-start p-4 mb-24">
+          <BackButton
+            style="w-[20vw]"
+            size={32}
+            onPress={() => {
+              logoutFunc();
+            }}
+          />
 
-            <Text className="text-6xl text-center font-montez py-2">
-              Dashboard
+          <Text className="text-6xl text-center font-montez py-2">
+            Dashboard
+          </Text>
+
+          <CustomButton
+            title="New Game"
+            handlePress={() => {
+              createNewGameAlert();
+            }}
+            containerStyles="w-[45%] mt-2 mb-6 p-3"
+            textStyles={"text-2xl"}
+            isLoading={isSubmitting}
+          />
+
+          <Text className="font-montez text-4xl text-left mb-3">
+            Settings
+          </Text>
+          {error ? (
+            <Text style={{ color: "white", textAlign: "center" }}>
+              {error}
             </Text>
-
-            <CustomButton
-              title="New Game"
-              handlePress={() => {
-                createNewGameAlert();
-              }}
-              containerStyles="w-[45%] mt-2 mb-6 p-3"
-              textStyles={"text-2xl"}
-              isLoading={isSubmitting}
-            />
-
-            <Text className="font-montez text-4xl text-left mb-3">
-              Settings
-            </Text>
-            {error ? (
-              <Text style={{ color: "white", textAlign: "center" }}>
-                {error}
-              </Text>
-            ) : (
-              renderSettings()
-            )}
-          </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+          ) : (
+            renderSettings()
+          )}
+        </View>
+      </ScrollView>
+    </PageWrapper>
   );
 };
 

@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback, useContext } from "react";
 import {
   View,
   Text,
-  ImageBackground,
   RefreshControl,
   ScrollView,
   Alert,
@@ -10,9 +9,7 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { images } from "../../constants";
 import { get_all_attacks } from "../../api/attack_functions";
 
 import { delete_attack, set_attack_result } from "../../api/attack_functions";
@@ -21,14 +18,13 @@ import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 
 import { GlobalContext } from "../../context/GlobalProvider";
+import PageWrapper from "../../components/PageWrapper";
 
 const DashboardAttacks = () => {
   const [attacks, setAttacks] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const insets = useSafeAreaInsets();
 
   const { socket } = useContext(GlobalContext);
 
@@ -262,79 +258,54 @@ const DashboardAttacks = () => {
 
   if (isRefreshing) {
     return (
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="flex-1 bg-black"
-      >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
-          <Loader />
-        </ImageBackground>
-      </View>
+      <PageWrapper>
+        <Loader />
+      </PageWrapper>
     );
   }
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+    <PageWrapper>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 20 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={fetchData}
+            tintColor="#000"
+          />
+        }
+        bounces={false}
+        overScrollMode="never"
       >
-        <ScrollView
-          contentContainerStyle={{ paddingBottom: 20 }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={fetchData}
-              tintColor="#000"
+        <View className="w-full justify-center p-4 mb-24">
+          <Text className="text-6xl text-center font-montez py-2 mt-7">
+            Wars
+          </Text>
+          <View className="flex flex-row justify-between">
+            <CustomButton
+              title="Create Attack"
+              handlePress={() => router.replace("/add_attack")}
+              containerStyles="w-[45%] my-2 p-3"
+              textStyles={"text-2xl"}
             />
-          }
-          bounces={false}
-          overScrollMode="never"
-        >
-          <View className="w-full justify-center p-4 mb-24">
-            <Text className="text-6xl text-center font-montez py-2 mt-7">
-              Wars
-            </Text>
-            <View className="flex flex-row justify-between">
-              <CustomButton
-                title="Create Attack"
-                handlePress={() => router.replace("/add_attack")}
-                containerStyles="w-[45%] my-2 p-3"
-                textStyles={"text-2xl"}
-              />
-              <CustomButton
-                title="View Warzones"
-                handlePress={() => router.navigate("/warzones")}
-                containerStyles="w-[45%] my-2 p-3"
-                textStyles={"text-2xl"}
-              />
-            </View>
-            {error ? (
-              <Text style={{ color: "white", textAlign: "center" }}>
-                {error}
-              </Text>
-            ) : (
-              renderAttacks()
-            )}
+            <CustomButton
+              title="View Warzones"
+              handlePress={() => router.navigate("/warzones")}
+              containerStyles="w-[45%] my-2 p-3"
+              textStyles={"text-2xl"}
+            />
           </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+          {error ? (
+            <Text style={{ color: "white", textAlign: "center" }}>
+              {error}
+            </Text>
+          ) : (
+            renderAttacks()
+          )}
+        </View>
+      </ScrollView>
+    </PageWrapper>
   );
 };
 

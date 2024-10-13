@@ -4,27 +4,23 @@ import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
-  ImageBackground,
   ScrollView,
   RefreshControl,
 } from "react-native";
 import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Loader from "../../components/Loader";
 import { get_country_mappings } from "../../api/country_functions";
 
-import { images } from "../../constants";
 
 import { GlobalContext } from "../../context/GlobalProvider";
+import PageWrapper from "../../components/PageWrapper";
 
 const Countries = () => {
   const [countries, setCountries] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
-
-  const insets = useSafeAreaInsets();
 
   const { socket } = useContext(GlobalContext);
 
@@ -120,8 +116,7 @@ const Countries = () => {
               title="Edit"
               handlePress={() =>
                 router.push(
-                  `/edit_country?countryName=${item.name.trim()}&teamNo=${
-                    item.teamNo
+                  `/edit_country?countryName=${item.name.trim()}&teamNo=${item.teamNo
                   }`
                 )
               }
@@ -136,66 +131,41 @@ const Countries = () => {
 
   if (isRefreshing) {
     return (
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="flex-1 bg-black"
-      >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
-          <Loader />
-        </ImageBackground>
-      </View>
+      <PageWrapper>
+        <Loader />
+      </PageWrapper>
     );
   }
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black flex-1"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="flex-1" // Ensure it covers the full height
+    <PageWrapper>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 20 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={fetchData}
+            tintColor="#000"
+          />
+        }
+        bounces={false}
+        overScrollMode="never"
       >
-        <ScrollView
-          contentContainerStyle={{ paddingBottom: 20 }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={fetchData}
-              tintColor="#000"
-            />
-          }
-          bounces={false}
-          overScrollMode="never"
-        >
-          <View className="w-full justify-center p-4 mb-24">
-            <Text className="text-6xl text-center font-montez py-2 mt-7">
-              Countries
-            </Text>
+        <View className="w-full justify-center p-4 mb-24">
+          <Text className="text-6xl text-center font-montez py-2 mt-7">
+            Countries
+          </Text>
 
-            {error ? (
-              <Text style={{ color: "white", textAlign: "center" }}>
-                {error}
-              </Text>
-            ) : (
-              renderCountries()
-            )}
-          </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+          {error ? (
+            <Text style={{ color: "white", textAlign: "center" }}>
+              {error}
+            </Text>
+          ) : (
+            renderCountries()
+          )}
+        </View>
+      </ScrollView>
+    </PageWrapper>
   );
 };
 
