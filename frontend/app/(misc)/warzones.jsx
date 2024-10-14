@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useContext } from "react";
 import {
   View,
+  ScrollView,
   Text,
+  RefreshControl,
 } from "react-native";
 import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
@@ -125,30 +127,43 @@ const Warzones = () => {
   }
 
   return (
-
-    <View className="w-full justify-start p-4 mb-24">
-      <BackButton
-        style="w-[20vw]"
-        size={32}
-        onPress={() => router.navigate("/dashboard_attacks")}
-      />
-      <Text className="text-6xl text-center font-montez py-2 mt-7">
-        Warzones
-      </Text>
-      <CustomButton
-        title="Add Warzone"
-        handlePress={() => router.navigate("/add_warzone")}
-        containerStyles="w-[45%] my-2 p-3"
-        textStyles={"text-2xl"}
-      />
-      {error ? (
-        <Text style={{ color: "white", textAlign: "center" }}>
-          {error}
+    <ScrollView
+      contentContainerStyle={{ paddingBottom: 20 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={() => fetchData()}
+          tintColor="#000"
+        />
+      }
+      bounces={false}
+      overScrollMode="never"
+    >
+      <View className="w-full justify-start p-4 mb-24">
+        <BackButton
+          style="w-[20vw]"
+          size={32}
+          onPress={() => router.navigate("/dashboard_attacks")}
+        />
+        <Text className="text-6xl text-center font-montez py-2 mt-7">
+          Warzones
         </Text>
-      ) : (
-        renderWarzones()
-      )}
-    </View>
+        <CustomButton
+          title="Add Warzone"
+          handlePress={() => router.navigate("/add_warzone")}
+          containerStyles="w-[45%] my-2 p-3"
+          textStyles={"text-2xl"}
+        />
+        {error ? (
+          <Text style={{ color: "white", textAlign: "center" }}>
+            {error}
+          </Text>
+        ) : (
+          renderWarzones()
+        )}
+      </View>
+    </ScrollView>
+
   );
 };
 

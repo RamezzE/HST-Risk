@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useContext } from "react";
 import {
   View,
+  ScrollView,
+  RefreshControl,
   Text,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -93,26 +95,37 @@ const SubTeams = () => {
   }
 
   return (
-
-    <View className="w-full justify-start p-4 mb-24">
-      <BackButton
-        style="w-[20vw]"
-        size={32}
-        onPress={() => router.navigate("/teams")}
-      />
-      <Text className="text-6xl text-center font-montez py-2 mt-7">
-        Subteams
-      </Text>
-
-      {error ? (
-        <Text style={{ color: "white", textAlign: "center" }}>
-          {error}
+    <ScrollView
+      contentContainerStyle={{ paddingBottom: 20 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={() => fetchData()}
+          tintColor="#000"
+        />
+      }
+      bounces={false}
+      overScrollMode="never"
+    >
+      <View className="w-full justify-start p-4 mb-24">
+        <BackButton
+          style="w-[20vw]"
+          size={32}
+          onPress={() => router.navigate("/teams")}
+        />
+        <Text className="text-6xl text-center font-montez py-2 mt-7">
+          Subteams
         </Text>
-      ) : (
-        renderSubTeams()
-      )}
-    </View>
 
+        {error ? (
+          <Text style={{ color: "white", textAlign: "center" }}>
+            {error}
+          </Text>
+        ) : (
+          renderSubTeams()
+        )}
+      </View>
+    </ScrollView>
   );
 };
 
