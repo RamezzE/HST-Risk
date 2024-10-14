@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import { GlobalProvider } from "../context/GlobalProvider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import NotificationHandler from "../components/NotificationHandler"; // Import the notification component
 
 const RootLayout = () => {
 
@@ -36,18 +37,19 @@ const RootLayout = () => {
     <SafeAreaProvider>
       <KeyboardProvider>
         <GlobalProvider>
-            <Stack
-              screenOptions={{
-                contentStyle: { backgroundColor: "transparent" }, // Set entire stack to transparent
-                headerShown: false, 
-              }}
-            >
-              <Stack.Screen name="index"/>
-              <Stack.Screen name="(tabs)"/>
-              <Stack.Screen name="(dashboard)"/>
-              <Stack.Screen name="(forms)"/>
-              <Stack.Screen name="(misc)"/>
-            </Stack>
+          <NotificationHandler />
+          <Stack
+            screenOptions={{
+              contentStyle: { backgroundColor: "transparent" }, // Set entire stack to transparent
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(dashboard)" />
+            <Stack.Screen name="(forms)" />
+            <Stack.Screen name="(misc)" />
+          </Stack>
         </GlobalProvider>
       </KeyboardProvider>
     </SafeAreaProvider>

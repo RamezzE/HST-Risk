@@ -7,7 +7,6 @@ import { GlobalContext } from "../context/GlobalProvider";
 import { is_logged_in } from "../api/user_functions";
 import { images } from "../constants";
 import PageWrapper from "../components/PageWrapper";
-import NotificationHandler from "../components/NotificationHandler"; // Import the notification component
 
 SplashScreen.preventAutoHideAsync();
 
@@ -109,7 +108,6 @@ export default function App() {
 
   return (
     <PageWrapper>
-      <NotificationHandler />
       <View className="flex-1 justify-center pt-8">
         <View className="w-full justify-center space-y-8 items-center px-4 py-8">
           <View className="w-full flex flex-col space-y-8">
