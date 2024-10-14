@@ -7,7 +7,6 @@ import {
   Alert,
 } from "react-native";
 import { Tabs } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { icons } from "../../constants";
 import { router } from "expo-router";
 import { GlobalContext } from "../../context/GlobalProvider";
@@ -223,7 +222,6 @@ const TabsLayout = () => {
       />
       {/* )} */}
 
-      <StatusBar backgroundColor="#000" style="light" />
     </PageWrapper>
   );
 };

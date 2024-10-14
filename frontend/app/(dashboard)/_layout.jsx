@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { View, Text, Image, Alert, Platform } from "react-native";
 import { Tabs } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { GlobalContext } from "../../context/GlobalProvider"; 
 import { router } from "expo-router"; 
 import { deletePushToken } from "../../api/user_functions"; 
@@ -159,7 +158,6 @@ const TabsLayout = () => {
           }}
         />
       </Tabs>
-      <StatusBar backgroundColor="#000" style="light" />
     </PageWrapper>
   );
 };

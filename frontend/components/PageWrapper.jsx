@@ -1,4 +1,4 @@
-import React from 'react';
+import { StatusBar } from "expo-status-bar";
 import { View, ImageBackground } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { images } from '../constants';
@@ -22,6 +22,7 @@ const PageWrapper = ({ children }) => {
             >
                 {children}
             </ImageBackground>
+            <StatusBar backgroundColor="#000" style="light" />
         </View>
     );
 };

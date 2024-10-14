@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import { Text, View, Image, Platform } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import * as Notifications from "expo-notifications";
 import * as Device from 'expo-device';
 import { router } from "expo-router";
@@ -247,7 +246,6 @@ export default function App() {
           </Text>
         </View>
       </View>
-      <StatusBar backgroundColor="#000" style="light" />
     </PageWrapper>
   );
 }
