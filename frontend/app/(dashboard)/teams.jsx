@@ -4,15 +4,18 @@ import {
   Text,
   ScrollView,
   RefreshControl,
+  Alert,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import CustomButton from "../../components/CustomButton";
 import { router } from "expo-router";
 import { get_all_teams } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
-import Loader from "../../components/Loader";
 
 import { GlobalContext } from "../../context/GlobalProvider";
+
+import BackButton from "../../components/BackButton";
+import Loader from "../../components/Loader";
+import CustomButton from "../../components/CustomButton";
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
@@ -21,7 +24,7 @@ const Teams = () => {
   const [countries, setCountries] = useState([]);
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
 
-  const { socket } = useContext(GlobalContext);
+  const { globalState, socket, Logout } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -149,6 +152,26 @@ const Teams = () => {
     });
   };
 
+  const logoutFunc = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?\nYou won't be able to log back in without your username and password.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          onPress: () => {
+            Logout();
+            router.replace("/");
+          },
+        },
+      ]
+    );
+  };
+
   if (isRefreshing) {
     return (
       <Loader />
@@ -169,17 +192,34 @@ const Teams = () => {
       contentContainerStyle={{ paddingBottom: 20 }}
     >
       <View className="w-full justify-start p-4 mb-24">
+        {
+          globalState.userMode === "admin" && (
+            <BackButton
+              style="w-[20vw]"
+              size={32}
+              onPress={() => {
+                logoutFunc();
+              }}
+            />
+          )
+        }
+
         <Text className="text-6xl text-center font-montez py-2 mt-7">
           Teams
         </Text>
 
         <View className="flex flex-row justify-between">
-          <CustomButton
-            title="View Subteams"
-            handlePress={() => router.navigate("/subteams")}
-            containerStyles="w-[45%] my-2 p-3"
-            textStyles={"text-2xl"}
-          />
+          {
+            globalState.userMode === "super_admin" && (
+              <CustomButton
+                title="View Subteams"
+                handlePress={() => router.navigate("/subteams")}
+                containerStyles="w-[45%] my-2 p-3"
+                textStyles={"text-2xl"}
+              />
+            )
+          }
+
         </View>
 
         {error ? (

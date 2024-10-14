@@ -74,7 +74,7 @@ const SignIn = () => {
             return;
           }
 
-          router.replace("/admin_home2");
+          router.replace("/teams");
           return;
         }
 

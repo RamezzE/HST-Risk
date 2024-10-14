@@ -93,11 +93,8 @@ const EditTeam = () => {
       }
 
       Alert.alert("Success", "Team balance updated successfully");
-      if (globalState.userMode == "super_admin") {
-        router.navigate("/teams");
-      } else if (globalState.userMode == "admin") {
-        router.navigate("/admin_home2");
-      }
+      router.navigate("/teams");
+
     } catch (error) {
       Alert.alert("Error", "Error updating team balance");
       console.log(error);
@@ -130,12 +127,8 @@ const EditTeam = () => {
 
       Alert.alert("Success", "Team updated successfully");
 
-      // router.dismiss(1);
-      if (globalState.userMode == "super_admin") {
-        router.navigate("/teams");
-      } else if (globalState.userMode == "admin") {
-        router.navigate("/admin_home2");
-      }
+      router.navigate("/teams");
+
     } catch (error) {
       Alert.alert("Error", "Error updating team");
       console.log(error);
@@ -151,12 +144,7 @@ const EditTeam = () => {
         style="w-[20vw]"
         size={32}
         onPress={() => {
-          if (globalState.userMode == "super_admin") {
-            router.navigate("/teams");
-          } else if (globalState.userMode == "admin") {
-            router.navigate("/admin_home2");
-          }
-          ``;
+          router.navigate("/teams");
         }}
       />
       <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">

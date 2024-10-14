@@ -99,7 +99,7 @@ export default function App() {
             router.navigate("/admin_home");
             return;
           }
-          router.navigate("/admin_home2");
+          router.navigate("/teams");
           return;
         }
 
@@ -137,7 +137,7 @@ export default function App() {
           router.navigate("/admin_home");
           return;
         }
-        router.navigate("/admin_home2");
+        router.navigate("/teams");
         return;
       }
 

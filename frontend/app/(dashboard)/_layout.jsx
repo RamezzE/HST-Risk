@@ -2,9 +2,9 @@ import React, { useContext, useEffect } from "react";
 import { View, Text, Image, Alert, Platform } from "react-native";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { GlobalContext } from "../../context/GlobalProvider"; // Import GlobalContext
-import { router } from "expo-router"; // Import router for navigation
-import { deletePushToken } from "../../api/user_functions"; // Import deletePushToken if needed
+import { GlobalContext } from "../../context/GlobalProvider"; 
+import { router } from "expo-router"; 
+import { deletePushToken } from "../../api/user_functions"; 
 
 import { icons } from "../../constants";
 import PageWrapper from "../../components/PageWrapper";
@@ -29,7 +29,7 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 const TabsLayout = () => {
-  const { globalState, socket, Logout } = useContext(GlobalContext); // Use the context
+  const { globalState, socket, Logout } = useContext(GlobalContext); 
 
   useEffect(() => {
     const handleNewGame = () => {
@@ -68,7 +68,13 @@ const TabsLayout = () => {
             backgroundColor: "#201402",
             borderTopWidth: 1,
             borderTopColor: "#000",
-            height: Platform.OS === "ios" ? "12%" : "10%",
+            height:
+              globalState.userMode === "admin"
+                ? null
+                : Platform.OS === "ios"
+                  ? "12%"
+                  : "10%",
+
           },
         }}
       >
@@ -77,6 +83,7 @@ const TabsLayout = () => {
           options={{
             title: "Home",
             headerShown: false,
+            href: globalState.userMode == "admin" ? null : "/dashboard",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.dashboard}
@@ -92,6 +99,7 @@ const TabsLayout = () => {
           options={{
             title: "Wars",
             headerShown: false,
+            href: globalState.userMode == "admin" ? null : "/dashboard_attacks",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.swords}
@@ -107,6 +115,7 @@ const TabsLayout = () => {
           options={{
             title: "Teams",
             headerShown: false,
+            href: globalState.userMode == "admin" ? null : "/teams",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.teams}
@@ -122,6 +131,7 @@ const TabsLayout = () => {
           options={{
             title: "Countries",
             headerShown: false,
+            href: globalState.userMode == "admin" ? null : "/countries",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.countries}
@@ -137,6 +147,7 @@ const TabsLayout = () => {
           options={{
             title: "Admins",
             headerShown: false,
+            href: globalState.userMode == "admin" ? null : "/admins",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.whistle}
