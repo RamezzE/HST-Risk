@@ -109,7 +109,7 @@ const Dashboard = () => {
           "Success",
           "New Game Created Successfully.\nAll users will be logged out automatically"
         );
-        router.navigate("/teams");
+        router.navigate("/(teams)");
       } else {
         Alert.alert("Error", result.errorMsg);
       }

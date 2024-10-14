@@ -5,16 +5,16 @@ import {
   Text,
   RefreshControl,
 } from "react-native";
-import CustomButton from "../../components/CustomButton";
+import CustomButton from "../../../components/CustomButton";
 import { useRouter } from "expo-router";
-import Loader from "../../components/Loader";
-import BackButton from "../../components/BackButton";
+import Loader from "../../../components/Loader";
+import BackButton from "../../../components/BackButton";
 
-import { get_warzones } from "../../api/warzone_functions";
+import { get_warzones } from "../../../api/warzone_functions";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import { GlobalContext } from "../../context/GlobalProvider";
+import { GlobalContext } from "../../../context/GlobalProvider";
 
 const Warzones = () => {
   const [warzones, setWarzones] = useState([]);
@@ -143,7 +143,7 @@ const Warzones = () => {
         <BackButton
           style="w-[20vw]"
           size={32}
-          onPress={() => router.navigate("/dashboard_attacks")}
+          onPress={() => router.navigate("/(wars)")}
         />
         <Text className="text-6xl text-center font-montez py-2 mt-7">
           Warzones

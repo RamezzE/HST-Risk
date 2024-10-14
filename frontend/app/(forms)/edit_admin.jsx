@@ -83,7 +83,7 @@ const EditAdmin = () => {
 
       Alert.alert("Success", "Admin updated successfully");
 
-      router.navigate("/admins");
+      router.navigate("/dashboard/admins");
     } catch (error) {
       Alert.alert("Error", "Failed to update admin");
       console.log(error);
@@ -105,7 +105,7 @@ const EditAdmin = () => {
 
       Alert.alert("Success", "Admin deleted successfully");
 
-      router.navigate("/admins");
+      router.navigate("/dashboard/admins");
     } catch (error) {
       Alert.alert("Error", "Error deleting admin");
       console.log(error);
@@ -165,7 +165,7 @@ const EditAdmin = () => {
       <BackButton
         style="w-[20vw]"
         size={32}
-        onPress={() => router.navigate("/admins")}
+        onPress={() => router.navigate("/dashboard/admins")}
       />
       <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
         Edit Admin

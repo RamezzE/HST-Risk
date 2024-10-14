@@ -28,7 +28,7 @@ export default function App() {
             router.navigate("/admin_home");
             return;
           }
-          router.navigate("/teams");
+          router.navigate("/(teams)");
           return;
         }
         if (globalState.userMode === "super_admin") {
@@ -64,7 +64,7 @@ export default function App() {
           router.navigate("/admin_home");
           return;
         }
-        router.navigate("/teams");
+        router.navigate("/(teams)");
         return;
       }
 

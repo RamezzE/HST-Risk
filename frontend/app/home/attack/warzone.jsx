@@ -4,16 +4,14 @@ import {
   Alert,
 } from "react-native";
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import CustomButton from "../../components/CustomButton";
-import { useLocalSearchParams } from "expo-router";
-import { get_warzones } from "../../api/warzone_functions";
-import { attack } from "../../api/attack_functions";
-import BackButton from "../../components/BackButton";
-import Loader from "../../components/Loader";
+import CustomButton from "../../../components/CustomButton";
+import { router, useLocalSearchParams } from "expo-router";
+import { get_warzones } from "../../../api/warzone_functions";
+import { attack } from "../../../api/attack_functions";
+import BackButton from "../../../components/BackButton";
+import Loader from "../../../components/Loader";
 
-import { router } from "expo-router";
-
-import { GlobalContext } from "../../context/GlobalProvider";
+import { GlobalContext } from "../../../context/GlobalProvider";
 
 import { useFocusEffect } from "@react-navigation/native";
 

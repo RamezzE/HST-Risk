@@ -78,11 +78,11 @@ const TabsLayout = () => {
         }}
       >
         <Tabs.Screen
-          name="dashboard"
+          name="index"
           options={{
             title: "Home",
             headerShown: false,
-            href: globalState.userMode == "admin" ? null : "/dashboard",
+            href: globalState.userMode == "admin" ? null : undefined,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.dashboard}
@@ -94,11 +94,11 @@ const TabsLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="dashboard_attacks"
+          name="(wars)"
           options={{
             title: "Wars",
             headerShown: false,
-            href: globalState.userMode == "admin" ? null : "/dashboard_attacks",
+            href: globalState.userMode == "admin" ? null : undefined,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.swords}
@@ -110,11 +110,11 @@ const TabsLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="teams"
+          name="(teams)"
           options={{
             title: "Teams",
             headerShown: false,
-            href: globalState.userMode == "admin" ? null : "/teams",
+            href: globalState.userMode == "admin" ? null : undefined,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.teams}
@@ -130,7 +130,7 @@ const TabsLayout = () => {
           options={{
             title: "Countries",
             headerShown: false,
-            href: globalState.userMode == "admin" ? null : "/countries",
+            href: globalState.userMode == "admin" ? null : undefined,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.countries}
@@ -146,7 +146,7 @@ const TabsLayout = () => {
           options={{
             title: "Admins",
             headerShown: false,
-            href: globalState.userMode == "admin" ? null : "/admins",
+            href: globalState.userMode == "admin" ? null : undefined,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.whistle}

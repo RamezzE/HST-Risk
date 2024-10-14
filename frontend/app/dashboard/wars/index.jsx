@@ -7,17 +7,17 @@ import {
   Alert,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import CustomButton from "../../components/CustomButton";
+import CustomButton from "../../../components/CustomButton";
 import { router } from "expo-router";
 
-import { get_all_attacks } from "../../api/attack_functions";
+import { get_all_attacks } from "../../../api/attack_functions";
 
-import { delete_attack, set_attack_result } from "../../api/attack_functions";
+import { delete_attack, set_attack_result } from "../../../api/attack_functions";
 
-import Loader from "../../components/Loader";
-import Timer from "../../components/Timer";
+import Loader from "../../../components/Loader";
+import Timer from "../../../components/Timer";
 
-import { GlobalContext } from "../../context/GlobalProvider";
+import { GlobalContext } from "../../../context/GlobalProvider";
 
 const DashboardAttacks = () => {
   const [attacks, setAttacks] = useState([]);
@@ -287,7 +287,7 @@ const DashboardAttacks = () => {
           />
           <CustomButton
             title="View Warzones"
-            handlePress={() => router.navigate("/warzones")}
+            handlePress={() => router.navigate("/dashboard/wars/warzones")}
             containerStyles="w-[45%] my-2 p-3"
             textStyles={"text-2xl"}
           />

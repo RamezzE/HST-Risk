@@ -141,7 +141,7 @@ const AddAttack = () => {
       <BackButton
         style="w-[20vw]"
         size={32}
-        onPress={() => router.navigate("/dashboard_attacks")}
+        onPress={() => router.navigate("/(wars)")}
       />
       <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
         Add Attack

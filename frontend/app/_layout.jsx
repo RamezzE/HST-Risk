@@ -45,8 +45,8 @@ const RootLayout = () => {
             }}
           >
             <Stack.Screen name="index" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="(dashboard)" />
+            <Stack.Screen name="home" />
+            <Stack.Screen name="dashboard" />
             <Stack.Screen name="(forms)" />
             <Stack.Screen name="(misc)" />
           </Stack>

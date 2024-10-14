@@ -85,7 +85,7 @@ const AddWarzone = () => {
       }
 
       Alert.alert("Success", "Warzone created successfully");
-      router.navigate("/warzones");
+      router.navigate("/dashboard/wars/warzones");
     } catch (error) {
       Alert.alert("Error", "Failed to create warzone");
       console.log(error);
@@ -117,7 +117,7 @@ const AddWarzone = () => {
       <BackButton
         style="w-[20vw]"
         size={32}
-        onPress={() => router.navigate("/warzones")}
+        onPress={() => router.navigate("/dashboard/wars/warzones")}
       />
       <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
         Add Warzone

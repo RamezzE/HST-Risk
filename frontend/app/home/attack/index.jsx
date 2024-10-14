@@ -10,24 +10,24 @@ import { useState, useEffect, useContext, useCallback, useReducer } from "react"
 import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import { router } from "expo-router";
 
-import { GlobalContext } from "../../context/GlobalProvider";
+import { GlobalContext } from "../../../context/GlobalProvider";
 
-import countries from "../../constants/countries";
+import countries from "../../../constants/countries";
 
 import {
   get_countries_by_team,
   get_country_mappings,
-} from "../../api/country_functions";
-import { get_all_teams } from "../../api/team_functions";
-import { get_settings } from "../../api/settings_functions";
-import { attack_check, get_all_attacks } from "../../api/attack_functions";
+} from "../../../api/country_functions";
+import { get_all_teams } from "../../../api/team_functions";
+import { get_settings } from "../../../api/settings_functions";
+import { attack_check, get_all_attacks } from "../../../api/attack_functions";
 
-import MapZone from "../../components/MapZone";
-import CountryConnections from "../../constants/country_connections";
-import DottedLine from "../../components/DottedLine";
-import Loader from "../../components/Loader";
-import DropDownField from "../../components/DropDownField";
-import CustomButton from "../../components/CustomButton";
+import MapZone from "../../../components/MapZone";
+import CountryConnections from "../../../constants/country_connections";
+import DottedLine from "../../../components/DottedLine";
+import Loader from "../../../components/Loader";
+import DropDownField from "../../../components/DropDownField";
+import CustomButton from "../../../components/CustomButton";
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -326,7 +326,7 @@ const Attack = () => {
 
       // setForm({ your_zone: "", other_zone: "" });
       router.navigate(
-        `/warzone?attacking_zone=${zone_1}&defending_zone=${zone_2}&attacking_team=${team_1}&defending_team=${team_2}&attacking_subteam=${globalState.subteam}`
+        `/home/attack/warzone?attacking_zone=${zone_1}&defending_zone=${zone_2}&attacking_team=${team_1}&defending_team=${team_2}&attacking_subteam=${globalState.subteam}`
       );
     } catch (error) {
       Alert.alert(

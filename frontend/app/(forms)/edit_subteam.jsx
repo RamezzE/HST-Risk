@@ -56,7 +56,7 @@ const EditTeam = () => {
 
       Alert.alert("Success", "Subteam updated successfully");
 
-      router.navigate("/subteams");
+      router.navigate("/dashboard/teams/subteams");
     } catch (error) {
       Alert.alert("Error", "Error updating team");
       console.log(error);
@@ -72,7 +72,7 @@ const EditTeam = () => {
       <BackButton
         style="w-[20vw]"
         size={32}
-        onPress={() => router.navigate("/subteams")}
+        onPress={() => router.navigate("/dashboard/teams/subteams")}
       />
       <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
         Edit Subteam

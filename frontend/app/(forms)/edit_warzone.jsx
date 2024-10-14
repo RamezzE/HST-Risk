@@ -97,7 +97,7 @@ const EditWarzone = () => {
       }
 
       Alert.alert("Success", "Warzone updated successfully");
-      router.navigate("/warzones");
+      router.navigate("/dashboard/wars/warzones");
     } catch (error) {
       Alert.alert("Error", "Failed to update warzone");
       console.log(error);
@@ -118,7 +118,7 @@ const EditWarzone = () => {
       }
 
       Alert.alert("Success", "Warzone deleted successfully");
-      router.navigate("/warzones");
+      router.navigate("/dashboard/wars/warzones");
     } catch (error) {
       Alert.alert("Error", "Error deleting warzone");
       console.log(error);
@@ -167,7 +167,7 @@ const EditWarzone = () => {
       <BackButton
         style="w-[20vw]"
         size={32}
-        onPress={() => router.navigate("/warzones")}
+        onPress={() => router.navigate("/dashboard/wars/warzones")}
       />
       <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
         Edit Warzone

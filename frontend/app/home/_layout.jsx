@@ -136,7 +136,7 @@ const TabsLayout = () => {
         }}
       >
         <Tabs.Screen
-          name="home"
+          name="index"
           options={{
             title: "Map",
             headerShown: false,
@@ -155,7 +155,7 @@ const TabsLayout = () => {
           name="attack"
           options={{
             title: "Attack",
-            href: globalState.subteam == "" ? null : "/attack",
+            href: globalState.subteam == "" ? null : undefined,
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
@@ -168,7 +168,7 @@ const TabsLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="team_attacks"
+          name="wars"
           options={{
             title: "Wars",
             headerShown: false,
@@ -183,7 +183,7 @@ const TabsLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="teams_user"
+          name="teams"
           options={{
             title: "Teams",
             headerShown: false,
@@ -198,7 +198,7 @@ const TabsLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="countries_user"
+          name="countries"
           options={{
             title: "Countries",
             headerShown: false,

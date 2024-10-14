@@ -8,14 +8,14 @@ import {
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
-import { get_all_teams } from "../../api/team_functions";
-import { get_country_mappings } from "../../api/country_functions";
+import { get_all_teams } from "../../../api/team_functions";
+import { get_country_mappings } from "../../../api/country_functions";
 
-import { GlobalContext } from "../../context/GlobalProvider";
+import { GlobalContext } from "../../../context/GlobalProvider";
 
-import BackButton from "../../components/BackButton";
-import Loader from "../../components/Loader";
-import CustomButton from "../../components/CustomButton";
+import BackButton from "../../../components/BackButton";
+import Loader from "../../../components/Loader";
+import CustomButton from "../../../components/CustomButton";
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
@@ -213,7 +213,7 @@ const Teams = () => {
             globalState.userMode === "super_admin" && (
               <CustomButton
                 title="View Subteams"
-                handlePress={() => router.navigate("/subteams")}
+                handlePress={() => router.navigate("/dashboard/teams/subteams")}
                 containerStyles="w-[45%] my-2 p-3"
                 textStyles={"text-2xl"}
               />
