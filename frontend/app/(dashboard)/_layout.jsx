@@ -57,7 +57,7 @@ const TabsLayout = () => {
   }, [socket, globalState.expoPushToken, globalState.teamNo]);
 
   return (
-    <>
+    <PageWrapper>
       <Tabs
         sceneContainerStyle={{ backgroundColor: "transparent" }}
         screenOptions={{
@@ -149,7 +149,7 @@ const TabsLayout = () => {
         />
       </Tabs>
       <StatusBar backgroundColor="#000" style="light" />
-    </>
+    </PageWrapper>
   );
 };
 
