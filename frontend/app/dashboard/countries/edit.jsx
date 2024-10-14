@@ -62,7 +62,7 @@ const EditCountry = () => {
 
 
   return (
-    <FormWraper>
+    <FormWrapper>
       <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
         <BackButton
           style="w-[20vw] mb-4"
@@ -104,7 +104,7 @@ const EditCountry = () => {
           isLoading={isSubmitting}
         />
       </View>
-    </FormWraper>
+    </FormWrapper>
   );
 };
 

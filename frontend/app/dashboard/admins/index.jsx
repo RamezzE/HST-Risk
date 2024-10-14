@@ -113,7 +113,7 @@ const Admins = () => {
           title="Edit"
           handlePress={() =>
             router.push(
-              `/edit_admin?name=${item.name.trim()}&password=${item.password.trim()}&war=${item.war.trim()}&type=${item.type.trim()}`
+              `/dashboard/admins/edit?name=${item.name.trim()}&password=${item.password.trim()}&war=${item.war.trim()}&type=${item.type.trim()}`
             )
           }
           containerStyles="p-2 px-4 mt-2"

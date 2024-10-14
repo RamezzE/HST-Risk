@@ -115,7 +115,7 @@ const Countries = () => {
               title="Edit"
               handlePress={() =>
                 router.push(
-                  `/edit_country?countryName=${item.name.trim()}&teamNo=${item.teamNo
+                  `/dashboard/countries/edit?countryName=${item.name.trim()}&teamNo=${item.teamNo
                   }`
                 )
               }
