@@ -2,7 +2,20 @@ import Settings from "../models/setting.js";
 import { io } from "../app.js";
 class SettingsController {
   static async get_settings(req, res) {
-    const settings = await Settings.find();
+    let settings = await Settings.find();
+    const order = [
+      "Game Status",
+      "Attack Cost",
+      "Rate ($/min) per country",
+      "Disqualify Timer",
+      "Attack Cooldown",
+      "Max concurrent attacks per team",
+      "Max concurrent defences per team",
+      "Initial Money",
+      "No of Teams",
+      "No of Subteams",
+    ];
+    settings.sort((a, b) => order.indexOf(a.name) - order.indexOf(b.name));
     return res.json(settings);
   }
 
