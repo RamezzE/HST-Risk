@@ -21,7 +21,7 @@ const Countries = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
 
-  const { globalState } = useContext(GlobalContext);
+  const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -48,7 +48,7 @@ const Countries = () => {
     useCallback(() => {
       fetchData();
 
-      globalState.socket.on("update_country", (updatedCountry) => {
+      socket.on("update_country", (updatedCountry) => {
         setCountries((prevCountries) =>
           prevCountries.map((country) =>
             country.name === updatedCountry.name ? updatedCountry : country
@@ -57,7 +57,7 @@ const Countries = () => {
       });
 
       return () => {
-        globalState.socket.off("update_country");
+        socket.off("update_country");
       };
     }, [])
   );

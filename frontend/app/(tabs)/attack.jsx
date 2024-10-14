@@ -96,7 +96,7 @@ const reducer = (state, action) => {
 
 const Attack = () => {
 
-  const { globalState } = useContext(GlobalContext);
+  const { globalState, socket } = useContext(GlobalContext);
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -260,31 +260,31 @@ const Attack = () => {
       fetchData(); // Fetch initial data
 
       // Set up socket listeners for real-time updates
-      globalState.socket.on("update_country", (updatedCountryMapping) => {
+      socket.on("update_country", (updatedCountryMapping) => {
         dispatch({ type: "UPDATE_COUNTRY_MAPPING", payload: updatedCountryMapping });
       });
 
-      globalState.socket.on("update_team", (updatedTeam) => {
+      socket.on("update_team", (updatedTeam) => {
         dispatch({ type: "UPDATE_TEAM", payload: updatedTeam });
       });
 
-      globalState.socket.on("new_attack", (newAttack) => {
+      socket.on("new_attack", (newAttack) => {
         if (newAttack.defending_team === globalState.teamNo.toString()) {
           setCurrentDefence((prevDefences) => [...prevDefences, newAttack]);
         }
       });
 
-      globalState.socket.on("remove_attack", (attackId) => {
+      socket.on("remove_attack", (attackId) => {
         setCurrentDefence((prevDefences) =>
           prevDefences.filter((attack) => attack._id !== attackId)
         );
       });
 
       return () => {
-        globalState.socket.off("update_country");
-        globalState.socket.off("update_team");
-        globalState.socket.off("new_attack");
-        globalState.socket.off("remove_attack");
+        socket.off("update_country");
+        socket.off("update_team");
+        socket.off("new_attack");
+        socket.off("remove_attack");
       };
     }, [globalState.teamNo, globalState.subteam])
   );

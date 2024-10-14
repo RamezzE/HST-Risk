@@ -42,7 +42,7 @@ const Countries = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const { globalState } = useContext(GlobalContext);
+  const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null })
@@ -69,12 +69,12 @@ const Countries = () => {
     useCallback(() => {
       fetchData();
 
-      globalState.socket.on("update_country", (updatedCountry) => {
+      socket.on("update_country", (updatedCountry) => {
         dispatch({ type: "UPDATE_COUNTRY", payload: updatedCountry })
       });
 
       return () => {
-        globalState.socket.off("update_country");
+        socket.off("update_country");
       };
     }, [])
   );

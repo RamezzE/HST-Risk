@@ -5,7 +5,7 @@ import {
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../components/CustomButton";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { get_all_subteams } from "../../api/team_functions";
 import Loader from "../../components/Loader";
 import BackButton from "../../components/BackButton";
@@ -16,9 +16,8 @@ const SubTeams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
-  const router = useRouter();
 
-  const { globalState } = useContext(GlobalContext);
+  const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -43,7 +42,7 @@ const SubTeams = () => {
     useCallback(() => {
       fetchData();
 
-      globalState.socket.on("update_subteam", (editedSubteam) => {
+      socket.on("update_subteam", (editedSubteam) => {
         setTeams((prevTeams) =>
           prevTeams.map((team) =>
             team.username === editedSubteam.username ? editedSubteam : team

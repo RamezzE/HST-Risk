@@ -40,7 +40,7 @@ const TabIcon = ({ icon, color, name, focused }) => {
 
 const TabsLayout = () => {
 
-  const { globalState, globalDispatch, Logout } = useContext(GlobalContext);
+  const { globalState, socket, globalDispatch, Logout } = useContext(GlobalContext);
 
   const fetchData = async () => {
     try {
@@ -74,7 +74,7 @@ const TabsLayout = () => {
 
       fetchData();
 
-      globalState.socket.on("new_attack", (newAttack) => {
+      socket.on("new_attack", (newAttack) => {
         if (newAttack.defending_team.toString() === globalState.teamNo.toString())
           globalDispatch({ type: "ADD_CURRENT_DEFENCE", payload: newAttack });
 
@@ -87,7 +87,7 @@ const TabsLayout = () => {
         }
       });
 
-      globalState.socket.on("remove_attack", (attackId) => {
+      socket.on("remove_attack", (attackId) => {
         globalDispatch({
           type: SET_CURRENT_DEFENCE,
           payload: currentDefence.filter((attack) => attack._id !== attackId),
@@ -99,7 +99,7 @@ const TabsLayout = () => {
         });
       });
 
-      globalState.socket.on("new_game", () => {
+      socket.on("new_game", () => {
         Alert.alert(
           "New Game",
           "A new game has started. You will be logged out automatically."
@@ -113,9 +113,9 @@ const TabsLayout = () => {
       });
 
       return () => {
-        globalState.socket.off("new_attack");
-        globalState.socket.off("remove_attack");
-        globalState.socket.off("new_game");
+        socket.off("new_attack");
+        socket.off("remove_attack");
+        socket.off("new_game");
       };
     }, [globalState.teamNo, globalState.subteam])
   );

@@ -29,7 +29,7 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 const TabsLayout = () => {
-  const { globalState, Logout } = useContext(GlobalContext); // Use the context
+  const { globalState, socket, Logout } = useContext(GlobalContext); // Use the context
 
   useEffect(() => {
     const handleNewGame = () => {
@@ -48,13 +48,13 @@ const TabsLayout = () => {
       }, 3000);
     };
 
-    globalState.socket.on("new_game", handleNewGame);
+    socket.on("new_game", handleNewGame);
 
     // Cleanup listener on component unmount
     return () => {
-      globalState.socket.off("new_game", handleNewGame);
+      socket.off("new_game", handleNewGame);
     };
-  }, [globalState.socket, globalState.expoPushToken, globalState.teamNo]);
+  }, [socket, globalState.expoPushToken, globalState.teamNo]);
 
   return (
     <>

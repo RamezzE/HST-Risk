@@ -23,7 +23,7 @@ const Dashboard = () => {
   const [settings, setSettings] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { Logout, globalState } = useContext(GlobalContext);
+  const { socket, Logout } = useContext(GlobalContext);
 
   const logoutFunc = () => {
     Alert.alert(
@@ -124,7 +124,7 @@ const Dashboard = () => {
     useCallback(() => {
       fetchData();
 
-      globalState.socket.on("update_setting", (updatedSetting) => {
+      socket.on("update_setting", (updatedSetting) => {
         setSettings((prevSettings) =>
           prevSettings.map((setting) =>
             setting.name === updatedSetting.name ? updatedSetting : setting

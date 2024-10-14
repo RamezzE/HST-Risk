@@ -59,7 +59,7 @@ const Teams = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const { globalState } = useContext(GlobalContext);
+  const { socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null })
@@ -85,17 +85,17 @@ const Teams = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-      globalState.socket.on("update_team", (updatedTeam) => {
+      socket.on("update_team", (updatedTeam) => {
         dispatch({ type: "UPDATE_TEAM", payload: updatedTeam });
       });
 
-      globalState.socket.on("update_country", (updatedCountry) => {
+      socket.on("update_country", (updatedCountry) => {
         dispatch({ type: "UPDATE_COUNTRY", payload: updatedCountry });
       });
 
       return () => {
-        globalState.socket.off("update_team"); // Cleanup socket listener on component unmount
-        globalState.socket.off("update_country"); // Cleanup socket listener on component unmount
+        socket.off("update_team"); // Cleanup socket listener on component unmount
+        socket.off("update_country"); // Cleanup socket listener on component unmount
       };
     }, [])
   );

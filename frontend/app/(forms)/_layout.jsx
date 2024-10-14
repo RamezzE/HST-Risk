@@ -8,7 +8,7 @@ import { KeyboardProvider, KeyboardAwareScrollView } from "react-native-keyboard
 import PageWrapper from "../../components/PageWrapper";
 
 const FormsLayout = () => {
-  const { globalState, Logout } = useContext(GlobalContext);
+  const { globalState, socket, Logout } = useContext(GlobalContext);
 
   useEffect(() => {
     const handleNewGame = () => {
@@ -26,10 +26,10 @@ const FormsLayout = () => {
       }, 3000);
     };
 
-    globalState.socket.on("new_game", handleNewGame);
+    socket.on("new_game", handleNewGame);
 
     return () => {
-      globalState.socket.off("new_game", handleNewGame);
+      socket.off("new_game", handleNewGame);
     };
   }, [globalState]);
 

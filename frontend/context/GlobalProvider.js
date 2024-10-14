@@ -36,8 +36,6 @@ const reducer = (state, action) => {
       return { ...state, currentAttack: action.payload };
     case "SET_CURRENT_DEFENCE":
       return { ...state, currentDefence: action.payload };
-    case "SET_SOCKET":
-      return { ...state, socket: action.payload };
     case "SET_ADMIN_TYPE":
       return { ...state, adminType: action.payload };
     case "ADD_CURRENT_DEFENCE":
@@ -54,16 +52,18 @@ const reducer = (state, action) => {
 
 export const GlobalProvider = ({ children }) => {
   const [globalState, globalDispatch] = useReducer(reducer, initialState);
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     // Initialize the socket connection
     const newSocket = io(config.serverIP);
 
-    globalDispatch({ type: "SET_SOCKET", payload: newSocket });
+    setSocket(newSocket);
 
     // Clean up the socket connection on unmount
     return () => {
       if (newSocket) newSocket.disconnect();
+      if (socket) socket.disconnect();
     };
   }, []);
 
@@ -80,6 +80,7 @@ export const GlobalProvider = ({ children }) => {
     <GlobalContext.Provider
       value={{
         globalState,
+        socket,
         globalDispatch,
         Logout,
       }}

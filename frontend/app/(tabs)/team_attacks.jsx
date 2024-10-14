@@ -39,7 +39,7 @@ const TeamAttacks = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const { globalState } = useContext(GlobalContext);
+  const { globalState, socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
 
@@ -73,7 +73,7 @@ const TeamAttacks = () => {
       fetchData();
 
       // Set up socket listeners for real-time updates
-      globalState.socket.on("new_attack", (newAttack) => {
+      socket.on("new_attack", (newAttack) => {
 
         if (newAttack.attacking_team.toString() === globalState.teamNo.toString())
           dispatch({ type: "SET_ATTACKING_ATTACKS", payload: [...state.attackingAttacks, newAttack] })
@@ -83,7 +83,7 @@ const TeamAttacks = () => {
 
       });
 
-      globalState.socket.on("remove_attack", (attackId) => {
+      socket.on("remove_attack", (attackId) => {
 
         dispatch({
           type: "SET_ATTACKING_ATTACKS",
@@ -99,8 +99,8 @@ const TeamAttacks = () => {
 
       // Clean up the socket listeners when the component loses focus or unmounts
       return () => {
-        globalState.socket.off("new_attack");
-        globalState.socket.off("remove_attack");
+        socket.off("new_attack");
+        socket.off("remove_attack");
       };
     }, [globalState.teamNo])
   );

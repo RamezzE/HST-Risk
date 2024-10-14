@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../components/CustomButton";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { get_all_teams } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
 import Loader from "../../components/Loader";
@@ -21,9 +21,8 @@ const Teams = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [countries, setCountries] = useState([]);
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
-  const router = useRouter();
 
-  const { globalState, Logout } = useContext(GlobalContext);
+  const { socket, Logout } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -51,7 +50,7 @@ const Teams = () => {
     useCallback(() => {
       fetchData();
 
-      globalState.socket.on("update_team", (updatedTeam) => {
+      socket.on("update_team", (updatedTeam) => {
         setTeams((prevTeams) =>
           prevTeams.map((team) =>
             team.number === updatedTeam.number ? updatedTeam : team
@@ -59,7 +58,7 @@ const Teams = () => {
         );
       });
 
-      globalState.socket.on("update_country", (updatedCountry) => {
+      socket.on("update_country", (updatedCountry) => {
         setCountries((prevCountries) =>
           prevCountries.map((country) =>
             country._id === updatedCountry._id ? updatedCountry : country

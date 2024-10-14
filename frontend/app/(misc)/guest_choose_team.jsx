@@ -20,7 +20,6 @@ const GuestChooseTeam = () => {
 
   const { globalState, globalDispatch } = useContext(GlobalContext);
 
-
   const [teams, setTeams] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);

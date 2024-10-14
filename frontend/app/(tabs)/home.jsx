@@ -76,7 +76,7 @@ const Home = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const { globalState, Logout } = useContext(GlobalContext);
+  const { globalState, socket, Logout } = useContext(GlobalContext);
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null });
@@ -114,20 +114,20 @@ const Home = () => {
     useCallback(() => {
       fetchData(); // Fetch initial data
 
-      // Set up globalState.socket listeners for real-time updates
-      globalState.socket.on("update_country", (updatedCountryMapping) => {
+      // Set up socket listeners for real-time updates
+      socket.on("update_country", (updatedCountryMapping) => {
         dispatch({ type: "UPDATE_COUNTRY_MAPPING", payload: updatedCountryMapping })
       });
 
-      globalState.socket.on("update_team", (updatedTeam) => {
+      socket.on("update_team", (updatedTeam) => {
         dispatch({ type: "UPDATE_TEAM", payload: updatedTeam })
       });
 
-      globalState.socket.on("new_attack", (newAttack) => {
+      socket.on("new_attack", (newAttack) => {
         dispatch({ type: "SET_ATTACKS", payload: [...state.attacks, newAttack] });
       });
 
-      globalState.socket.on("remove_attack", (attackId) => {
+      socket.on("remove_attack", (attackId) => {
 
         dispatch({
           type: "SET_ATTACKS",
@@ -139,11 +139,11 @@ const Home = () => {
       });
 
       return () => {
-        globalState.socket.off("update_country");
-        globalState.socket.off("update_team");
-        globalState.socket.off("new_attack");
-        globalState.socket.off("remove_attack");
-        globalState.socket.off("new_game");
+        socket.off("update_country");
+        socket.off("update_team");
+        socket.off("new_attack");
+        socket.off("remove_attack");
+        socket.off("new_game");
       };
     }, [globalState.teamNo])
   );

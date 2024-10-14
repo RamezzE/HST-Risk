@@ -20,7 +20,7 @@ import Timer from "../../components/Timer";
 import { useFocusEffect } from "@react-navigation/native";
 
 const AdminHome = () => {
-  const { globalState, Logout } = useContext(GlobalContext);
+  const { globalState, socket, Logout } = useContext(GlobalContext);
   const [war, setWar] = useState("");
   const [response, setResponse] = useState({ attacks: [] });
   const [currentAttack, setCurrentAttack] = useState({
@@ -81,14 +81,14 @@ const AdminHome = () => {
       fetchData(); // Fetch initial data
 
       // Set up socket listeners for real-time updates
-      globalState.socket.on("new_attack", (newAttack) => {
+      socket.on("new_attack", (newAttack) => {
         setResponse((prevResponse) => ({
           attacks: [newAttack, ...prevResponse.attacks],
         }));
         setCurrentAttack(newAttack);
       });
 
-      globalState.socket.on("remove_attack", (attackId) => {
+      socket.on("remove_attack", (attackId) => {
         setResponse((prevResponse) => ({
           attacks: prevResponse.attacks.filter(
             (attack) => attack._id !== attackId
@@ -107,7 +107,7 @@ const AdminHome = () => {
         }
       });
 
-      globalState.socket.on("update_attack_result", (updatedAttack) => {
+      socket.on("update_attack_result", (updatedAttack) => {
         setResponse((prevResponse) => ({
           attacks: prevResponse.attacks.map((attack) =>
             attack._id === updatedAttack._id ? updatedAttack : attack
@@ -118,7 +118,7 @@ const AdminHome = () => {
         }
       });
 
-      globalState.socket.on("new_game", () => {
+      socket.on("new_game", () => {
         Alert.alert(
           "New Game",
           "A new game has started. You will be logged out automatically."
@@ -131,10 +131,10 @@ const AdminHome = () => {
       });
 
       return () => {
-        globalState.socket.off("new_attack");
-        globalState.socket.off("remove_attack");
-        globalState.socket.off("update_attack_result");
-        globalState.socket.off("new_game");
+        socket.off("new_attack");
+        socket.off("remove_attack");
+        socket.off("update_attack_result");
+        socket.off("new_game");
       };
     }, [currentAttack._id])
   );
