@@ -18,7 +18,6 @@ import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 
 import { GlobalContext } from "../../context/GlobalProvider";
-import PageWrapper from "../../components/PageWrapper";
 
 const DashboardAttacks = () => {
   const [attacks, setAttacks] = useState([]);
@@ -258,54 +257,50 @@ const DashboardAttacks = () => {
 
   if (isRefreshing) {
     return (
-      <PageWrapper>
-        <Loader />
-      </PageWrapper>
+      <Loader />
     );
   }
 
   return (
-    <PageWrapper>
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 20 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={fetchData}
-            tintColor="#000"
+    <ScrollView
+      contentContainerStyle={{ paddingBottom: 20 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={fetchData}
+          tintColor="#000"
+        />
+      }
+      bounces={false}
+      overScrollMode="never"
+    >
+      <View className="w-full justify-center p-4 mb-24">
+        <Text className="text-6xl text-center font-montez py-2 mt-7">
+          Wars
+        </Text>
+        <View className="flex flex-row justify-between">
+          <CustomButton
+            title="Create Attack"
+            handlePress={() => router.replace("/add_attack")}
+            containerStyles="w-[45%] my-2 p-3"
+            textStyles={"text-2xl"}
           />
-        }
-        bounces={false}
-        overScrollMode="never"
-      >
-        <View className="w-full justify-center p-4 mb-24">
-          <Text className="text-6xl text-center font-montez py-2 mt-7">
-            Wars
-          </Text>
-          <View className="flex flex-row justify-between">
-            <CustomButton
-              title="Create Attack"
-              handlePress={() => router.replace("/add_attack")}
-              containerStyles="w-[45%] my-2 p-3"
-              textStyles={"text-2xl"}
-            />
-            <CustomButton
-              title="View Warzones"
-              handlePress={() => router.navigate("/warzones")}
-              containerStyles="w-[45%] my-2 p-3"
-              textStyles={"text-2xl"}
-            />
-          </View>
-          {error ? (
-            <Text style={{ color: "white", textAlign: "center" }}>
-              {error}
-            </Text>
-          ) : (
-            renderAttacks()
-          )}
+          <CustomButton
+            title="View Warzones"
+            handlePress={() => router.navigate("/warzones")}
+            containerStyles="w-[45%] my-2 p-3"
+            textStyles={"text-2xl"}
+          />
         </View>
-      </ScrollView>
-    </PageWrapper>
+        {error ? (
+          <Text style={{ color: "white", textAlign: "center" }}>
+            {error}
+          </Text>
+        ) : (
+          renderAttacks()
+        )}
+      </View>
+    </ScrollView>
   );
 };
 

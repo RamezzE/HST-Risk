@@ -12,7 +12,6 @@ import { get_admins } from "../../api/admin_functions";
 import Loader from "../../components/Loader";
 
 import { GlobalContext } from "./../../context/GlobalProvider";
-import PageWrapper from "../../components/PageWrapper";
 
 const initialState = {
   admins: [],
@@ -126,50 +125,46 @@ const Admins = () => {
 
   if (state.isRefreshing) {
     return (
-      <PageWrapper>
-        <Loader />
-      </PageWrapper>
+      <Loader />
     );
   }
 
   return (
-    <PageWrapper>
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={state.isRefreshing}
-            onRefresh={fetchData}
-            tintColor="#000"
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={state.isRefreshing}
+          onRefresh={fetchData}
+          tintColor="#000"
+        />
+      }
+      contentContainerStyle={{ paddingBottom: 20 }}
+      bounces={false}
+      overScrollMode="never"
+    >
+      <View className="w-full justify-start p-4 mb-24">
+        <Text className="text-6xl text-center font-montez py-2 mt-7">
+          Admins
+        </Text>
+
+        <View className="flex flex-row justify-between">
+          <CustomButton
+            title="Add Admin"
+            handlePress={() => router.replace("/add_admin")}
+            containerStyles="w-[45%] my-2 p-3"
+            textStyles={"text-2xl"}
           />
-        }
-        contentContainerStyle={{ paddingBottom: 20 }}
-        bounces={false}
-        overScrollMode="never"
-      >
-        <View className="w-full justify-start p-4 mb-24">
-          <Text className="text-6xl text-center font-montez py-2 mt-7">
-            Admins
-          </Text>
-
-          <View className="flex flex-row justify-between">
-            <CustomButton
-              title="Add Admin"
-              handlePress={() => router.replace("/add_admin")}
-              containerStyles="w-[45%] my-2 p-3"
-              textStyles={"text-2xl"}
-            />
-          </View>
-
-          {state.error ? (
-            <Text style={{ color: "white", textAlign: "center" }}>
-              {state.error}
-            </Text>
-          ) : (
-            renderAdmins()
-          )}
         </View>
-      </ScrollView>
-    </PageWrapper>
+
+        {state.error ? (
+          <Text style={{ color: "white", textAlign: "center" }}>
+            {state.error}
+          </Text>
+        ) : (
+          renderAdmins()
+        )}
+      </View>
+    </ScrollView>
   );
 };
 

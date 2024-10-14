@@ -4,7 +4,8 @@ import { StatusBar, Alert } from "react-native";
 import { GlobalContext } from "../../context/GlobalProvider";
 import { router } from "expo-router";
 import { deletePushToken } from "../../api/user_functions";
-import FormWrapper from "../../components/FormWrapper";
+import { KeyboardProvider, KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import PageWrapper from "../../components/PageWrapper";
 
 const FormsLayout = () => {
   const { globalState, Logout } = useContext(GlobalContext);
@@ -30,15 +31,24 @@ const FormsLayout = () => {
     return () => {
       globalState.socket.off("new_game", handleNewGame);
     };
-  }, [globalState.socket, globalState.expoPushToken, globalState.teamNo]);
+  }, [globalState]);
 
   return (
-    <>
-      <FormWrapper >
-        <Slot />
-      </FormWrapper>
+    <KeyboardProvider>
+      <KeyboardAwareScrollView
+        bottomOffset={175}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+        overScrollMode="never"
+      >
+        <PageWrapper>
+          <Slot />
+        </PageWrapper>
+      </KeyboardAwareScrollView>
       <StatusBar backgroundColor="#000" style="light" />
-    </>
+    </KeyboardProvider>
   );
 };
 

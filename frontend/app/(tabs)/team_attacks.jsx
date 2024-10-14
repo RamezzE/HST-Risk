@@ -12,7 +12,6 @@ import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 
 import { useFocusEffect } from "@react-navigation/native";
-import PageWrapper from "../../components/PageWrapper";
 
 const initialState = {
   error: null,
@@ -112,126 +111,122 @@ const TeamAttacks = () => {
 
   if (state.isRefreshing) {
     return (
-      <PageWrapper>
-        <Loader />
-      </PageWrapper>
+      <Loader />
     );
   }
 
   return (
-    <PageWrapper>
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={state.isRefreshing}
-            onRefresh={() => {
-              dispatch({ type: "SET_IS_REFRESHING", payload: true })
-              fetchData();
-            }}
-            tintColor="#000"
-          />
-        }
-        bounces={false}
-        overScrollMode="never"
-      >
-        <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-start">
-          <Text className="font-montez text-center text-5xl py-5">
-            Team {globalState.teamNo} Wars
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={state.isRefreshing}
+          onRefresh={() => {
+            dispatch({ type: "SET_IS_REFRESHING", payload: true })
+            fetchData();
+          }}
+          tintColor="#000"
+        />
+      }
+      bounces={false}
+      overScrollMode="never"
+    >
+      <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-start">
+        <Text className="font-montez text-center text-5xl py-5">
+          Team {globalState.teamNo} Wars
+        </Text>
+
+        {state.error ? (
+          <Text className="text-red-500 text-center p-2 text-xl">
+            {state.error}
           </Text>
-
-          {state.error ? (
-            <Text className="text-red-500 text-center p-2 text-xl">
-              {state.error}
+        ) : (
+          <View style={{ backgroundColor: "rgb(75,50,12,1)" }}>
+            <Text className="text-red-800 font-montez text-4xl p-2 mb-2">
+              Ongoing Attacks
             </Text>
-          ) : (
-            <View style={{ backgroundColor: "rgb(75,50,12,1)" }}>
-              <Text className="text-red-800 font-montez text-4xl p-2 mb-2">
-                Ongoing Attacks
-              </Text>
-              <View className="mb-4">
-                {Array.isArray(state.attackingAttacks) &&
-                  state.attackingAttacks.length > 0 ? (
-                  state.attackingAttacks.map((attack, index) => (
-                    <View
-                      key={index}
-                      className="px-2 rounded-md mb-3"
-                      style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
-                    >
-                      <View className="p-2">
-                        <Text className="text-black text-xl font-psemibold">
-                          {attack.attacking_zone} ({attack.attacking_team}
-                          {attack.attacking_subteam}) →{" "}
-                          {attack.defending_zone} ({attack.defending_team}
-                          {attack.defending_subteam})
+            <View className="mb-4">
+              {Array.isArray(state.attackingAttacks) &&
+                state.attackingAttacks.length > 0 ? (
+                state.attackingAttacks.map((attack, index) => (
+                  <View
+                    key={index}
+                    className="px-2 rounded-md mb-3"
+                    style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
+                  >
+                    <View className="p-2">
+                      <Text className="text-black text-xl font-psemibold">
+                        {attack.attacking_zone} ({attack.attacking_team}
+                        {attack.attacking_subteam}) →{" "}
+                        {attack.defending_zone} ({attack.defending_team}
+                        {attack.defending_subteam})
+                      </Text>
+                      <Text className="text-black text-xl font-pregular mr-2">
+                        {attack.war}
+                      </Text>
+                      {attack.location != "" && (
+                        <Text className="text-black text-xl font-pregular">
+                          Location: {attack.location}
                         </Text>
-                        <Text className="text-black text-xl font-pregular mr-2">
-                          {attack.war}
-                        </Text>
-                        {attack.location != "" && (
-                          <Text className="text-black text-xl font-pregular">
-                            Location: {attack.location}
-                          </Text>
-                        )}
+                      )}
 
-                        <Timer
-                          attack_id={attack._id}
-                          textStyles={"font-pbold text-red-800 text-xl"}
-                        />
-                      </View>
+                      <Timer
+                        attack_id={attack._id}
+                        textStyles={"font-pbold text-red-800 text-xl"}
+                      />
                     </View>
-                  ))
-                ) : (
-                  <Text className="text-black text-3xl font-montez px-4">
-                    You are not attacking now
-                  </Text>
-                )}
-              </View>
-
-              <Text className="text-green-800 text-4xl font-montez p-2 mb-2">
-                Ongoing Defense
-              </Text>
-              <View className="mb-4">
-                {Array.isArray(state.defendingAttacks) &&
-                  state.defendingAttacks.length > 0 ? (
-                  state.defendingAttacks.map((attack, index) => (
-                    <View
-                      key={index}
-                      className="px-2 rounded-md mb-3"
-                      style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
-                    >
-                      <View className="p-2">
-                        <Text className="text-black text-xl font-psemibold">
-                          {attack.attacking_zone} ({attack.attacking_team}
-                          {attack.attacking_subteam}) →{" "}
-                          {attack.defending_zone} ({attack.defending_team}
-                          {attack.defending_subteam})
-                        </Text>
-                        <Text className="text-black text-xl font-pregular mr-2">
-                          {attack.war}
-                        </Text>
-                        {attack.location != "" && (
-                          <Text className="text-black text-xl font-pregular">
-                            Location: {attack.location}
-                          </Text>
-                        )}
-                        <Timer
-                          attack_id={attack._id}
-                          textStyles={"font-pbold text-red-800 text-xl"}
-                        />
-                      </View>
-                    </View>
-                  ))
-                ) : (
-                  <Text className="text-black text-3xl font-montez px-4">
-                    There are no attacks on you
-                  </Text>
-                )}
-              </View>
+                  </View>
+                ))
+              ) : (
+                <Text className="text-black text-3xl font-montez px-4">
+                  You are not attacking now
+                </Text>
+              )}
             </View>
-          )}
-        </View>
-      </ScrollView>
-    </PageWrapper>
+
+            <Text className="text-green-800 text-4xl font-montez p-2 mb-2">
+              Ongoing Defense
+            </Text>
+            <View className="mb-4">
+              {Array.isArray(state.defendingAttacks) &&
+                state.defendingAttacks.length > 0 ? (
+                state.defendingAttacks.map((attack, index) => (
+                  <View
+                    key={index}
+                    className="px-2 rounded-md mb-3"
+                    style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
+                  >
+                    <View className="p-2">
+                      <Text className="text-black text-xl font-psemibold">
+                        {attack.attacking_zone} ({attack.attacking_team}
+                        {attack.attacking_subteam}) →{" "}
+                        {attack.defending_zone} ({attack.defending_team}
+                        {attack.defending_subteam})
+                      </Text>
+                      <Text className="text-black text-xl font-pregular mr-2">
+                        {attack.war}
+                      </Text>
+                      {attack.location != "" && (
+                        <Text className="text-black text-xl font-pregular">
+                          Location: {attack.location}
+                        </Text>
+                      )}
+                      <Timer
+                        attack_id={attack._id}
+                        textStyles={"font-pbold text-red-800 text-xl"}
+                      />
+                    </View>
+                  </View>
+                ))
+              ) : (
+                <Text className="text-black text-3xl font-montez px-4">
+                  There are no attacks on you
+                </Text>
+              )}
+            </View>
+          </View>
+        )}
+      </View>
+    </ScrollView>
   );
 };
 

@@ -13,7 +13,6 @@ import { get_country_mappings } from "../../api/country_functions";
 import Loader from "../../components/Loader";
 
 import { GlobalContext } from "../../context/GlobalProvider";
-import PageWrapper from "../../components/PageWrapper";
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
@@ -152,50 +151,46 @@ const Teams = () => {
 
   if (isRefreshing) {
     return (
-      <PageWrapper>
-        <Loader />
-      </PageWrapper>
+      <Loader />
     );
   }
 
   return (
-    <PageWrapper>
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={fetchData}
-            tintColor="#000"
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={fetchData}
+          tintColor="#000"
+        />
+      }
+      bounces={false}
+      overScrollMode="never"
+      contentContainerStyle={{ paddingBottom: 20 }}
+    >
+      <View className="w-full justify-start p-4 mb-24">
+        <Text className="text-6xl text-center font-montez py-2 mt-7">
+          Teams
+        </Text>
+
+        <View className="flex flex-row justify-between">
+          <CustomButton
+            title="View Subteams"
+            handlePress={() => router.navigate("/subteams")}
+            containerStyles="w-[45%] my-2 p-3"
+            textStyles={"text-2xl"}
           />
-        }
-        bounces={false}
-        overScrollMode="never"
-        contentContainerStyle={{ paddingBottom: 20 }}
-      >
-        <View className="w-full justify-start p-4 mb-24">
-          <Text className="text-6xl text-center font-montez py-2 mt-7">
-            Teams
-          </Text>
-
-          <View className="flex flex-row justify-between">
-            <CustomButton
-              title="View Subteams"
-              handlePress={() => router.navigate("/subteams")}
-              containerStyles="w-[45%] my-2 p-3"
-              textStyles={"text-2xl"}
-            />
-          </View>
-
-          {error ? (
-            <Text style={{ color: "white", textAlign: "center" }}>
-              {error}
-            </Text>
-          ) : (
-            renderTeams()
-          )}
         </View>
-      </ScrollView>
-    </PageWrapper>
+
+        {error ? (
+          <Text style={{ color: "white", textAlign: "center" }}>
+            {error}
+          </Text>
+        ) : (
+          renderTeams()
+        )}
+      </View>
+    </ScrollView>
   );
 };
 

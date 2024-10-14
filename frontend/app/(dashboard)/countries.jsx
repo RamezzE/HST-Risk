@@ -15,7 +15,6 @@ import { get_country_mappings } from "../../api/country_functions";
 
 
 import { GlobalContext } from "../../context/GlobalProvider";
-import PageWrapper from "../../components/PageWrapper";
 
 const Countries = () => {
   const [countries, setCountries] = useState([]);
@@ -131,41 +130,37 @@ const Countries = () => {
 
   if (isRefreshing) {
     return (
-      <PageWrapper>
-        <Loader />
-      </PageWrapper>
+      <Loader />
     );
   }
 
   return (
-    <PageWrapper>
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 20 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={fetchData}
-            tintColor="#000"
-          />
-        }
-        bounces={false}
-        overScrollMode="never"
-      >
-        <View className="w-full justify-center p-4 mb-24">
-          <Text className="text-6xl text-center font-montez py-2 mt-7">
-            Countries
-          </Text>
+    <ScrollView
+      contentContainerStyle={{ paddingBottom: 20 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={fetchData}
+          tintColor="#000"
+        />
+      }
+      bounces={false}
+      overScrollMode="never"
+    >
+      <View className="w-full justify-center p-4 mb-24">
+        <Text className="text-6xl text-center font-montez py-2 mt-7">
+          Countries
+        </Text>
 
-          {error ? (
-            <Text style={{ color: "white", textAlign: "center" }}>
-              {error}
-            </Text>
-          ) : (
-            renderCountries()
-          )}
-        </View>
-      </ScrollView>
-    </PageWrapper>
+        {error ? (
+          <Text style={{ color: "white", textAlign: "center" }}>
+            {error}
+          </Text>
+        ) : (
+          renderCountries()
+        )}
+      </View>
+    </ScrollView>
   );
 };
 

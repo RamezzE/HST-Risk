@@ -12,7 +12,6 @@ import Loader from "../../components/Loader";
 import CustomButton from "../../components/CustomButton";
 
 import { GlobalContext } from "../../context/GlobalProvider";
-import PageWrapper from "../../components/PageWrapper";
 
 const initialState = {
   teams: [],
@@ -177,41 +176,37 @@ const Teams = () => {
 
   if (state.isRefreshing) {
     return (
-      <PageWrapper>
-        <Loader />
-      </PageWrapper>
+      <Loader />
     );
   }
 
   return (
-    <PageWrapper>
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={state.isRefreshing}
-            onRefresh={fetchData}
-            tintColor="#000"
-          />
-        }
-        bounces={false}
-        overScrollMode="never"
-        contentContainerStyle={{ paddingBottom: 20 }}
-      >
-        <View className="w-full justify-start p-4 mb-24">
-          <Text className="text-6xl text-center font-montez py-2 mt-7">
-            Teams
-          </Text>
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={state.isRefreshing}
+          onRefresh={fetchData}
+          tintColor="#000"
+        />
+      }
+      bounces={false}
+      overScrollMode="never"
+      contentContainerStyle={{ paddingBottom: 20 }}
+    >
+      <View className="w-full justify-start p-4 mb-24">
+        <Text className="text-6xl text-center font-montez py-2 mt-7">
+          Teams
+        </Text>
 
-          {state.error ? (
-            <Text style={{ color: "black", textAlign: "center" }}>
-              {state.error}
-            </Text>
-          ) : (
-            renderTeams()
-          )}
-        </View>
-      </ScrollView>
-    </PageWrapper>
+        {state.error ? (
+          <Text style={{ color: "black", textAlign: "center" }}>
+            {state.error}
+          </Text>
+        ) : (
+          renderTeams()
+        )}
+      </View>
+    </ScrollView>
   );
 };
 

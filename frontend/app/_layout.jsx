@@ -36,15 +36,20 @@ const RootLayout = () => {
   return (
     <SafeAreaProvider>
       <KeyboardProvider>
-      <GlobalProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(dashboard)" options={{ headerShown: false }} />
-          <Stack.Screen name="(forms)" options={{ headerShown: false }} />
-          <Stack.Screen name="(misc)" options={{ headerShown: false }} />
-        </Stack>
-      </GlobalProvider>
+        <GlobalProvider>
+            <Stack
+              screenOptions={{
+                contentStyle: { backgroundColor: "transparent" }, // Set entire stack to transparent
+                headerShown: false, 
+              }}
+            >
+              <Stack.Screen name="index"/>
+              <Stack.Screen name="(tabs)"/>
+              <Stack.Screen name="(dashboard)"/>
+              <Stack.Screen name="(forms)"/>
+              <Stack.Screen name="(misc)"/>
+            </Stack>
+        </GlobalProvider>
       </KeyboardProvider>
     </SafeAreaProvider>
   );

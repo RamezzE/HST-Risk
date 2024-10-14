@@ -1,40 +1,29 @@
 import React from 'react';
-import { View, ImageBackground, StyleSheet } from 'react-native';
+import { View, ImageBackground } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { images } from '../constants'; // Import your image constants
+import { images } from '../constants';
 
 const PageWrapper = ({ children }) => {
-  const insets = useSafeAreaInsets();
+    const insets = useSafeAreaInsets();
 
-  return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={images.background}
-        style={styles.background}
-      />
-      <View
-        style={{
-          flex: 1,
-          paddingTop: insets.top,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
-        }}
-      >
-        {children}
-      </View>
-    </View>
-  );
+    return (
+        <View
+            style={{
+                paddingTop: insets.top,
+                paddingRight: insets.right,
+                paddingLeft: insets.left,
+            }}
+            className="bg-black h-full"
+        >
+            <ImageBackground
+                source={images.background}
+                style={{ resizeMode: "cover" }}
+                className="min-h-[100vh]"
+            >
+                {children}
+            </ImageBackground>
+        </View>
+    );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: "relative", // Allows content layering
-  },
-  background: {
-    ...StyleSheet.absoluteFillObject, // Makes background fill the whole screen
-    zIndex: -1, // Sends background behind everything else
-  },
-});
 
 export default PageWrapper;

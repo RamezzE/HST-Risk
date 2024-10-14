@@ -26,7 +26,6 @@ import { deletePushToken } from "../../api/user_functions";
 import { GlobalContext } from "../../context/GlobalProvider";
 
 import { useFocusEffect } from "@react-navigation/native";
-import PageWrapper from './../../components/PageWrapper';
 
 const initialState = {
   zones: [],
@@ -257,86 +256,82 @@ const Home = () => {
 
   if (state.isRefreshing) {
     return (
-      <PageWrapper>
-        <Loader />
-      </PageWrapper>
+      <Loader />
     );
   }
 
   return (
-    <PageWrapper>
-      <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
-        <BackButton
-          style="w-[20vw]"
-          size={32}
-          onPress={() => logoutFunc()}
-        />
+    <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
+      <BackButton
+        style="w-[20vw]"
+        size={32}
+        onPress={() => logoutFunc()}
+      />
 
-        <View className="flex flex-row pt-2 justify-center gap-0">
-          <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
-            {globalState.name}, Team {globalState.teamNo}
-          </Text>
-          <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">
-            {globalState.subteam}
-          </Text>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            borderWidth: 5,
-            borderColor: "black",
-            borderRadius: 2,
-            overflow: "hidden",
-          }}
-        >
-          <MapView
-            className="flex-1"
-            initialRegion={{
-              latitude: 30.357810872761366,
-              longitude: 30.392057112613095,
-              latitudeDelta: 100,
-              longitudeDelta: 180,
-            }}
-            provider={
-              Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-            }
-            mapType="satellite"
-            rotateEnabled={false}
-            pitchEnabled={false}
-          >
-            {Array.isArray(state.zones) &&
-              state.zones.map((zone) => (
-                <MapZone
-                  key={zone.name}
-                  points={zone.points}
-                  color={getTeamColor(zone.name)}
-                  label={zone.name}
-                  onMarkerPress={() => onMarkerPress(zone)}
-                />
-              ))}
-
-            {Array.isArray(CountryConnections) &&
-              CountryConnections.map((points, index) => (
-                <DottedLine
-                  key={index}
-                  startPoint={points.point1}
-                  endPoint={points.point2}
-                  color="#FFF"
-                  thickness={3}
-                />
-              ))}
-          </MapView>
-        </View>
-
-        {renderColorLegend()}
-
-        {state.error && (
-          <Text className="text-white text-center p-2 text-xl">
-            {state.error}
-          </Text>
-        )}
+      <View className="flex flex-row pt-2 justify-center gap-0">
+        <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
+          {globalState.name}, Team {globalState.teamNo}
+        </Text>
+        <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">
+          {globalState.subteam}
+        </Text>
       </View>
-    </PageWrapper>
+      <View
+        style={{
+          flex: 1,
+          borderWidth: 5,
+          borderColor: "black",
+          borderRadius: 2,
+          overflow: "hidden",
+        }}
+      >
+        <MapView
+          className="flex-1"
+          initialRegion={{
+            latitude: 30.357810872761366,
+            longitude: 30.392057112613095,
+            latitudeDelta: 100,
+            longitudeDelta: 180,
+          }}
+          provider={
+            Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+          }
+          mapType="satellite"
+          rotateEnabled={false}
+          pitchEnabled={false}
+        >
+          {Array.isArray(state.zones) &&
+            state.zones.map((zone) => (
+              <MapZone
+                key={zone.name}
+                points={zone.points}
+                color={getTeamColor(zone.name)}
+                label={zone.name}
+                onMarkerPress={() => onMarkerPress(zone)}
+              />
+            ))}
+
+          {Array.isArray(CountryConnections) &&
+            CountryConnections.map((points, index) => (
+              <DottedLine
+                key={index}
+                startPoint={points.point1}
+                endPoint={points.point2}
+                color="#FFF"
+                thickness={3}
+              />
+            ))}
+        </MapView>
+      </View>
+
+      {renderColorLegend()}
+
+      {state.error && (
+        <Text className="text-white text-center p-2 text-xl">
+          {state.error}
+        </Text>
+      )}
+    </View>
   );
 };
 

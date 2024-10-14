@@ -17,6 +17,8 @@ import { deletePushToken } from "../../api/user_functions";
 import _ from "lodash";
 import StickyPopup from "../../components/StickyPopup";
 
+import PageWrapper from './../../components/PageWrapper';
+
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
     <View className="items-center justify-center gap-2">
@@ -119,8 +121,9 @@ const TabsLayout = () => {
   );
 
   return (
-    <>
+    <PageWrapper>
       <Tabs
+        sceneContainerStyle={{ backgroundColor: "transparent" }}
         screenOptions={{
           tabBarShowLabel: false,
           tabBarActiveTintColor: "#FFF",
@@ -138,6 +141,7 @@ const TabsLayout = () => {
           options={{
             title: "Map",
             headerShown: false,
+            backgroundColor: "transparent",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={icons.globe}
@@ -220,7 +224,7 @@ const TabsLayout = () => {
       {/* )} */}
 
       <StatusBar backgroundColor="#000" style="light" />
-    </>
+    </PageWrapper>
   );
 };
 

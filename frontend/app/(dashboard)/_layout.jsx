@@ -7,6 +7,7 @@ import { router } from "expo-router"; // Import router for navigation
 import { deletePushToken } from "../../api/user_functions"; // Import deletePushToken if needed
 
 import { icons } from "../../constants";
+import PageWrapper from "../../components/PageWrapper";
 
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
@@ -58,6 +59,7 @@ const TabsLayout = () => {
   return (
     <>
       <Tabs
+        sceneContainerStyle={{ backgroundColor: "transparent" }}
         screenOptions={{
           tabBarShowLabel: false,
           tabBarActiveTintColor: "#FFF",

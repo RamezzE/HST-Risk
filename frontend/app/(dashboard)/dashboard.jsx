@@ -16,7 +16,6 @@ import { GlobalContext } from "../../context/GlobalProvider";
 import { create_teams } from "../../api/team_functions";
 
 import { useFocusEffect } from "@react-navigation/native";
-import PageWrapper from "../../components/PageWrapper";
 
 const Dashboard = () => {
   const [error, setError] = useState(null);
@@ -197,62 +196,58 @@ const Dashboard = () => {
 
   if (isRefreshing) {
     return (
-      <PageWrapper>
-        <Loader />
-      </PageWrapper>
+      <Loader />
     );
   }
 
   return (
-    <PageWrapper>
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 20 }}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={() => fetchData()}
-            tintColor="#000"
-          />
-        }
-        bounces={false}
-        overScrollMode="never"
-      >
-        <View className="w-full justify-start p-4 mb-24">
-          <BackButton
-            style="w-[20vw]"
-            size={32}
-            onPress={() => {
-              logoutFunc();
-            }}
-          />
+    <ScrollView
+      contentContainerStyle={{ paddingBottom: 20 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={() => fetchData()}
+          tintColor="#000"
+        />
+      }
+      bounces={false}
+      overScrollMode="never"
+    >
+      <View className="w-full justify-start p-4 mb-24">
+        <BackButton
+          style="w-[20vw]"
+          size={32}
+          onPress={() => {
+            logoutFunc();
+          }}
+        />
 
-          <Text className="text-6xl text-center font-montez py-2">
-            Dashboard
+        <Text className="text-6xl text-center font-montez py-2">
+          Dashboard
+        </Text>
+
+        <CustomButton
+          title="New Game"
+          handlePress={() => {
+            createNewGameAlert();
+          }}
+          containerStyles="w-[45%] mt-2 mb-6 p-3"
+          textStyles={"text-2xl"}
+          isLoading={isSubmitting}
+        />
+
+        <Text className="font-montez text-4xl text-left mb-3">
+          Settings
+        </Text>
+        {error ? (
+          <Text style={{ color: "white", textAlign: "center" }}>
+            {error}
           </Text>
-
-          <CustomButton
-            title="New Game"
-            handlePress={() => {
-              createNewGameAlert();
-            }}
-            containerStyles="w-[45%] mt-2 mb-6 p-3"
-            textStyles={"text-2xl"}
-            isLoading={isSubmitting}
-          />
-
-          <Text className="font-montez text-4xl text-left mb-3">
-            Settings
-          </Text>
-          {error ? (
-            <Text style={{ color: "white", textAlign: "center" }}>
-              {error}
-            </Text>
-          ) : (
-            renderSettings()
-          )}
-        </View>
-      </ScrollView>
-    </PageWrapper>
+        ) : (
+          renderSettings()
+        )}
+      </View>
+    </ScrollView>
   );
 };
 

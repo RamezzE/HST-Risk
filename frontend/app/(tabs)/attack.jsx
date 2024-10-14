@@ -30,7 +30,6 @@ import DropDownField from "../../components/DropDownField";
 import CustomButton from "../../components/CustomButton";
 
 import { useFocusEffect } from "@react-navigation/native";
-import PageWrapper from "../../components/PageWrapper";
 
 const initialState = {
   countryMappings: [],
@@ -98,7 +97,7 @@ const reducer = (state, action) => {
 const Attack = () => {
 
   const { globalState } = useContext(GlobalContext);
-  
+
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const [form, setForm] = useState({
@@ -361,132 +360,128 @@ const Attack = () => {
 
   if (state.isRefreshing) {
     return (
-      <PageWrapper>
-        <Loader />
-      </PageWrapper>
+      <Loader />
     );
   }
 
   return (
-    <PageWrapper>
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={state.isRefreshing}
-            onRefresh={() => {
-              dispatch({ type: "SET_IS_REFRESHING", payload: true });
-              setForm({ your_zone: "", other_zone: "" });
-              fetchData();
-            }}
-            tintColor="#000"
-          />
-        }
-        bounces={false}
-        overScrollMode="never"
-      >
-        <View className="w-full min-h-[82.5vh] px-4 pt-4 mt-2 mb-8 flex flex-col justify-start">
-          <View className="flex flex-col mb-6">
-            <View className="flex flex-row justify-between pb-4">
-              <Text className="font-pmedium text-[16px]">
-                Team money: {state.balance}
-              </Text>
-              <Text className="font-pmedium text-[16px]">
-                Attack cost: {state.attackCost}
-              </Text>
-            </View>
-
-            {!Array.isArray(state.myZones) || state.myZones.length === 0 ? (
-              <View></View>
-            ) : (
-              <DropDownField
-                title="Select Your Country"
-                value={form.your_zone}
-                placeholder="Select Your Country"
-                items={state.myZones.map((zone) => ({
-                  label: `${zone.name}`,
-                  value: zone.name,
-                }))}
-                handleChange={(e) => selectYourZone(e)}
-                otherStyles=""
-              />
-            )}
-
-            {!Array.isArray(state.otherZones) || state.otherZones.length === 0 ? (
-              <View></View>
-            ) : (
-              <DropDownField
-                title="Select Country to Attack"
-                value={form.other_zone}
-                placeholder="Select Country to Attack"
-                items={state.otherZones.map((zone) => ({
-                  label: `${zone}`,
-                  value: zone,
-                }))}
-                handleChange={(e) => selectOtherZone(e)}
-                otherStyles="mt-5"
-              />
-            )}
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={state.isRefreshing}
+          onRefresh={() => {
+            dispatch({ type: "SET_IS_REFRESHING", payload: true });
+            setForm({ your_zone: "", other_zone: "" });
+            fetchData();
+          }}
+          tintColor="#000"
+        />
+      }
+      bounces={false}
+      overScrollMode="never"
+    >
+      <View className="w-full min-h-[82.5vh] px-4 pt-4 mt-2 mb-8 flex flex-col justify-start">
+        <View className="flex flex-col mb-6">
+          <View className="flex flex-row justify-between pb-4">
+            <Text className="font-pmedium text-[16px]">
+              Team money: {state.balance}
+            </Text>
+            <Text className="font-pmedium text-[16px]">
+              Attack cost: {state.attackCost}
+            </Text>
           </View>
 
-          <MapView
-            className="flex-1"
-            region={{
-              latitude: state.initialArea[0],
-              longitude: state.initialArea[1],
-              latitudeDelta: 75,
-              longitudeDelta: 100,
-            }}
-            provider={
-              Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-            }
-            mapType="satellite"
-            rotateEnabled={false}
-            pitchEnabled={false}
-          >
-            {Array.isArray(state.zones) &&
-              state.zones.map((zone, index) => {
-                const isSelectedOrCanAttack =
-                  form.your_zone === zone.name ||
-                  state.otherZones.includes(zone.name);
-                const shouldHideLabel =
-                  form.your_zone && !isSelectedOrCanAttack;
+          {!Array.isArray(state.myZones) || state.myZones.length === 0 ? (
+            <View></View>
+          ) : (
+            <DropDownField
+              title="Select Your Country"
+              value={form.your_zone}
+              placeholder="Select Your Country"
+              items={state.myZones.map((zone) => ({
+                label: `${zone.name}`,
+                value: zone.name,
+              }))}
+              handleChange={(e) => selectYourZone(e)}
+              otherStyles=""
+            />
+          )}
 
-                return (
-                  <MapZone
-                    key={index}
-                    points={zone.points}
-                    color={getTeamColor(zone.name)}
-                    label={shouldHideLabel ? "" : zone.name} // Hide label only if selecting a zone and it's not the selected or attackable zone
-                    onMarkerPress={() => onMarkerPress(zone)}
-                  />
-                );
-              })}
-
-            {Array.isArray(CountryConnections) &&
-              CountryConnections.map((points, index) => (
-                <DottedLine
-                  key={index}
-                  startPoint={points.point1}
-                  endPoint={points.point2}
-                  color="#FFF"
-                  thickness={2}
-                  dashGap={2}
-                />
-              ))}
-          </MapView>
-
-          <CustomButton
-            title={form.other_zone ? `Attack ${form.other_zone}` : "Attack"}
-            handlePress={() =>
-              attack_func(form.your_zone, parseInt(globalState.teamNo), form.other_zone)
-            }
-            containerStyles="mt-5 mb-5 p-3"
-            textStyles={"text-xl font-pregular"}
-            isLoading={state.isSubmitting}
-          />
+          {!Array.isArray(state.otherZones) || state.otherZones.length === 0 ? (
+            <View></View>
+          ) : (
+            <DropDownField
+              title="Select Country to Attack"
+              value={form.other_zone}
+              placeholder="Select Country to Attack"
+              items={state.otherZones.map((zone) => ({
+                label: `${zone}`,
+                value: zone,
+              }))}
+              handleChange={(e) => selectOtherZone(e)}
+              otherStyles="mt-5"
+            />
+          )}
         </View>
-      </ScrollView>
-    </PageWrapper>
+
+        <MapView
+          className="flex-1"
+          region={{
+            latitude: state.initialArea[0],
+            longitude: state.initialArea[1],
+            latitudeDelta: 75,
+            longitudeDelta: 100,
+          }}
+          provider={
+            Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+          }
+          mapType="satellite"
+          rotateEnabled={false}
+          pitchEnabled={false}
+        >
+          {Array.isArray(state.zones) &&
+            state.zones.map((zone, index) => {
+              const isSelectedOrCanAttack =
+                form.your_zone === zone.name ||
+                state.otherZones.includes(zone.name);
+              const shouldHideLabel =
+                form.your_zone && !isSelectedOrCanAttack;
+
+              return (
+                <MapZone
+                  key={index}
+                  points={zone.points}
+                  color={getTeamColor(zone.name)}
+                  label={shouldHideLabel ? "" : zone.name} // Hide label only if selecting a zone and it's not the selected or attackable zone
+                  onMarkerPress={() => onMarkerPress(zone)}
+                />
+              );
+            })}
+
+          {Array.isArray(CountryConnections) &&
+            CountryConnections.map((points, index) => (
+              <DottedLine
+                key={index}
+                startPoint={points.point1}
+                endPoint={points.point2}
+                color="#FFF"
+                thickness={2}
+                dashGap={2}
+              />
+            ))}
+        </MapView>
+
+        <CustomButton
+          title={form.other_zone ? `Attack ${form.other_zone}` : "Attack"}
+          handlePress={() =>
+            attack_func(form.your_zone, parseInt(globalState.teamNo), form.other_zone)
+          }
+          containerStyles="mt-5 mb-5 p-3"
+          textStyles={"text-xl font-pregular"}
+          isLoading={state.isSubmitting}
+        />
+      </View>
+    </ScrollView>
   );
 };
 
