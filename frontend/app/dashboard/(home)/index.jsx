@@ -1,4 +1,4 @@
-import React, { useState, useContext, useCallback } from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -47,7 +47,6 @@ const Dashboard = () => {
 
   const fetchData = async () => {
     setError(null);
-    setIsRefreshing(true);
 
     try {
       const result = await get_settings();
@@ -119,6 +118,11 @@ const Dashboard = () => {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    setIsRefreshing(true);
+    fetchData();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -210,7 +214,10 @@ const Dashboard = () => {
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
-          onRefresh={() => fetchData()}
+          onRefresh={() => {
+            setIsRefreshing(true);
+            fetchData();
+          }}
           tintColor="#000"
         />
       }
@@ -229,16 +236,27 @@ const Dashboard = () => {
         <Text className="text-6xl text-center font-montez py-2">
           Dashboard
         </Text>
+        <View className="flex flex-row w-full justify-between items-center">
+          <CustomButton
+            title="View Map"
+            handlePress={() => {
+              router.navigate("/dashboard/map");
+            }}
+            containerStyles="w-[45%] mt-2 mb-6 p-3"
+            textStyles={"text-2xl"}
+            isLoading={isSubmitting}
+          />
+          <CustomButton
+            title="New Game"
+            handlePress={() => {
+              createNewGameAlert();
+            }}
+            containerStyles="w-[45%] mt-2 mb-6 p-3"
+            textStyles={"text-2xl"}
+            isLoading={isSubmitting}
+          />
+        </View>
 
-        <CustomButton
-          title="New Game"
-          handlePress={() => {
-            createNewGameAlert();
-          }}
-          containerStyles="w-[45%] mt-2 mb-6 p-3"
-          textStyles={"text-2xl"}
-          isLoading={isSubmitting}
-        />
 
         <Text className="font-montez text-4xl text-left mb-3">
           Settings

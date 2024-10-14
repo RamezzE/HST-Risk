@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -23,7 +23,6 @@ const SubTeams = () => {
 
   const fetchData = async () => {
     setError(null);
-    setIsRefreshing(true);
     try {
       const result = await get_all_subteams();
       if (result.success === false) {
@@ -39,6 +38,11 @@ const SubTeams = () => {
       setIsRefreshing(false);
     }
   };
+
+  useEffect(() => {
+    setIsRefreshing(true);
+    fetchData();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -100,7 +104,10 @@ const SubTeams = () => {
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
-          onRefresh={() => fetchData()}
+          onRefresh={() => {
+            setIsRefreshing(true);
+            fetchData();
+          }}
           tintColor="#000"
         />
       }

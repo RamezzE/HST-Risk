@@ -6,6 +6,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import NotificationHandler from "../components/NotificationHandler"; // Import the notification component
 
+SplashScreen.preventAutoHideAsync();
+
 const RootLayout = () => {
 
   const [fontsLoaded, error] = useFonts({
@@ -24,8 +26,12 @@ const RootLayout = () => {
   useEffect(() => {
     if (error) throw error;
 
+    SplashScreen.preventAutoHideAsync();
+
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      setTimeout(() => {
+        SplashScreen.hideAsync();
+      }, 1000);
     }
   }, [fontsLoaded, error]);
 
@@ -40,7 +46,7 @@ const RootLayout = () => {
           <NotificationHandler />
           <Stack
             screenOptions={{
-              contentStyle: { backgroundColor: "transparent" }, // Set entire stack to transparent
+              contentStyle: { backgroundColor: "transparent" },
               headerShown: false,
             }}
           >

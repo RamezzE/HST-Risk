@@ -25,12 +25,12 @@ const validateSignIn = (username, password) => {
 };
 
 const SignIn = () => {
+  const { globalState, globalDispatch } = useContext(GlobalContext);
+
   const [form, setForm] = useState({
     username: "",
     password: "",
   });
-
-  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 

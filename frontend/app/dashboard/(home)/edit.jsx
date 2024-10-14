@@ -14,8 +14,6 @@ const EditSetting = () => {
   const local = useLocalSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  console.log(local);
-
   // Ensure options is an array
   const [form, setForm] = useState({
     name: local.name || "",

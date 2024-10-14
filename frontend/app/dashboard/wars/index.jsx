@@ -29,7 +29,6 @@ const DashboardAttacks = () => {
 
   const fetchData = async () => {
     setError(null);
-    setIsRefreshing(true);
     try {
       const result = await get_all_attacks();
       if (result.success === false) {
@@ -70,6 +69,7 @@ const DashboardAttacks = () => {
   );
 
   useEffect(() => {
+    setIsRefreshing(true);
     fetchData();
   }, []);
 
@@ -267,7 +267,10 @@ const DashboardAttacks = () => {
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
-          onRefresh={fetchData}
+          onRefresh={() => {
+            setIsRefreshing(true);
+            fetchData();
+          }}
           tintColor="#000"
         />
       }

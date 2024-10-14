@@ -1,4 +1,4 @@
-import React, { useReducer, useCallback, useContext } from "react";
+import React, { useReducer, useCallback, useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -50,7 +50,6 @@ const Admins = () => {
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null });
-    dispatch({ type: "SET_IS_REFRESHING", payload: true });
     try {
       const result = await get_admins();
       if (result.success === false)
@@ -66,6 +65,11 @@ const Admins = () => {
       dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
+
+  useEffect(() => {
+    dispatch({ type: "SET_IS_REFRESHING", payload: true });
+    fetchData();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -134,7 +138,10 @@ const Admins = () => {
       refreshControl={
         <RefreshControl
           refreshing={state.isRefreshing}
-          onRefresh={fetchData}
+          onRefresh={() => {
+            dispatch({ type: "SET_IS_REFRESHING", payload: true });
+            fetchData();
+          }}
           tintColor="#000"
         />
       }

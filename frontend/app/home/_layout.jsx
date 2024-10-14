@@ -1,8 +1,5 @@
 import React, { useContext, useCallback } from "react";
 import {
-  View,
-  Text,
-  Image,
   Platform,
   Alert,
 } from "react-native";
@@ -17,25 +14,7 @@ import _ from "lodash";
 import StickyPopup from "../../components/StickyPopup";
 
 import PageWrapper from './../../components/PageWrapper';
-
-const TabIcon = ({ icon, color, name, focused }) => {
-  return (
-    <View className="items-center justify-center gap-2">
-      <Image
-        source={icon}
-        resizeMode="contain"
-        tintColor={color}
-        className={Platform.OS === "ios" ? "w-6 h-6 mt-2" : "w-6 h-6"}
-      />
-      <Text
-        className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
-        style={{ color: color }}
-      >
-        {name}
-      </Text>
-    </View>
-  );
-};
+import TabIcon from "../../components/TabIcon";
 
 const TabsLayout = () => {
 

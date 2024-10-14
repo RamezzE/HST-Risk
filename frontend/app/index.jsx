@@ -1,6 +1,5 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { Text, View, Image } from "react-native";
-import * as SplashScreen from 'expo-splash-screen';
 import { router } from "expo-router";
 import CustomButton from "../components/CustomButton";
 import { GlobalContext } from "../context/GlobalProvider";
@@ -8,14 +7,11 @@ import { is_logged_in } from "../api/user_functions";
 import { images } from "../constants";
 import PageWrapper from "../components/PageWrapper";
 
-SplashScreen.preventAutoHideAsync();
-
-export default function App() {
+const App = () => {
   const { globalState, globalDispatch } = useContext(GlobalContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const checkLoginStatus = async () => {
-    if (!isSubmitting) return;
 
     try {
       if (globalState.isLoggedIn) {
@@ -45,11 +41,11 @@ export default function App() {
       }
 
       if (response.subteam !== "") {
+        globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
+        globalDispatch({ type: "SET_NAME", payload: response.subteam.name });
+        globalDispatch({ type: "SET_USER_MODE", payload: "subteam" });
         globalDispatch({ type: "SET_TEAM_NO", payload: response.subteam.number });
         globalDispatch({ type: "SET_SUBTEAM", payload: response.subteam.letter });
-        globalDispatch({ type: "SET_NAME", payload: response.subteam.name });
-        globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
-        globalDispatch({ type: "SET_USER_MODE", payload: "subteam" });
 
         router.navigate("/home");
         return;
@@ -83,29 +79,6 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    if (isSubmitting) {
-      checkLoginStatus();
-    }
-  }, [isSubmitting]);
-
-  useEffect(() => {
-    const keepSplash = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      await SplashScreen.hideAsync();
-    };
-    keepSplash();
-  }, []);
-
-  const checkLoggedIn = () => {
-    setIsSubmitting(true);
-  };
-
-  const guestLogin = () => {
-    globalDispatch({ type: "SET_NAME", payload: "Guest" });
-    router.navigate("/guest_choose_team");
-  };
-
   return (
     <PageWrapper>
       <View className="flex-1 justify-center pt-8">
@@ -123,14 +96,20 @@ export default function App() {
             <View className="w-full flex flex-row justify-evenly items-center">
               <CustomButton
                 title="Guest"
-                handlePress={() => guestLogin()}
+                handlePress={() => {
+                  globalDispatch({ type: "SET_NAME", payload: "Guest" });
+                  router.navigate("/guest_choose_team");
+                }}
                 textStyles={"font-montez text-3xl"}
                 containerStyles={"p-4"}
               />
 
               <CustomButton
                 title="Sign in"
-                handlePress={() => checkLoggedIn()}
+                handlePress={() => {
+                  setIsSubmitting(true);
+                  checkLoginStatus();
+                }}
                 isLoading={isSubmitting}
                 textStyles={"font-montez text-3xl"}
                 containerStyles={"p-4"}
@@ -153,3 +132,5 @@ export default function App() {
     </PageWrapper>
   );
 }
+
+export default App;

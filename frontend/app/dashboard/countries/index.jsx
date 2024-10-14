@@ -25,7 +25,6 @@ const Countries = () => {
 
   const fetchData = async () => {
     setError(null);
-    setIsRefreshing(true);
 
     try {
       const result = await get_country_mappings();
@@ -63,6 +62,7 @@ const Countries = () => {
   );
 
   useEffect(() => {
+    setIsRefreshing(true);
     fetchData();
   }, []);
 
@@ -140,7 +140,10 @@ const Countries = () => {
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
-          onRefresh={fetchData}
+          onRefresh={() =>{
+            setIsRefreshing(true);
+            fetchData();
+          }}
           tintColor="#000"
         />
       }

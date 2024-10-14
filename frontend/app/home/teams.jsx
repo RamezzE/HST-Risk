@@ -63,7 +63,6 @@ const Teams = () => {
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null })
-    dispatch({ type: "SET_IS_REFRESHING", payload: true })
     try {
       const result = await get_all_teams();
       const countriesR = await get_country_mappings();
@@ -101,6 +100,7 @@ const Teams = () => {
   );
 
   useEffect(() => {
+    dispatch({ type: "SET_IS_REFRESHING", payload: true })
     fetchData();
   }, []);
 
@@ -185,7 +185,10 @@ const Teams = () => {
       refreshControl={
         <RefreshControl
           refreshing={state.isRefreshing}
-          onRefresh={fetchData}
+          onRefresh={() => {
+            dispatch({ type: "SET_IS_REFRESHING", payload: true });
+            fetchData();
+          }}
           tintColor="#000"
         />
       }

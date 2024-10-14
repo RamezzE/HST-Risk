@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { View, Text, Image, Alert, Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import { Tabs } from "expo-router";
 import { GlobalContext } from "../../context/GlobalProvider"; 
 import { router } from "expo-router"; 
@@ -7,25 +7,7 @@ import { deletePushToken } from "../../api/user_functions";
 
 import { icons } from "../../constants";
 import PageWrapper from "../../components/PageWrapper";
-
-const TabIcon = ({ icon, color, name, focused }) => {
-  return (
-    <View className="items-center justify-center">
-      <Image
-        source={icon}
-        resizeMode="contain"
-        tintColor={color}
-        className={Platform.OS === "ios" ? "w-6 h-6 mt-2" : "w-6 h-6"}
-      />
-      <Text
-        className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
-        style={{ color: color }}
-      >
-        {name}
-      </Text>
-    </View>
-  );
-};
+import TabIcon from "../../components/TabIcon";
 
 const TabsLayout = () => {
   const { globalState, socket, Logout } = useContext(GlobalContext); 

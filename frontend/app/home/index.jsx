@@ -81,7 +81,6 @@ const Home = () => {
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null });
     dispatch({ type: "SET_ZONES", payload: countries });
-    dispatch({ type: "SET_IS_REFRESHING", payload: true });
 
     try {
       const result = await get_country_mappings();
@@ -149,6 +148,7 @@ const Home = () => {
   );
 
   useEffect(() => {
+    dispatch({ type: "SET_IS_REFRESHING", payload: true })
     fetchData();
   }, []);
 
@@ -265,7 +265,15 @@ const Home = () => {
       <BackButton
         style="w-[20vw]"
         size={32}
-        onPress={() => logoutFunc()}
+        onPress={() => {
+          if (globalState.name === "Guest") {
+            router.navigate("/guest_choose_team");
+          } else if (globalState.userMode === "super_admin") {
+            router.navigate("/dashboard");
+          } else {
+            logoutFunc()
+          }
+        }}
       />
 
       <View className="flex flex-row pt-2 justify-center gap-0">

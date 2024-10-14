@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -26,7 +26,6 @@ const Warzones = () => {
 
   const fetchData = async () => {
     setError(null);
-    setIsRefreshing(true);
     try {
       const result = await get_warzones();
       if (result.success === false) {
@@ -42,6 +41,11 @@ const Warzones = () => {
       setIsRefreshing(false);
     }
   };
+
+  useEffect(() => {
+    setIsRefreshing(true);
+    fetchData();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -132,7 +136,10 @@ const Warzones = () => {
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
-          onRefresh={() => fetchData()}
+          onRefresh={() => {
+            setIsRefreshing(true);
+            fetchData();
+          }}
           tintColor="#000"
         />
       }

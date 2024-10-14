@@ -43,7 +43,6 @@ const TeamAttacks = () => {
 
   const fetchData = async () => {
 
-
     dispatch({ type: "SET_ERROR", payload: null })
     try {
       const result = await get_all_attacks();
@@ -106,6 +105,7 @@ const TeamAttacks = () => {
   );
 
   useEffect(() => {
+    dispatch({ type: "SET_IS_REFRESHING", payload: true })
     fetchData();
   }, []);
 

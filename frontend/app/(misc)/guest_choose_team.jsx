@@ -16,8 +16,7 @@ import { get_all_teams } from "../../api/team_functions";
 import { addPushToken } from "../../api/user_functions";
 
 const GuestChooseTeam = () => {
-
-
+  
   const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const [teams, setTeams] = useState([]);
