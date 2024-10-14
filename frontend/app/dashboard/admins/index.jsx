@@ -6,12 +6,12 @@ import {
   RefreshControl,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import CustomButton from "../../components/CustomButton";
+import CustomButton from "../../../components/CustomButton";
 import { router } from "expo-router";
-import { get_admins } from "../../api/admin_functions";
-import Loader from "../../components/Loader";
+import { get_admins } from "../../../api/admin_functions";
+import Loader from "../../../components/Loader";
 
-import { GlobalContext } from "./../../context/GlobalProvider";
+import { GlobalContext } from "../../../context/GlobalProvider";
 
 const initialState = {
   admins: [],
@@ -150,7 +150,7 @@ const Admins = () => {
         <View className="flex flex-row justify-between">
           <CustomButton
             title="Add Admin"
-            handlePress={() => router.replace("/add_admin")}
+            handlePress={() => router.replace("/dashboard/admins/add")}
             containerStyles="w-[45%] my-2 p-3"
             textStyles={"text-2xl"}
           />

@@ -130,7 +130,7 @@ const Teams = () => {
               title="Edit"
               handlePress={() =>
                 router.push(
-                  `/edit_team?teamNo=${item.number}&teamName=${item.name}&teamBalance=${item.balance}`
+                  `/dashboard/teams/edit?teamNo=${item.number}&teamName=${item.name}&teamBalance=${item.balance}`
                 )
               }
               containerStyles="mt-2"

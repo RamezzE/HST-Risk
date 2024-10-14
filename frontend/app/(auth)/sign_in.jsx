@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { View, Text, Alert } from "react-native";
-import FormField from "../../components/FormField";
-import CustomButton from "../../components/CustomButton";
+
 import { router } from "expo-router";
 import { addPushToken, login } from "../../api/user_functions";
-
-import { useContext } from "react";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
 import BackButton from "../../components/BackButton";
-
+import FormField from "../../components/FormField";
+import CustomButton from "../../components/CustomButton";
 const validateSignIn = (username, password) => {
   var result = {
     success: false,
@@ -74,7 +72,7 @@ const SignIn = () => {
             return;
           }
 
-          router.replace("/(teams)");
+          router.replace("/dashboard/teams");
           return;
         }
 

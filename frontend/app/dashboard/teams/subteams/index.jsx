@@ -6,13 +6,13 @@ import {
   Text,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import CustomButton from "../../../components/CustomButton";
+import CustomButton from "../../../../components/CustomButton";
 import { router } from "expo-router";
-import { get_all_subteams } from "../../../api/team_functions";
-import Loader from "../../../components/Loader";
-import BackButton from "../../../components/BackButton";
+import { get_all_subteams } from "../../../../api/team_functions";
+import Loader from "../../../../components/Loader";
+import BackButton from "../../../../components/BackButton";
 
-import { GlobalContext } from "../../../context/GlobalProvider";
+import { GlobalContext } from "../../../../context/GlobalProvider";
 
 const SubTeams = () => {
   const [teams, setTeams] = useState([]);
@@ -78,7 +78,7 @@ const SubTeams = () => {
           title="Edit"
           handlePress={() =>
             router.push(
-              `/edit_subteam?username=${item.username}&password=${item.password}`
+              `/dashboard/teams/subteams/edit?username=${item.username}&password=${item.password}`
             )
           }
           containerStyles="w-1/4 h-2/3 mt-2"
@@ -111,7 +111,7 @@ const SubTeams = () => {
         <BackButton
           style="w-[20vw]"
           size={32}
-          onPress={() => router.navigate("/(teams)")}
+          onPress={() => router.navigate("/dashboard/teams")}
         />
         <Text className="text-6xl text-center font-montez py-2 mt-7">
           Subteams

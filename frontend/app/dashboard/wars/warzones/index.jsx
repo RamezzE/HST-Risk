@@ -5,16 +5,16 @@ import {
   Text,
   RefreshControl,
 } from "react-native";
-import CustomButton from "../../../components/CustomButton";
+import CustomButton from "../../../../components/CustomButton";
 import { useRouter } from "expo-router";
-import Loader from "../../../components/Loader";
-import BackButton from "../../../components/BackButton";
+import Loader from "../../../../components/Loader";
+import BackButton from "../../../../components/BackButton";
 
-import { get_warzones } from "../../../api/warzone_functions";
+import { get_warzones } from "../../../../api/warzone_functions";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import { GlobalContext } from "../../../context/GlobalProvider";
+import { GlobalContext } from "../../../../context/GlobalProvider";
 
 const Warzones = () => {
   const [warzones, setWarzones] = useState([]);
@@ -110,7 +110,7 @@ const Warzones = () => {
           handlePress={() => {
             const jsonData = JSON.stringify(item.wars);
             router.push(
-              `/edit_warzone?id=${item._id}&name=${item.name}&wars=${jsonData}`
+              `/dashboard/wars/warzones/edit?id=${item._id}&name=${item.name}&wars=${jsonData}`
             );
           }}
           containerStyles="w-1/4 h-2/3 mt-2 self-end"
@@ -150,7 +150,7 @@ const Warzones = () => {
         </Text>
         <CustomButton
           title="Add Warzone"
-          handlePress={() => router.navigate("/add_warzone")}
+          handlePress={() => router.navigate("/dashboard/wars/warzones/add")}
           containerStyles="w-[45%] my-2 p-3"
           textStyles={"text-2xl"}
         />

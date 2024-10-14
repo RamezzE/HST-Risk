@@ -281,7 +281,7 @@ const DashboardAttacks = () => {
         <View className="flex flex-row justify-between">
           <CustomButton
             title="Create Attack"
-            handlePress={() => router.replace("/add_attack")}
+            handlePress={() => router.replace("/dashboard/wars/add")}
             containerStyles="w-[45%] my-2 p-3"
             textStyles={"text-2xl"}
           />

@@ -1,14 +1,16 @@
 import React, { useState, useContext } from "react";
 import { View, Text, Alert } from "react-native";
-import FormField from "../../components/FormField";
-import CustomButton from "../../components/CustomButton";
+
 import { router, useLocalSearchParams } from "expo-router";
 
-import { update_team, update_team_balance } from "../../api/team_functions";
+import { update_team, update_team_balance } from "../../../api/team_functions";
 
-import BackButton from "../../components/BackButton";
+import BackButton from "../../../components/BackButton";
+import FormField from "../../../components/FormField";
+import CustomButton from "../../../components/CustomButton";
+import FormWrapper from "../../../components/FormWrapper";
 
-import { GlobalContext } from "../../context/GlobalProvider";
+import { GlobalContext } from "../../../context/GlobalProvider";
 
 
 const EditTeam = () => {
@@ -93,7 +95,7 @@ const EditTeam = () => {
       }
 
       Alert.alert("Success", "Team balance updated successfully");
-      router.navigate("/(teams)");
+      router.navigate("/dashboard/teams");
 
     } catch (error) {
       Alert.alert("Error", "Error updating team balance");
@@ -127,7 +129,7 @@ const EditTeam = () => {
 
       Alert.alert("Success", "Team updated successfully");
 
-      router.navigate("/(teams)");
+      router.navigate("/dashboard/teams");
 
     } catch (error) {
       Alert.alert("Error", "Error updating team");
@@ -138,80 +140,80 @@ const EditTeam = () => {
   };
 
   return (
-
-    <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-      <BackButton
-        style="w-[20vw]"
-        size={32}
-        onPress={() => {
-          router.navigate("/(teams)");
-        }}
-      />
-      <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
-        Edit Team
-      </Text>
-      <FormField
-        title="Team Number"
-        value={teamNo}
-        otherStyles="mt-7"
-        editable={false}
-      />
-
-      {globalState.userMode == "super_admin" && (
+    <FormWrapper>
+      <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+        <BackButton
+          style="w-[20vw]"
+          size={32}
+          onPress={() => {
+            router.navigate("/dashboard/teams");
+          }}
+        />
+        <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+          Edit Team
+        </Text>
         <FormField
-          title="Team Name"
-          value={form.teamName}
-          handleChangeText={(e) => setForm({ ...form, teamName: e })}
+          title="Team Number"
+          value={teamNo}
           otherStyles="mt-7"
+          editable={false}
         />
-      )}
 
-      <FormField
-        title="Running Money"
-        value={form.balance.toString()}
-        otherStyles="mt-7"
-        editable={false}
-      />
+        {globalState.userMode == "super_admin" && (
+          <FormField
+            title="Team Name"
+            value={form.teamName}
+            handleChangeText={(e) => setForm({ ...form, teamName: e })}
+            otherStyles="mt-7"
+          />
+        )}
 
-      <FormField
-        title="Modify Amount"
-        value={form.modifyAmount}
-        handleChangeText={(e) =>
-          setForm({ ...form, modifyAmount: e })
-        }
-        otherStyles="mt-7"
-        keyboardType="numeric"
-        placeholder="Enter amount to add/remove"
-      />
-
-      <View className="flex flex-row justify-between mt-4">
-        <CustomButton
-          title="Add"
-          handlePress={() => modifyBalance("add")}
-          containerStyles="w-[45%] p-3 bg-green-800"
-          textStyles="text-2xl"
-          isLoading={isModifyingBalance}
+        <FormField
+          title="Running Money"
+          value={form.balance.toString()}
+          otherStyles="mt-7"
+          editable={false}
         />
-        <CustomButton
-          title="Remove"
-          handlePress={() => modifyBalance("remove")}
-          containerStyles="w-[45%] p-3 bg-red-800"
-          textStyles="text-2xl"
-          isLoading={isModifyingBalance}
+
+        <FormField
+          title="Modify Amount"
+          value={form.modifyAmount}
+          handleChangeText={(e) =>
+            setForm({ ...form, modifyAmount: e })
+          }
+          otherStyles="mt-7"
+          keyboardType="numeric"
+          placeholder="Enter amount to add/remove"
         />
+
+        <View className="flex flex-row justify-between mt-4">
+          <CustomButton
+            title="Add"
+            handlePress={() => modifyBalance("add")}
+            containerStyles="w-[45%] p-3 bg-green-800"
+            textStyles="text-2xl"
+            isLoading={isModifyingBalance}
+          />
+          <CustomButton
+            title="Remove"
+            handlePress={() => modifyBalance("remove")}
+            containerStyles="w-[45%] p-3 bg-red-800"
+            textStyles="text-2xl"
+            isLoading={isModifyingBalance}
+          />
+        </View>
+
+        {globalState.userMode == "super_admin" && (
+          <CustomButton
+            title="Update Team"
+            handlePress={() => submit()}
+            containerStyles="mt-7 p-3 bg-green-800"
+            textStyles="text-3xl"
+            isLoading={isSubmitting}
+          />
+        )}
       </View>
-
-      {globalState.userMode == "super_admin" && (
-        <CustomButton
-          title="Update Team"
-          handlePress={() => submit()}
-          containerStyles="mt-7 p-3 bg-green-800"
-          textStyles="text-3xl"
-          isLoading={isSubmitting}
-        />
-      )}
-    </View>
-
+    </FormWrapper>
   );
 };
 

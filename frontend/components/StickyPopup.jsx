@@ -31,7 +31,7 @@ const StickyPopup = ({ currentAttack, currentDefence, subteam }) => {
         currentDefence.forEach((defence) => {
             timers.push(
                 <View key={defence._id} style={{ marginBottom: 10 }}>
-                    <TouchableOpacity onPress={() => router.navigate("/team_attacks")}>
+                    <TouchableOpacity onPress={() => router.navigate("/home/wars")}>
                         <Text className="font-pbold text-blue-800 text-l">
                             {defence.attacking_team} {defence.attacking_subteam} VS{" "}
                             {defence.defending_team} {defence.defending_subteam}
@@ -53,7 +53,7 @@ const StickyPopup = ({ currentAttack, currentDefence, subteam }) => {
     if (subteam !== "" && currentAttack) {
         timers.push(
             <View key={currentAttack._id} style={{ marginBottom: 10 }}>
-                <TouchableOpacity onPress={() => router.navigate("/team_attacks")}>
+                <TouchableOpacity onPress={() => router.navigate("/home/wars")}>
                     <Text className="font-pbold text-red-800 text-l">
                         {currentAttack.attacking_team} {currentAttack.attacking_subteam} VS{" "}
                         {currentAttack.defending_team} {currentAttack.defending_subteam}

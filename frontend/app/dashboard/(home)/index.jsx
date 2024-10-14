@@ -7,13 +7,13 @@ import {
   Alert,
 } from "react-native";
 
-import CustomButton from "../../components/CustomButton";
+import CustomButton from "../../../components/CustomButton";
 import { router } from "expo-router";
-import { get_settings } from "../../api/settings_functions";
-import BackButton from "../../components/BackButton";
-import Loader from "../../components/Loader";
-import { GlobalContext } from "../../context/GlobalProvider";
-import { create_teams } from "../../api/team_functions";
+import { get_settings } from "../../../api/settings_functions";
+import BackButton from "../../../components/BackButton";
+import Loader from "../../../components/Loader";
+import { GlobalContext } from "../../../context/GlobalProvider";
+import { create_teams } from "../../../api/team_functions";
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -23,7 +23,7 @@ const Dashboard = () => {
   const [settings, setSettings] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { socket, Logout } = useContext(GlobalContext);
+  const { globalState, socket, Logout } = useContext(GlobalContext);
 
   const logoutFunc = () => {
     Alert.alert(
@@ -109,7 +109,7 @@ const Dashboard = () => {
           "Success",
           "New Game Created Successfully.\nAll users will be logged out automatically"
         );
-        router.navigate("/(teams)");
+        router.navigate("/dashboard/teams");
       } else {
         Alert.alert("Error", result.errorMsg);
       }
@@ -122,6 +122,10 @@ const Dashboard = () => {
 
   useFocusEffect(
     useCallback(() => {
+      if (globalState.userMode != "super_admin") {
+        router.replace("/");
+        return;
+      }
       fetchData();
 
       socket.on("update_setting", (updatedSetting) => {
@@ -176,7 +180,7 @@ const Dashboard = () => {
               handlePress={() => {
                 const jsonData = JSON.stringify(item.options);
                 router.push(
-                  `/edit_setting?name=${item.name}&value=${item.value}&options=${jsonData}`
+                  `/dashboard/edit?name=${item.name}&value=${item.value}&options=${jsonData}`
                 );
               }}
               containerStyles="w-1/4 h-2/3 mt-2"

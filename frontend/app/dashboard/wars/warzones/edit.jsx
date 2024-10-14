@@ -5,13 +5,15 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import FormField from "../../components/FormField";
-import CustomButton from "../../components/CustomButton";
+
 import { router, useLocalSearchParams } from "expo-router";
-import BackButton from "../../components/BackButton";
-import { update_warzone, delete_warzone } from "../../api/warzone_functions";
+import { update_warzone, delete_warzone } from "../../../../api/warzone_functions";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import FontAwesome icons
 
+import FormField from "../../../../components/FormField";
+import CustomButton from "../../../../components/CustomButton";
+import BackButton from "../../../../components/BackButton";
+import FormWrapper from "../../../../components/FormWrapper";
 
 const EditWarzone = () => {
   const local = useLocalSearchParams();
@@ -162,71 +164,71 @@ const EditWarzone = () => {
   };
 
   return (
+    <FormWrapper>
+      <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+        <BackButton
+          style="w-[20vw]"
+          size={32}
+          onPress={() => router.navigate("/dashboard/wars/warzones")}
+        />
+        <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+          Edit Warzone
+        </Text>
+        <FormField
+          title="Warzone Name"
+          value={form.name}
+          otherStyles="mt-7"
+          handleChangeText={(e) => setForm({ ...form, name: e })}
+        />
 
-    <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-      <BackButton
-        style="w-[20vw]"
-        size={32}
-        onPress={() => router.navigate("/dashboard/wars/warzones")}
-      />
-      <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
-        Edit Warzone
-      </Text>
-      <FormField
-        title="Warzone Name"
-        value={form.name}
-        otherStyles="mt-7"
-        handleChangeText={(e) => setForm({ ...form, name: e })}
-      />
+        {form.wars.map((war, index) => (
+          <View key={index} className="mt-4 flex flex-row">
+            <FormField
+              title={`War ${index + 1} Name`}
+              value={war.name}
+              handleChangeText={(e) => handleWarChange(index, "name", e)}
+              otherStyles="flex-1 mr-3"
+            />
+            <FormField
+              title={`Location`}
+              value={war.location}
+              handleChangeText={(e) =>
+                handleWarChange(index, "location", e)
+              }
+              otherStyles="flex-1 mr-3"
+            />
+            <TouchableOpacity
+              onPress={() => removeWar(index)}
+              className="bg-red-700 p-2 rounded-md mt-2 self-end"
+            >
+              <Icon name="trash" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        ))}
 
-      {form.wars.map((war, index) => (
-        <View key={index} className="mt-4 flex flex-row">
-          <FormField
-            title={`War ${index + 1} Name`}
-            value={war.name}
-            handleChangeText={(e) => handleWarChange(index, "name", e)}
-            otherStyles="flex-1 mr-3"
-          />
-          <FormField
-            title={`Location`}
-            value={war.location}
-            handleChangeText={(e) =>
-              handleWarChange(index, "location", e)
-            }
-            otherStyles="flex-1 mr-3"
-          />
-          <TouchableOpacity
-            onPress={() => removeWar(index)}
-            className="bg-red-700 p-2 rounded-md mt-2 self-end"
-          >
-            <Icon name="trash" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      ))}
+        <CustomButton
+          handlePress={addWar}
+          title={"Add War"}
+          containerStyles={"mt-7 p-3 bg-blue-800"}
+          textStyles={"text-xl font-pregular"}
+        />
 
-      <CustomButton
-        handlePress={addWar}
-        title={"Add War"}
-        containerStyles={"mt-7 p-3 bg-blue-800"}
-        textStyles={"text-xl font-pregular"}
-      />
-
-      <CustomButton
-        title="Update Warzone"
-        handlePress={() => submit()}
-        containerStyles="mt-7 p-3 bg-green-800"
-        textStyles={"text-3xl"}
-        isLoading={isSubmitting}
-      />
-      <CustomButton
-        title="Delete Warzone"
-        handlePress={() => deleteWarzoneAlert()}
-        containerStyles="mt-7 p-3 bg-red-800"
-        textStyles={"text-3xl"}
-        isLoading={isSubmitting}
-      />
-    </View>
-
+        <CustomButton
+          title="Update Warzone"
+          handlePress={() => submit()}
+          containerStyles="mt-7 p-3 bg-green-800"
+          textStyles={"text-3xl"}
+          isLoading={isSubmitting}
+        />
+        <CustomButton
+          title="Delete Warzone"
+          handlePress={() => deleteWarzoneAlert()}
+          containerStyles="mt-7 p-3 bg-red-800"
+          textStyles={"text-3xl"}
+          isLoading={isSubmitting}
+        />
+      </View>
+    </FormWrapper>
   );
 };
 

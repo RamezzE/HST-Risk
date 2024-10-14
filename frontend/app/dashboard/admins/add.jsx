@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Alert } from "react-native";
-import FormField from "../../components/FormField";
-import DropDownField from "../../components/DropDownField";
-import CustomButton from "../../components/CustomButton";
+
 import { router } from "expo-router";
 
-import { get_wars } from "../../api/warzone_functions";
-import { add_admin } from "../../api/admin_functions";
+import { get_wars } from "../../../api/warzone_functions";
+import { add_admin } from "../../../api/admin_functions";
 
-import BackButton from "../../components/BackButton";
-import Loader from "../../components/Loader";
+import BackButton from "../../../components/BackButton";
+import Loader from "../../../components/Loader";
+import DropDownField from "../../../components/DropDownField";
+import CustomButton from "../../../components/CustomButton";
+import FormField from "../../../components/FormField";
+import FormWrapper from "../../../components/FormWrapper";
 
 const validateAddAdmin = (name, war, type) => {
   var result = {
@@ -69,7 +71,7 @@ const AddAdmin = () => {
       }
 
       Alert.alert("Success", "Admin added successfully");
-      router.replace("/admins");
+      router.replace("/dashboard/admins");
     } catch (error) {
       Alert.alert("Error", "Error adding admin");
       console.log(error);
@@ -106,59 +108,59 @@ const AddAdmin = () => {
   }
 
   return (
+    <FormWrapper>
+      <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+        <BackButton
+          style="w-[20vw]"
+          size={32}
+          onPress={() => router.navigate("/dashboard/admins")}
+        />
+        <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+          Add Admin
+        </Text>
 
-    <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
-      <BackButton
-        style="w-[20vw]"
-        size={32}
-        onPress={() => router.navigate("/admins")}
-      />
-      <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
-        Add Admin
-      </Text>
-
-      <FormField
-        title="Admin Name"
-        value={form.name}
-        handleChangeText={(e) => setForm({ ...form, name: e })}
-        otherStyles="mt-7"
-      />
-
-      <DropDownField
-        title="Admin Type"
-        value={form.type}
-        placeholder="Select War"
-        items={["Wars", "Missions"].map((type) => ({
-          label: type,
-          value: type,
-        }))}
-        handleChange={(e) => setForm({ ...form, type: e })}
-        otherStyles="mt-7"
-      />
-
-      {Array.isArray(wars) && form.type == "Wars" && (
-        <DropDownField
-          title="Assigned War"
-          value={form.war}
-          placeholder="Select War"
-          items={wars.map((war) => ({
-            label: `${war.name}`,
-            value: war.name,
-          }))}
-          handleChange={(e) => setForm({ ...form, war: e })}
+        <FormField
+          title="Admin Name"
+          value={form.name}
+          handleChangeText={(e) => setForm({ ...form, name: e })}
           otherStyles="mt-7"
         />
-      )}
 
-      <CustomButton
-        title="Add Admin"
-        handlePress={() => submit()}
-        containerStyles="mt-7 p-3 bg-green-800"
-        textStyles={"text-3xl"}
-        isLoading={isSubmitting}
-      />
-    </View>
+        <DropDownField
+          title="Admin Type"
+          value={form.type}
+          placeholder="Select War"
+          items={["Wars", "Missions"].map((type) => ({
+            label: type,
+            value: type,
+          }))}
+          handleChange={(e) => setForm({ ...form, type: e })}
+          otherStyles="mt-7"
+        />
 
+        {Array.isArray(wars) && form.type == "Wars" && (
+          <DropDownField
+            title="Assigned War"
+            value={form.war}
+            placeholder="Select War"
+            items={wars.map((war) => ({
+              label: `${war.name}`,
+              value: war.name,
+            }))}
+            handleChange={(e) => setForm({ ...form, war: e })}
+            otherStyles="mt-7"
+          />
+        )}
+
+        <CustomButton
+          title="Add Admin"
+          handlePress={() => submit()}
+          containerStyles="mt-7 p-3 bg-green-800"
+          textStyles={"text-3xl"}
+          isLoading={isSubmitting}
+        />
+      </View>
+    </FormWrapper>
   );
 };
 

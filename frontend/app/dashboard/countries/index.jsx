@@ -7,14 +7,14 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import CustomButton from "../../components/CustomButton";
+import CustomButton from "../../../components/CustomButton";
 import { router } from "expo-router";
 
-import Loader from "../../components/Loader";
-import { get_country_mappings } from "../../api/country_functions";
+import Loader from "../../../components/Loader";
+import { get_country_mappings } from "../../../api/country_functions";
 
 
-import { GlobalContext } from "../../context/GlobalProvider";
+import { GlobalContext } from "../../../context/GlobalProvider";
 
 const Countries = () => {
   const [countries, setCountries] = useState([]);

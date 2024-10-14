@@ -78,7 +78,7 @@ const TabsLayout = () => {
         }}
       >
         <Tabs.Screen
-          name="index"
+          name="(home)"
           options={{
             title: "Home",
             headerShown: false,
@@ -94,7 +94,7 @@ const TabsLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="(wars)"
+          name="wars"
           options={{
             title: "Wars",
             headerShown: false,
@@ -110,7 +110,7 @@ const TabsLayout = () => {
           }}
         />
         <Tabs.Screen
-          name="(teams)"
+          name="teams"
           options={{
             title: "Teams",
             headerShown: false,
