@@ -7,7 +7,6 @@ import {
 } from "react-native";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import BackButton from "../../components/BackButton";
 import { update_warzone, delete_warzone } from "../../api/warzone_functions";
@@ -161,8 +160,6 @@ const EditWarzone = () => {
   const addWar = () => {
     setForm({ ...form, wars: [...form.wars, { name: "", location: "" }] });
   };
-
-  const insets = useSafeAreaInsets();
 
   return (
 
