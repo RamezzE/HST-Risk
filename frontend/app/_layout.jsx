@@ -1,8 +1,7 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { GlobalProvider } from "../context/GlobalProvider";
-import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 
@@ -54,15 +53,5 @@ const RootLayout = () => {
     </SafeAreaProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(1, 1, 1, 0.1)",
-  },
-});
 
 export default RootLayout;
