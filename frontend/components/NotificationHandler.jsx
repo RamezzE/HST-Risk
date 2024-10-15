@@ -5,7 +5,15 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { GlobalContext } from "../context/GlobalProvider";
 
-export default function NotificationHandler() {
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,  // Show notifications as alerts in the foreground
+    shouldPlaySound: false, // Disable sound for notifications
+    shouldSetBadge: false,  // Disable app icon badge updates
+  }),
+});
+
+const NotificationHandler = () => {
   const { globalDispatch } = useContext(GlobalContext);
   const [notification, setNotification] = useState(null);
   const notificationListener = useRef();
@@ -88,3 +96,5 @@ export default function NotificationHandler() {
 
   return null; // Since this is a logic-only component, there's no need to render anything
 }
+
+export default NotificationHandler;
