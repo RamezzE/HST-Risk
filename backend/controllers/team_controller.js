@@ -305,7 +305,9 @@ class TeamController {
 
   static async get_all_teams(req, res) {
     try {
-      const teams = await Team.find();
+      let teams = await Team.find();
+      // sort by team number
+      teams.sort((a, b) => a.number - b.number);
       return res.json(teams);
     } catch (error) {
       return res.json({});
@@ -315,6 +317,13 @@ class TeamController {
   static async get_all_subteams(req, res) {
     try {
       const subteams = await SubTeam.find();
+      // sort by team number and then by letter
+      subteams.sort((a, b) => {
+        if (a.number === b.number) {
+          return a.letter.localeCompare(b.letter);
+        }
+        return a.number - b.number;
+      });
       return res.json(subteams);
     } catch (error) {
       return res.json({});

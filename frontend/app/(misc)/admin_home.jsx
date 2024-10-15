@@ -2,12 +2,8 @@ import React, { useEffect, useState, useContext, useCallback } from "react";
 import {
   View,
   Text,
-  ScrollView,
   Alert,
-  ImageBackground,
-  RefreshControl,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 import { GlobalContext } from "../../context/GlobalProvider";
 import { get_admin_by_name } from "../../api/admin_functions";
@@ -20,12 +16,11 @@ import { router } from "expo-router";
 import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
-import { images } from "../../constants";
 
 import { useFocusEffect } from "@react-navigation/native";
 
 const AdminHome = () => {
-  const { name, Logout, socket } = useContext(GlobalContext);
+  const { globalState, socket, Logout } = useContext(GlobalContext);
   const [war, setWar] = useState("");
   const [response, setResponse] = useState({ attacks: [] });
   const [currentAttack, setCurrentAttack] = useState({
@@ -43,7 +38,7 @@ const AdminHome = () => {
   const fetchData = async () => {
     console.log("Fetching data");
     try {
-      const admin = await get_admin_by_name(name);
+      const admin = await get_admin_by_name(globalState.name);
       setWar(admin.admin.war);
       const response = await get_attacks_by_war(admin.admin.war);
 
@@ -258,151 +253,106 @@ const AdminHome = () => {
     }
   };
 
-  const insets = useSafeAreaInsets();
 
   if (isRefreshing) {
     return (
-      <View
-        style={{
-          paddingTop: insets.top,
-          paddingRight: insets.right,
-          paddingLeft: insets.left,
-        }}
-        className="flex-1 bg-black"
-      >
-        <ImageBackground
-          source={images.background}
-          style={{ flex: 1, resizeMode: "cover" }}
-        >
-          <Loader />
-        </ImageBackground>
-      </View>
+      <Loader />
     );
   }
 
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingRight: insets.right,
-        paddingLeft: insets.left,
-      }}
-      className="bg-black h-full"
-    >
-      <ImageBackground
-        source={images.background}
-        style={{ resizeMode: "cover" }}
-        className="min-h-[100vh]"
+
+    <View className="w-full min-h-[100vh] px-4 py-5 flex flex-col justify-start">
+      <View>
+        <BackButton
+          style="w-[20vw] mb-6"
+          size={32}
+          onPress={() => logoutFunc()}
+        />
+
+        <Text className="font-montez text-black text-5xl px-5 pt-1 text-center">
+          Welcome, {globalState.name}
+        </Text>
+
+        <Text className="font-montez text-black text-center mt-1 text-4xl ">
+          {war}
+        </Text>
+      </View>
+
+      <View
+        className="rounded-md mt-3 px-2 flex-1 flex-col justify-start"
+        style={{ backgroundColor: "rgba(32, 20, 2, 0.6)" }} // Transparent background
       >
-        <ScrollView
-          scrollEnabled={true}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={() => {
-                setIsRefreshing(true);
-                fetchData();
-              }}
-              tintColor="#000"
-            />
-          }
-          bounces={false}
-          overScrollMode="never"
-        >
-          <View className="w-full min-h-[100vh] px-4 py-5 flex flex-col justify-start">
+        {currentAttack._id ? (
+          <View className="h-full flex flex-col justify-between py-4">
             <View>
-              <BackButton
-                style="w-[20vw] mb-6"
-                size={32}
-                onPress={() => logoutFunc()}
-              />
-
-              <Text className="font-montez text-black text-5xl px-5 pt-1 text-center">
-                Welcome, {name}
+              <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
+                Attacking Side:
               </Text>
-
-              <Text className="font-montez text-black text-center mt-1 text-4xl ">
-                {war}
+              <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
+                Team {currentAttack.attacking_team}
+                {currentAttack.attacking_subteam},{" "}
+                {currentAttack.attacking_zone}
               </Text>
-            </View>
-
-            <View
-              className="rounded-md mt-3 px-2 flex-1 flex-col justify-start"
-              style={{ backgroundColor: "rgba(32, 20, 2, 0.6)" }} // Transparent background
-            >
-              {currentAttack._id ? (
-                <View className="h-full flex flex-col justify-between py-4">
-                  <View>
-                    <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
-                      Attacking Side:
-                    </Text>
-                    <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
-                      Team {currentAttack.attacking_team}
-                      {currentAttack.attacking_subteam},{" "}
-                      {currentAttack.attacking_zone}
-                    </Text>
-                    <Text></Text>
-                    <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
-                      Defending Side:
-                    </Text>
-                    <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
-                      Team {currentAttack.defending_team},{" "}
-                      {currentAttack.defending_zone}
-                    </Text>
-                  </View>
-                </View>
-              ) : (
-                <Text className="font-montez text-white text-4xl p-5 text-center ">
-                  No current attack
-                </Text>
-              )}
-            </View>
-
-            <View>
-              {currentAttack._id && (
-                <Timer
-                  attack_id={currentAttack._id}
-                  textStyles={
-                    "text-3xl text-red-800 mt-4 mb-2 text-center font-psemibold"
-                  }
-                  expiryMessage="Timer expired"
-                />
-              )}
-              <View className="flex flex-row justify-between mr-1 mt-3">
-                {response.attacks.length > 0 && (
-                  <View className="w-full">
-                    <View className="flex flex-row">
-                      <CustomButton
-                        title={`${currentAttack.attacking_team}${currentAttack.attacking_subteam} Won`}
-                        textStyles={"text-xl font-pregular"}
-                        containerStyles="w-1/2 mr-1 bg-green-800 p-3"
-                        handlePress={() => setAttackResultAlert("true")}
-                        isLoading={isSubmitting}
-                      />
-                      <CustomButton
-                        title={`${currentAttack.defending_team} Won`}
-                        textStyles={"text-xl font-pregular"}
-                        containerStyles="w-1/2 ml-1 bg-red-800 p-3"
-                        handlePress={() => setAttackResultAlert("false")}
-                        isLoading={isSubmitting}
-                      />
-                    </View>
-                    <CustomButton
-                      title="Cancel Attack"
-                      containerStyles="mt-5 p-3 mb-10"
-                      textStyles={"text-xl font-pregular"}
-                      handlePress={() => {
-                        cancelAttackAlert(currentAttack._id);
-                      }}
-                      isLoading={isSubmitting}
-                    />
-                  </View>
-                )}
-              </View>
+              <Text></Text>
+              <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
+                Defending Side:
+              </Text>
+              <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
+                Team {currentAttack.defending_team},{" "}
+                {currentAttack.defending_zone}
+              </Text>
             </View>
           </View>
-        </ScrollView>
-      </ImageBackground>
+        ) : (
+          <Text className="font-montez text-white text-4xl p-5 text-center ">
+            No current attack
+          </Text>
+        )}
+      </View>
+
+      <View>
+        {currentAttack._id && (
+          <Timer
+            attack_id={currentAttack._id}
+            textStyles={
+              "text-3xl text-red-800 mt-4 mb-2 text-center font-psemibold"
+            }
+            expiryMessage="Timer expired"
+          />
+        )}
+        <View className="flex flex-row justify-between mr-1 mt-3">
+          {response.attacks.length > 0 && (
+            <View className="w-full">
+              <View className="flex flex-row">
+                <CustomButton
+                  title={`${currentAttack.attacking_team}${currentAttack.attacking_subteam} Won`}
+                  textStyles={"text-xl font-pregular"}
+                  containerStyles="w-1/2 mr-1 bg-green-800 p-3"
+                  handlePress={() => setAttackResultAlert("true")}
+                  isLoading={isSubmitting}
+                />
+                <CustomButton
+                  title={`${currentAttack.defending_team} Won`}
+                  textStyles={"text-xl font-pregular"}
+                  containerStyles="w-1/2 ml-1 bg-red-800 p-3"
+                  handlePress={() => setAttackResultAlert("false")}
+                  isLoading={isSubmitting}
+                />
+              </View>
+              <CustomButton
+                title="Cancel Attack"
+                containerStyles="mt-5 p-3 mb-10"
+                textStyles={"text-xl font-pregular"}
+                handlePress={() => {
+                  cancelAttackAlert(currentAttack._id);
+                }}
+                isLoading={isSubmitting}
+              />
+            </View>
+          )}
+        </View>
+      </View>
     </View>
   );
 };

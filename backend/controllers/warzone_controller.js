@@ -1,5 +1,3 @@
-import { MongoClient } from "mongodb";
-
 import Warzone from "../models/warzone.js";
 import Attack from "../models/attack.js";
 

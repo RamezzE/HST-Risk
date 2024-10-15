@@ -1,10 +1,12 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { GlobalProvider } from "../context/GlobalProvider";
-import { StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import NotificationHandler from "../components/NotificationHandler"; // Import the notification component
+
+SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
 
@@ -24,8 +26,12 @@ const RootLayout = () => {
   useEffect(() => {
     if (error) throw error;
 
+    SplashScreen.preventAutoHideAsync();
+
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      setTimeout(() => {
+        SplashScreen.hideAsync();
+      }, 1000);
     }
   }, [fontsLoaded, error]);
 
@@ -36,28 +42,24 @@ const RootLayout = () => {
   return (
     <SafeAreaProvider>
       <KeyboardProvider>
-      <GlobalProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(dashboard)" options={{ headerShown: false }} />
-          <Stack.Screen name="(forms)" options={{ headerShown: false }} />
-          <Stack.Screen name="(misc)" options={{ headerShown: false }} />
-        </Stack>
-      </GlobalProvider>
+        <GlobalProvider>
+          <NotificationHandler />
+          <Stack
+            screenOptions={{
+              contentStyle: { backgroundColor: "transparent" },
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(misc)" />
+            <Stack.Screen name="home" />
+            <Stack.Screen name="dashboard" />
+          </Stack>
+        </GlobalProvider>
       </KeyboardProvider>
     </SafeAreaProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(1, 1, 1, 0.1)",
-  },
-});
 
 export default RootLayout;
