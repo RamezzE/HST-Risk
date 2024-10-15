@@ -7,9 +7,9 @@ import { GlobalContext } from "../context/GlobalProvider";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,  // Show notifications as alerts in the foreground
-    shouldPlaySound: false, // Disable sound for notifications
-    shouldSetBadge: false,  // Disable app icon badge updates
+    shouldShowAlert: true,  
+    shouldPlaySound: true, 
+    shouldSetBadge: true, 
   }),
 });
 
