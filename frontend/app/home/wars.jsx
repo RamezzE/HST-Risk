@@ -10,7 +10,7 @@ import { GlobalContext } from "../../context/GlobalProvider";
 import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 
-import { GetAttacksByTeam, GetAttacksOnTeam } from "../../helpers/AttackHelper";
+import { get_all_attacks } from "../../api/attack_functions";
 
 const initialState = {
   error: null,
@@ -42,11 +42,16 @@ const TeamAttacks = () => {
 
   useEffect(() => {
 
-    const attacksByTeam = GetAttacksByTeam(globalState.attacks, globalState.teamNo)
-    dispatch({ type: "SET_ATTACKING_ATTACKS", payload: attacksByTeam })
+    const filteredAttackingAttacks = Array.isArray(globalState.attacks)
+      ? globalState.attacks.filter((attack) => attack.attacking_team.toString() === globalState.teamNo.toString())
+      : [];
 
-    const attacksOnTeam = GetAttacksOnTeam(globalState.attacks, globalState.teamNo)
-    dispatch({ type: "SET_DEFENDING_ATTACKS", payload: attacksOnTeam })
+    const filteredDefendingAttacks = Array.isArray(globalState.attacks)
+      ? globalState.attacks.filter((attack) => attack.defending_team.toString() === globalState.teamNo.toString())
+      : [];
+
+    dispatch({ type: "SET_ATTACKING_ATTACKS", payload: filteredAttackingAttacks })
+    dispatch({ type: "SET_DEFENDING_ATTACKS", payload: filteredDefendingAttacks })
 
   }, [globalState.attacks, globalState.teamNo])
 
@@ -54,21 +59,14 @@ const TeamAttacks = () => {
   const fetchData = async () => {
 
     dispatch({ type: "SET_ERROR", payload: null })
+
     try {
-      const filteredAttackingAttacks = Array.isArray(globalState.attacks)
-        ? globalState.attacks.filter((attack) => attack.attacking_team === globalState.teamNo.toString())
-        : [];
+      const response = await get_all_attacks();
 
-      console.log(filteredAttackingAttacks)
-
-      const filteredDefendingAttacks = Array.isArray(globalState.attacks)
-        ? globalState.attacks.filter((attack) => attack.defending_team === globalState.teamNo.toString())
-        : [];
-
-      console.log(filteredDefendingAttacks)
-
-      dispatch({ type: "SET_ATTACKING_ATTACKS", payload: filteredAttackingAttacks })
-      dispatch({ type: "SET_DEFENDING_ATTACKS", payload: filteredDefendingAttacks })
+      if (Array.isArray(response)) {
+        dispatch({ type: "SET_ATTACKING_ATTACKS", payload: filteredAttackingAttacks })
+        dispatch({ type: "SET_DEFENDING_ATTACKS", payload: filteredDefendingAttacks })
+      }
 
     } catch (err) {
       dispatch({ type: "SET_ERROR", payload: "Failed to fetch data" })

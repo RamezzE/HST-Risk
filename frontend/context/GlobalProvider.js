@@ -37,10 +37,6 @@ const reducer = (state, action) => {
       return { ...state, subteam: action.payload };
     case "SET_EXPO_PUSH_TOKEN":
       return { ...state, expoPushToken: action.payload };
-    case "SET_CURRENT_ATTACK":
-      return { ...state, currentAttack: action.payload };
-    case "SET_CURRENT_DEFENCE":
-      return { ...state, currentDefence: action.payload };
     case "SET_ADMIN_TYPE":
       return { ...state, adminType: action.payload };
     case "SET_ATTACKS":
@@ -147,14 +143,22 @@ const reducer = (state, action) => {
           (warzone) => warzone._id !== action.payload
         ),
       };
-    case "ADD_CURRENT_DEFENCE":
+    case "UPDATE_POPUP_ATTACKS":
       return {
         ...state,
-        currentDefence: [...state.currentDefence, action.payload],
+        currentDefence: state.attacks.filter(
+          (attack) =>
+            attack.defending_team.toString() === state.teamNo.toString()
+        ),
+        currentAttack: state.attacks.find(
+          (attack) =>
+            attack.attacking_team.toString() === state.teamNo.toString() &&
+            attack.attacking_subteam.toString() === state.subteam.toString()
+        ),
       };
     case "RESET":
       return {
-        ... state,
+        ...state,
         name: "",
         teamNo: "",
         isLoggedIn: false,

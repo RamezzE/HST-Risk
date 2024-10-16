@@ -3,7 +3,6 @@ import { Alert, Platform } from "react-native";
 import { Tabs } from "expo-router";
 import { GlobalContext } from "../../context/GlobalProvider"; 
 import { router } from "expo-router"; 
-import { deletePushToken } from "../../api/user_functions"; 
 
 import { icons } from "../../constants";
 import PageWrapper from "../../components/PageWrapper";
@@ -22,11 +21,7 @@ const TabsLayout = () => {
       );
 
       setTimeout(async () => {
-        // If you want to delete the push token before logout
-        if (globalState.expoPushToken && globalState.teamNo) {
-          await deletePushToken(globalState.expoPushToken, globalState.teamNo);
-        }
-        Logout(globalDispatch);
+        Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
         router.replace("/");
       }, 3000);
     };

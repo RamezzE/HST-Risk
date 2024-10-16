@@ -35,8 +35,8 @@ const StickyPopup = ({ currentAttack, currentDefence, subteam }) => {
                 <View key={defence._id} style={{ marginBottom: 10 }}>
                     <TouchableOpacity onPress={() => router.navigate("/home/wars")}>
                         <Text className="font-pbold text-blue-800 text-l">
-                            {defence.attacking_team} {defence.attacking_subteam} VS{" "}
-                            {defence.defending_team} {defence.defending_subteam}
+                            {defence.attacking_team}{defence.attacking_subteam} VS{" "}
+                            {defence.defending_team}{defence.defending_subteam}{" "}
                         </Text>
                         <Text className="font-pbold text-blue-800 text-[14px]">
                             {defence.war}
@@ -57,8 +57,8 @@ const StickyPopup = ({ currentAttack, currentDefence, subteam }) => {
             <View key={currentAttack._id} style={{ marginBottom: 10 }}>
                 <TouchableOpacity onPress={() => router.navigate("/home/wars")}>
                     <Text className="font-pbold text-red-800 text-l">
-                        {currentAttack.attacking_team} {currentAttack.attacking_subteam} VS{" "}
-                        {currentAttack.defending_team} {currentAttack.defending_subteam}
+                        {currentAttack.attacking_team}{currentAttack.attacking_subteam} VS{" "}
+                        {currentAttack.defending_team}{currentAttack.defending_subteam}{" "}
                     </Text>
                     <Text className="font-pbold text-red-800 text-[14px]">
                         {currentAttack.war}

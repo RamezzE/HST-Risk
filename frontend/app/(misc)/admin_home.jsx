@@ -15,7 +15,6 @@ import Timer from "../../components/Timer";
 
 import { set_attack_result, delete_attack } from "../../api/attack_functions";
 import { Logout } from "../../helpers/AuthHelpers";
-import { FilterAttacksByWar } from "../../helpers/AttackHelper";
 import { GetAssignedWar } from "../../helpers/AdminHelper";
 
 const initialState = {
@@ -47,7 +46,7 @@ const AdminHome = () => {
 
   useEffect(() => {
 
-    const filteredAttacks = FilterAttacksByWar(globalState.attacks, state.war)
+    const filteredAttacks = globalState.attacks.filter(attack => attack.war === state.war);
 
     if (filteredAttacks.length > 0)
       dispatch({ type: "SET_CURRENT_ATTACK", payload: filteredAttacks[0] });

@@ -1,6 +1,7 @@
 import { is_logged_in } from "../api/user_functions";
 import { logout } from "../api/user_functions";
 import { login, addPushToken } from "../api/user_functions";
+import { deletePushToken } from "../api/user_functions";
 
 export const isLoggedIn = async (globalState, globalDispatch) => {
   if (globalState.isLoggedIn) {
@@ -81,8 +82,10 @@ export const Login = async (username, password, globalState, globalDispatch) => 
   }
 };
 
-export const Logout = async (globalDispatch) => {
+export const Logout = async (globalDispatch, pushToken = null, teamNo = null) => {
   try {
+    if (pushToken && teamNo)
+      deletePushToken(pushToken, teamNo);
     globalDispatch({ type: "RESET" });
     await logout();
   } catch (error) {

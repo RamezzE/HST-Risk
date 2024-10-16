@@ -21,7 +21,6 @@ import MapZone from "../../components/MapZone";
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
-import { deletePushToken } from "../../api/user_functions";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
@@ -101,8 +100,7 @@ const Home = () => {
         {
           text: "Logout",
           onPress: async () => {
-            deletePushToken(globalState.expoPushToken, globalState.teamNo);
-            Logout(globalDispatch);
+            Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
             router.replace("/");
           },
         },
