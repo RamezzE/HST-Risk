@@ -43,10 +43,10 @@ const TeamAttacks = () => {
   useEffect(() => {
 
     const attacksByTeam = GetAttacksByTeam(globalState.attacks, globalState.teamNo)
-    dispatch({ type: "SET_DEFENDING_ATTACKS", payload: attacksByTeam })
+    dispatch({ type: "SET_ATTACKING_ATTACKS", payload: attacksByTeam })
 
     const attacksOnTeam = GetAttacksOnTeam(globalState.attacks, globalState.teamNo)
-    dispatch({ type: "SET_ATTACKING_ATTACKS", payload: attacksOnTeam })
+    dispatch({ type: "SET_DEFENDING_ATTACKS", payload: attacksOnTeam })
 
   }, [globalState.attacks, globalState.teamNo])
 
@@ -59,9 +59,13 @@ const TeamAttacks = () => {
         ? globalState.attacks.filter((attack) => attack.attacking_team === globalState.teamNo.toString())
         : [];
 
+      console.log(filteredAttackingAttacks)
+
       const filteredDefendingAttacks = Array.isArray(globalState.attacks)
         ? globalState.attacks.filter((attack) => attack.defending_team === globalState.teamNo.toString())
         : [];
+
+      console.log(filteredDefendingAttacks)
 
       dispatch({ type: "SET_ATTACKING_ATTACKS", payload: filteredAttackingAttacks })
       dispatch({ type: "SET_DEFENDING_ATTACKS", payload: filteredDefendingAttacks })

@@ -1,4 +1,4 @@
-import React, { useContext, useReducer } from "react";
+import React, { useContext, useReducer, useEffect } from "react";
 import {
   View,
   Text,
@@ -52,9 +52,13 @@ const Home = () => {
 
   const { globalState, globalDispatch } = useContext(GlobalContext);
 
+  useEffect(() => {
+    dispatch({ type: "SET_ZONES", payload: countries });
+  }, [])
+
+
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null });
-    dispatch({ type: "SET_ZONES", payload: countries });
 
     try {
       const result = await get_country_mappings();
@@ -207,14 +211,25 @@ const Home = () => {
         }}
       />
 
-      <View className="flex flex-row pt-2 justify-center gap-0">
-        <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
-          {globalState.name}, Team {globalState.teamNo}
-        </Text>
-        <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">
-          {globalState.subteam}
-        </Text>
-      </View>
+      {
+        globalState.userMode !== "super_admin" ? (
+          <View className="flex flex-row pt-2 justify-center gap-0">
+            <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
+              {globalState.name}, Team {globalState.teamNo}
+            </Text>
+            <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">
+              {globalState.subteam}
+            </Text>
+          </View>
+        ) :
+        (
+          <Text className="text-center font-pmedium text-base m-4 mt-0 pt-2">
+            Ramez can be pretty cool right
+          </Text>
+        )
+      }
+
+
       <View
         style={{
           flex: 1,
