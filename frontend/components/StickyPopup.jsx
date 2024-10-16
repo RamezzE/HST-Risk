@@ -9,9 +9,11 @@ const StickyPopup = ({ currentAttack, currentDefence, subteam }) => {
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {
-        if (currentAttack || (currentDefence && currentDefence.length > 0)) {
+        if (currentAttack || (currentDefence && currentDefence.length > 0))
             setIsVisible(true);
-        }
+        else
+            setIsVisible(false);
+        
     }, [currentAttack, currentDefence]);
 
     if (!isVisible) return null;

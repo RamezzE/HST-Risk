@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from "react";
+import { useContext, useCallback, useEffect } from "react";
 import {
   Platform,
   Alert,
@@ -7,7 +7,6 @@ import { Tabs } from "expo-router";
 import { icons } from "../../constants";
 import { router } from "expo-router";
 import { GlobalContext } from "../../context/GlobalProvider";
-import { useFocusEffect } from "@react-navigation/native";
 import { get_all_attacks } from "../../api/attack_functions";
 import { deletePushToken } from "../../api/user_functions";
 import _ from "lodash";
@@ -47,7 +46,7 @@ const TabsLayout = () => {
     }
   };
 
-  useFocusEffect(
+  useEffect(
     useCallback(() => {
 
       fetchData();
