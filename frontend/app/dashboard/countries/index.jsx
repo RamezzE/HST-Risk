@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useCallback, useContext } from "react";
-import { useFocusEffect } from "@react-navigation/native";
+import React, { useState, useContext } from "react";
 
 import {
   View,
@@ -16,7 +15,7 @@ import { GlobalContext } from "../../../context/GlobalProvider";
 
 const Countries = () => {
   const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { globalState, globalDispatch } = useContext(GlobalContext);
 
@@ -39,17 +38,6 @@ const Countries = () => {
       setIsRefreshing(false);
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
-
-  useEffect(() => {
-    setIsRefreshing(true);
-    fetchData();
-  }, []);
 
   const renderCountries = () => {
     if (!Array.isArray(globalState.countries)) {

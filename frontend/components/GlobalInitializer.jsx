@@ -43,7 +43,7 @@ const GlobalInitializer = () => {
         const fetchAdmins = async () => {
             try {
                 let response = await get_admins();
-                globalDispatch({ type: "SET_ADMINS", payload: response });
+                globalDispatch({ type: "SET_ADMINS", payload: response.admins });
             } catch (error) {
                 console.error("Failed to fetch admins:", error);
             }

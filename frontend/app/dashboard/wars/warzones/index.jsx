@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   ScrollView,
@@ -12,13 +12,11 @@ import BackButton from "../../../../components/BackButton";
 
 import { get_warzones } from "../../../../api/warzone_functions";
 
-import { useFocusEffect } from "@react-navigation/native";
-
 import { GlobalContext } from "../../../../context/GlobalProvider";
 
 const Warzones = () => {
   const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { globalState, globalDispatch } = useContext(GlobalContext);
 
@@ -26,30 +24,19 @@ const Warzones = () => {
     setError(null);
     try {
       const result = await get_warzones();
-      if (result.success === false) 
+      if (result.success === false)
         setError(result.errorMsg);
-      else if (Array.isArray(result)) 
+      else if (Array.isArray(result))
         globalDispatch({ type: "SET_WARZONES", payload: result });
-      else 
+      else
         setError("Unexpected response format");
-      
+
     } catch (err) {
       setError("Failed to fetch warzones");
     } finally {
       setIsRefreshing(false);
     }
   };
-
-  useEffect(() => {
-    setIsRefreshing(true);
-    fetchData();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
 
   const renderWarzones = () => {
     if (!Array.isArray(globalState.warzones)) {

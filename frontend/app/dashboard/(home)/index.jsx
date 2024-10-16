@@ -20,7 +20,7 @@ import { Logout } from "../../../helpers/AuthHelpers";
 
 const Dashboard = () => {
   const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { globalState, globalDispatch } = useContext(GlobalContext);
@@ -119,18 +119,12 @@ const Dashboard = () => {
     }
   };
 
-  useEffect(() => {
-    setIsRefreshing(true);
-    fetchData();
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       if (globalState.userMode != "super_admin") {
         router.replace("/");
         return;
       }
-      fetchData();
 
     }, [])
   );

@@ -5,7 +5,7 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useContext } from "react";
 import CustomButton from "../../../components/CustomButton";
 import { router, useLocalSearchParams } from "expo-router";
 import { get_warzones } from "../../../api/warzone_functions";
@@ -15,14 +15,12 @@ import Loader from "../../../components/Loader";
 
 import { GlobalContext } from "../../../context/GlobalProvider";
 
-import { useFocusEffect } from "@react-navigation/native";
-
 const Warzone = () => {
   const local = useLocalSearchParams();
-  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { globalState, socket } = useContext(GlobalContext);
+  const { globalState } = useContext(GlobalContext);
 
   const fetchData = async () => {
     try {
@@ -39,16 +37,6 @@ const Warzone = () => {
       setIsRefreshing(false);
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const handlePress = async (warzone) => {
     const availableWars = Array.isArray(warzone.wars)

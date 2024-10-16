@@ -1,11 +1,10 @@
-import React, { useReducer, useCallback, useContext, useEffect } from "react";
+import React, { useReducer, useContext } from "react";
 import {
   View,
   Text,
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../../components/CustomButton";
 import { router } from "expo-router";
 import { get_admins } from "../../../api/admin_functions";
@@ -15,7 +14,7 @@ import { GlobalContext } from "../../../context/GlobalProvider";
 
 const initialState = {
   error: null,
-  isRefreshing: true,
+  isRefreshing: false,
 }
 
 const reducer = (state, action) => {
@@ -31,7 +30,7 @@ const reducer = (state, action) => {
 
 const Admins = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { socket } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null });
@@ -51,17 +50,6 @@ const Admins = () => {
       dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
-
-  useEffect(() => {
-    dispatch({ type: "SET_IS_REFRESHING", payload: true });
-    fetchData();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
 
   const renderAdmins = () => {
     if (!Array.isArray(globalState.admins)) {

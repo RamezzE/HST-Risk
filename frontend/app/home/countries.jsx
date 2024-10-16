@@ -13,7 +13,7 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 const initialState = {
   error: null,
-  isRefreshing: true,
+  isRefreshing: false,
 }
 
 const reducer = (state, action) => {
@@ -52,17 +52,6 @@ const Countries = () => {
       dispatch({ type: "SET_IS_REFRESHING", payload: false })
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
-
-  useEffect(() => {
-    dispatch({ type: "SET_IS_REFRESHING", payload: true })
-    fetchData();
-  }, []);
 
   const renderCountries = () => {
     if (!Array.isArray(globalState.countries)) {

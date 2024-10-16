@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import { get_all_teams } from "../../../api/team_functions";
 import { get_country_mappings } from "../../../api/country_functions";
@@ -21,7 +20,7 @@ import { Logout } from "../../../helpers/AuthHelpers";
 
 const Teams = () => {
   const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
 
   const { globalState, globalDispatch } = useContext(GlobalContext);
@@ -47,17 +46,6 @@ const Teams = () => {
       setIsRefreshing(false);
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
-
-  useEffect(() => {
-    setIsRefreshing(true);
-    fetchData();
-  }, []);
 
   const toggleExpandTeam = (teamNumber) => {
     setExpandedTeam((prev) => (prev === teamNumber ? null : teamNumber));

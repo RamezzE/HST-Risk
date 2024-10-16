@@ -2,10 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Alert } from "react-native";
 import { router } from "expo-router";
 
-import { get_subteam_letters } from "../../../api/team_functions";
-import { get_country_mappings } from "../../../api/country_functions";
 import { attack_check } from "../../../api/attack_functions";
-
 import BackButton from "../../../components/BackButton";
 import Loader from "../../../components/Loader";
 import DropDownField from "../../../components/DropDownField";
@@ -13,6 +10,7 @@ import CustomButton from "../../../components/CustomButton";
 import FormWrapper from "../../../components/FormWrapper";
 
 import { GlobalContext } from "../../../context/GlobalProvider";
+import { get_country_mappings } from "../../../api/country_functions";
 
 const validateAddAttack = (
   attackingTeam,
@@ -40,8 +38,7 @@ const validateAddAttack = (
 };
 
 const AddAttack = () => {
-
-  const { globalState } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const [form, setForm] = useState({
     attackingTeam: "",
@@ -53,8 +50,6 @@ const AddAttack = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(true);
-
-  const [countries, setCountries] = useState([]);
   const [subteamLetters, setSubteamLetters] = useState([]);
   const [error, setError] = useState(null);
 
@@ -73,8 +68,6 @@ const AddAttack = () => {
       setIsSubmitting(false);
       return;
     }
-
-    console.log(form);
 
     try {
       const response = await attack_check(
@@ -102,17 +95,26 @@ const AddAttack = () => {
     }
   };
 
+  const getSubteamLetters = () => {
+    if (globalState.subteams.length === 0 || globalState.teams.length === 0) {
+      return [];
+    }
+
+    const subteams = globalState.subteams.slice(
+      0,
+      globalState.subteams.length / globalState.teams.length
+    );
+
+    return subteams.map((subteam) => subteam.letter);
+  };
+
   const fetchData = async () => {
     setError(null);
-
     try {
+      const response = await get_country_mappings();
+      globalDispatch({ type: "SET_COUNTRIES", payload: response });
 
-      const countriesResult = await get_country_mappings();
-      setCountries(countriesResult);
-
-      const subteamLetters = await get_subteam_letters();
-      setSubteamLetters(subteamLetters);
-
+      setSubteamLetters(getSubteamLetters());
     } catch (err) {
       setError("Failed to fetch data");
     } finally {
@@ -124,15 +126,24 @@ const AddAttack = () => {
     fetchData();
   }, []);
 
-
   if (isRefreshing) {
+    return <Loader />;
+  }
+
+  if (error) {
     return (
-      <Loader />
+      <View>
+        <Text>{error}</Text>
+      </View>
     );
   }
 
   const filterCountriesByTeam = (teamNo) => {
-    return countries.filter(
+    if (!globalState.countries) {
+      return [];
+    }
+
+    return globalState.countries.filter(
       (country) => country.teamNo.toString() === teamNo.toString()
     );
   };
@@ -171,12 +182,10 @@ const AddAttack = () => {
           title="Attacking Subteam"
           value={form.attackingSubteam}
           placeholder="Select Subteam"
-          items={subteamLetters.map(
-            (subteam) => ({
-              label: subteam,
-              value: subteam,
-            })
-          )}
+          items={subteamLetters.map((subteam) => ({
+            label: subteam,
+            value: subteam,
+          }))}
           handleChange={(e) => {
             setForm({ ...form, attackingSubteam: e });
           }}
@@ -188,15 +197,11 @@ const AddAttack = () => {
             title="Attacking Country"
             value={form.attackingCountry}
             placeholder="Select Country"
-            items={filterCountriesByTeam(form.attackingTeam).map(
-              (country) => ({
-                label: country.name,
-                value: country.name,
-              })
-            )}
-            handleChange={(e) =>
-              setForm({ ...form, attackingCountry: e })
-            }
+            items={filterCountriesByTeam(form.attackingTeam).map((country) => ({
+              label: country.name,
+              value: country.name,
+            }))}
+            handleChange={(e) => setForm({ ...form, attackingCountry: e })}
             otherStyles="mt-7"
           />
         )}
@@ -224,15 +229,11 @@ const AddAttack = () => {
             title="Defending Country"
             value={form.defendingCountry}
             placeholder="Select Defending Country"
-            items={filterCountriesByTeam(form.defendingTeam).map(
-              (country) => ({
-                label: country.name,
-                value: country.name,
-              })
-            )}
-            handleChange={(e) =>
-              setForm({ ...form, defendingCountry: e })
-            }
+            items={filterCountriesByTeam(form.defendingTeam).map((country) => ({
+              label: country.name,
+              value: country.name,
+            }))}
+            handleChange={(e) => setForm({ ...form, defendingCountry: e })}
             otherStyles="mt-7"
           />
         )}

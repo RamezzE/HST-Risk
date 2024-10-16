@@ -1,11 +1,10 @@
-import React, { useState, useCallback, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   ScrollView,
   RefreshControl,
   Text,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../../../components/CustomButton";
 import { router } from "expo-router";
 import { get_all_subteams } from "../../../../api/team_functions";
@@ -16,7 +15,7 @@ import { GlobalContext } from "../../../../context/GlobalProvider";
 
 const SubTeams = () => {
   const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { globalState, globalDispatch } = useContext(GlobalContext);
 
@@ -37,18 +36,6 @@ const SubTeams = () => {
       setIsRefreshing(false);
     }
   };
-
-  useEffect(() => {
-    setIsRefreshing(true);
-    fetchData();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-
-    }, [])
-  );
 
   const renderSubTeams = () => {
     if (!Array.isArray(globalState.subteams)) {

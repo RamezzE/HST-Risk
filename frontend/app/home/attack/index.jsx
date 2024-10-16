@@ -6,7 +6,7 @@ import {
   RefreshControl,
   Platform,
 } from "react-native";
-import { useState, useEffect, useContext, useCallback, useReducer } from "react";
+import { useState, useEffect, useContext, useReducer } from "react";
 import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import { router } from "expo-router";
 
@@ -28,8 +28,6 @@ import Loader from "../../../components/Loader";
 import DropDownField from "../../../components/DropDownField";
 import CustomButton from "../../../components/CustomButton";
 
-import { useFocusEffect } from "@react-navigation/native";
-
 const initialState = {
   initialArea: [30, 30],
   zones: [],
@@ -37,7 +35,7 @@ const initialState = {
   otherZones: [],
   isSubmitting: false,
   error: null,
-  isRefreshing: true,
+  isRefreshing: false,
   attackCost: 0,
   balance: 0,
 };
@@ -226,18 +224,6 @@ const Attack = () => {
       dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
-
-  useEffect(() => {
-    dispatch({ type: "SET_ZONES", payload: countries });
-
-    fetchData();
-  }, []);
 
   const attack_func = async (zone_1, team_1, zone_2) => {
     dispatch({ type: "SET_IS_SUBMITTING", payload: true });

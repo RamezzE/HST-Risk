@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useCallback, useReducer } from "react";
+import React, { useContext, useReducer } from "react";
 import {
   View,
   Text,
@@ -25,7 +25,6 @@ import { deletePushToken } from "../../api/user_functions";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
-import { useFocusEffect } from "@react-navigation/native";
 import { Logout } from "../../helpers/AuthHelpers";
 
 const initialState = {
@@ -83,18 +82,6 @@ const Home = () => {
       dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData(); 
-
-    }, [])
-  );
-
-  useEffect(() => {
-    dispatch({ type: "SET_IS_REFRESHING", payload: true })
-    fetchData();
-  }, []);
 
   const logoutFunc = () => {
     Alert.alert(

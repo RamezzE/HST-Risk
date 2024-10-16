@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Text, Alert, } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
@@ -77,10 +77,6 @@ const EditSetting = () => {
       setIsSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    // fetchData();
-  }, []);
 
   return (
     <FormWrapper>

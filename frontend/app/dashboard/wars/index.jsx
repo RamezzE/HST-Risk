@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useCallback, useContext } from "react";
+import React, { useEffect, useReducer, useContext } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../../components/CustomButton";
 import { router } from "expo-router";
 
@@ -21,7 +20,7 @@ import { GlobalContext } from "../../../context/GlobalProvider";
 
 const initialState = {
   error: null,
-  isRefreshing: true,
+  isRefreshing: false,
   isSubmitting: false,
 };
 
@@ -53,13 +52,6 @@ const DashboardAttacks = () => {
     };
     
   }, [globalState.attacks]);
-
-  useFocusEffect(
-    useCallback(() => {
-      dispatch({ type: "SET_IS_REFRESHING", payload: true });
-      fetchData();
-    }, [])
-  );
 
   const fetchData = async () => {
     dispatch({ type: "SET_IS_REFRESHING", payload: true });
@@ -129,13 +121,11 @@ const DashboardAttacks = () => {
       else if (attackWon === "false") team = defending_team;
 
       const response = await set_attack_result(id, team);
-      if (response.success) {
+      if (response.success)
         Alert.alert("Success", "Attack result set successfully");
-        fetchData();
-      } else {
+      else 
         Alert.alert("Error", response.errorMsg);
-        fetchData();
-      }
+      
     } catch (error) {
       console.log(error);
       Alert.alert("Error", "Failed to set attack result");

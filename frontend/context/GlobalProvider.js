@@ -102,7 +102,7 @@ const reducer = (state, action) => {
     case "REMOVE_ADMIN":
       return {
         ...state,
-        admins: state.admins.filter((admin) => admin._id !== action.payload),
+        admins: state.admins.filter((admin) => admin.name !== action.payload),
       };
     case "UPDATE_ADMIN":
       return {
@@ -153,7 +153,17 @@ const reducer = (state, action) => {
         currentDefence: [...state.currentDefence, action.payload],
       };
     case "RESET":
-      return initialState;
+      return {
+        ... state,
+        name: "",
+        teamNo: "",
+        isLoggedIn: false,
+        userMode: "",
+        subteam: "",
+        adminType: "",
+        currentAttack: null,
+        currentDefence: [],
+      };
     default:
       return state;
   }

@@ -22,7 +22,7 @@ const initialState = {
   currentAttack: null,
   war: null,
   isSubmitting: false,
-  isRefreshing: true,
+  isRefreshing: false,
 }
 
 const reducer = (state, action) => {
@@ -44,10 +44,6 @@ const AdminHome = () => {
   const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   useEffect(() => {
 

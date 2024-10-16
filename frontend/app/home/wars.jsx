@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useContext, useCallback } from "react";
+import React, { useEffect, useReducer, useContext } from "react";
 import {
   View,
   Text,
@@ -10,14 +10,13 @@ import { GlobalContext } from "../../context/GlobalProvider";
 import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 
-import { useFocusEffect } from "@react-navigation/native";
 import { GetAttacksByTeam, GetAttacksOnTeam } from "../../helpers/AttackHelper";
 
 const initialState = {
   error: null,
   attackingAttacks: [],
   defendingAttacks: [],
-  isRefreshing: true
+  isRefreshing: false,
 }
 
 const reducer = (state, action) => {
@@ -74,18 +73,6 @@ const TeamAttacks = () => {
       dispatch({ type: "SET_IS_REFRESHING", payload: false })
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-
-    }, [])
-  );
-
-  useEffect(() => {
-    dispatch({ type: "SET_IS_REFRESHING", payload: true })
-    fetchData();
-  }, []);
 
   if (state.isRefreshing) {
     return (

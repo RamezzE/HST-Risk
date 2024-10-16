@@ -1,11 +1,10 @@
-import React, { useEffect, useReducer, useCallback, useContext } from "react";
+import React, { useReducer, useContext } from "react";
 import {
   View,
   Text,
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import { get_all_teams } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
 import Loader from "../../components/Loader";
@@ -15,7 +14,7 @@ import { GlobalContext } from "../../context/GlobalProvider";
 
 const initialState = {
   error: null,
-  isRefreshing: true,
+  isRefreshing: false,
   expandedTeam: null,
 }
 
@@ -58,18 +57,6 @@ const Teams = () => {
       dispatch({ type: "SET_IS_REFRESHING", payload: false })
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-     
-    }, [])
-  );
-
-  useEffect(() => {
-    dispatch({ type: "SET_IS_REFRESHING", payload: true })
-    fetchData();
-  }, []);
 
   const toggleExpandTeam = (teamNumber) => {
     dispatch({
