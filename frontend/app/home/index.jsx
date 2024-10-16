@@ -26,6 +26,7 @@ import { deletePushToken } from "../../api/user_functions";
 import { GlobalContext } from "../../context/GlobalProvider";
 
 import { useFocusEffect } from "@react-navigation/native";
+import { Logout } from "../../helpers/AuthHelpers";
 
 const initialState = {
   zones: [],
@@ -76,7 +77,7 @@ const Home = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const { globalState, socket, Logout } = useContext(GlobalContext);
+  const { globalState, globalDispatch, socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null });
@@ -167,7 +168,7 @@ const Home = () => {
           text: "Logout",
           onPress: async () => {
             deletePushToken(globalState.expoPushToken, globalState.teamNo);
-            Logout();
+            Logout(globalDispatch);
             router.replace("/");
           },
         },

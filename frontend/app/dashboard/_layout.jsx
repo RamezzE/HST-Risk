@@ -9,8 +9,10 @@ import { icons } from "../../constants";
 import PageWrapper from "../../components/PageWrapper";
 import TabIcon from "../../components/TabIcon";
 
+import { Logout } from "../../helpers/AuthHelpers"
+
 const TabsLayout = () => {
-  const { globalState, socket, Logout } = useContext(GlobalContext); 
+  const { globalState, globalDispatch, socket } = useContext(GlobalContext); 
 
   useEffect(() => {
     const handleNewGame = () => {
@@ -24,7 +26,7 @@ const TabsLayout = () => {
         if (globalState.expoPushToken && globalState.teamNo) {
           await deletePushToken(globalState.expoPushToken, globalState.teamNo);
         }
-        Logout();
+        Logout(globalDispatch);
         router.replace("/");
       }, 3000);
     };

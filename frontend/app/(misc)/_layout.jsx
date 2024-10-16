@@ -5,9 +5,10 @@ import { GlobalContext } from "../../context/GlobalProvider";
 import { router } from "expo-router";
 import { deletePushToken } from "../../api/user_functions";
 import PageWrapper from "../../components/PageWrapper";
+import { Logout } from "../../helpers/AuthHelpers";
 
 const MiscLayout = () => {
-  const { socket, Logout, expoPushToken, teamNo } = useContext(GlobalContext);
+  const { socket, globalState, globalDispatch } = useContext(GlobalContext);
 
   useEffect(() => {
     const handleNewGame = () => {
@@ -17,10 +18,10 @@ const MiscLayout = () => {
       );
 
       setTimeout(async () => {
-        if (expoPushToken && teamNo) {
-          await deletePushToken(expoPushToken, teamNo);
+        if (globalState.expoPushToken && globalState.teamNo) {
+          await deletePushToken(globalState.expoPushToken, globalState.teamNo);
         }
-        Logout();
+        Logout(globalDispatch);
         router.replace("/");
       }, 3000);
     };
@@ -30,7 +31,7 @@ const MiscLayout = () => {
     return () => {
       socket.off("new_game", handleNewGame);
     };
-  }, [socket, expoPushToken, teamNo]);
+  }, [socket, globalState.expoPushToken, globalState.teamNo]);
 
   return (
     <PageWrapper>

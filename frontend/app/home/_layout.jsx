@@ -15,9 +15,11 @@ import StickyPopup from "../../components/StickyPopup";
 import PageWrapper from './../../components/PageWrapper';
 import TabIcon from "../../components/TabIcon";
 
+import { Logout } from "../../helpers/AuthHelpers";
+
 const TabsLayout = () => {
 
-  const { globalState, socket, globalDispatch, Logout } = useContext(GlobalContext);
+  const { globalState, socket, globalDispatch } = useContext(GlobalContext);
 
   const fetchData = async () => {
     try {
@@ -84,7 +86,7 @@ const TabsLayout = () => {
 
         setTimeout(async () => {
           deletePushToken(globalState.expoPushToken, globalState.teamNo);
-          Logout();
+          Logout(globalDispatch);
           router.replace("/");
         }, 3000);
       });

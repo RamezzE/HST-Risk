@@ -16,6 +16,7 @@ import { GlobalContext } from "../../../context/GlobalProvider";
 import { create_teams } from "../../../api/team_functions";
 
 import { useFocusEffect } from "@react-navigation/native";
+import { Logout } from "../../../helpers/AuthHelpers";
 
 const Dashboard = () => {
   const [error, setError] = useState(null);
@@ -23,7 +24,7 @@ const Dashboard = () => {
   const [settings, setSettings] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { globalState, socket, Logout } = useContext(GlobalContext);
+  const { globalState, globalDispatch, socket } = useContext(GlobalContext);
 
   const logoutFunc = () => {
     Alert.alert(
@@ -37,7 +38,7 @@ const Dashboard = () => {
         {
           text: "Logout",
           onPress: () => {
-            Logout();
+            Logout(globalDispatch);
             router.replace("/");
           },
         },

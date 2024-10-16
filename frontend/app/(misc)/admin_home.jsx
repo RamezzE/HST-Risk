@@ -18,9 +18,10 @@ import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 
 import { useFocusEffect } from "@react-navigation/native";
+import { Logout } from "../../helpers/AuthHelpers";
 
 const AdminHome = () => {
-  const { globalState, socket, Logout } = useContext(GlobalContext);
+  const { globalState, globalDispatch, socket } = useContext(GlobalContext);
   const [war, setWar] = useState("");
   const [response, setResponse] = useState({ attacks: [] });
   const [currentAttack, setCurrentAttack] = useState({
@@ -125,7 +126,7 @@ const AdminHome = () => {
         );
 
         setTimeout(async () => {
-          Logout();
+          Logout(globalDispatch);
           router.replace("/");
         }, 3000);
       });
@@ -155,7 +156,7 @@ const AdminHome = () => {
         {
           text: "Logout",
           onPress: () => {
-            Logout();
+            Logout(globalDispatch);
             router.replace("/");
           },
         },

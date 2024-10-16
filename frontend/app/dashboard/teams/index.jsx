@@ -17,6 +17,8 @@ import BackButton from "../../../components/BackButton";
 import Loader from "../../../components/Loader";
 import CustomButton from "../../../components/CustomButton";
 
+import { Logout } from "../../../helpers/AuthHelpers";
+
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
@@ -24,7 +26,7 @@ const Teams = () => {
   const [countries, setCountries] = useState([]);
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
 
-  const { globalState, socket, Logout } = useContext(GlobalContext);
+  const { globalState, globalDispatch, socket } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -164,7 +166,7 @@ const Teams = () => {
         {
           text: "Logout",
           onPress: () => {
-            Logout();
+            Logout(globalDispatch);
             router.replace("/");
           },
         },
