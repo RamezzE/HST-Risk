@@ -1,10 +1,13 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { GlobalProvider } from "../context/GlobalProvider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import NotificationHandler from "../components/NotificationHandler"; // Import the notification component
+
+import NotificationHandler from "../components/NotificationHandler";
+import SocketListener from "../components/SocketListener";
+import GlobalInitializer from "../components/GlobalInitializer";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,7 +46,9 @@ const RootLayout = () => {
     <SafeAreaProvider>
       <KeyboardProvider>
         <GlobalProvider>
+          <GlobalInitializer />
           <NotificationHandler />
+          <SocketListener />
           <Stack
             screenOptions={{
               contentStyle: { backgroundColor: "transparent" },

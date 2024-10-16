@@ -11,7 +11,8 @@ const App = () => {
   const { globalState, globalDispatch } = useContext(GlobalContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const checkLoginStatus = async () => {
+  const AutoLogin = async () => {
+    setIsSubmitting(true);
 
     try {
       const response = await isLoggedIn(globalState, globalDispatch);
@@ -53,10 +54,7 @@ const App = () => {
 
               <CustomButton
                 title="Sign in"
-                handlePress={() => {
-                  setIsSubmitting(true);
-                  checkLoginStatus();
-                }}
+                handlePress={AutoLogin}
                 isLoading={isSubmitting}
                 textStyles={"font-montez text-3xl"}
                 containerStyles={"p-4"}

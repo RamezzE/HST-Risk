@@ -19,7 +19,6 @@ import {
   get_country_mappings,
 } from "../../../api/country_functions";
 import { get_all_teams } from "../../../api/team_functions";
-import { get_settings } from "../../../api/settings_functions";
 import { attack_check, get_all_attacks } from "../../../api/attack_functions";
 
 import MapZone from "../../../components/MapZone";
@@ -32,30 +31,23 @@ import CustomButton from "../../../components/CustomButton";
 import { useFocusEffect } from "@react-navigation/native";
 
 const initialState = {
-  countryMappings: [],
   initialArea: [30, 30],
   zones: [],
-  teams: [],
   myZones: [],
   otherZones: [],
   isSubmitting: false,
   error: null,
   isRefreshing: true,
-  attacks: [],
   attackCost: 0,
   balance: 0,
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "SET_COUNTRY_MAPPINGS":
-      return { ...state, countryMappings: action.payload };
     case "SET_INITIAL_AREA":
       return { ...state, initialArea: action.payload };
     case "SET_ZONES":
       return { ...state, zones: action.payload };
-    case "SET_TEAMS":
-      return { ...state, teams: action.payload };
     case "SET_MY_ZONES":
       return { ...state, myZones: action.payload };
     case "SET_OTHER_ZONES":
@@ -66,29 +58,10 @@ const reducer = (state, action) => {
       return { ...state, error: action.payload };
     case "SET_IS_REFRESHING":
       return { ...state, isRefreshing: action.payload };
-    case "SET_ATTACKS":
-      return { ...state, attacks: action.payload };
     case "SET_ATTACK_COST":
       return { ...state, attackCost: action.payload };
     case "SET_BALANCE":
       return { ...state, balance: action.payload };
-    case "UPDATE_COUNTRY_MAPPING":
-      const updatedCountryMappings = state.countryMappings.map((country) => {
-        if (country.name === action.payload.name)
-          return action.payload;
-        return country;
-      });
-
-      return { ...state, countryMappings: updatedCountryMappings };
-
-    case "UPDATE_TEAM":
-      const updatedTeams = state.teams.map((team) => {
-        if (team.number === action.payload.number)
-          return action.payload;
-        return team;
-      });
-
-      return { ...state, teams: updatedTeams };
     default:
       return state;
   }
@@ -96,7 +69,7 @@ const reducer = (state, action) => {
 
 const Attack = () => {
 
-  const { globalState, socket } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -106,21 +79,31 @@ const Attack = () => {
     other_zone: "",
   });
 
+  useEffect(() => {
+
+    const attackCost = globalState.settings.find(
+      (setting) => setting.name === "Attack Cost"
+    );
+
+    dispatch({ type: "SET_ATTACK_COST", payload: attackCost.value });
+  }, [globalState.settings])
+
+
   const getTeamColor = (countryName) => {
     try {
       if (form.your_zone === countryName || state.otherZones.includes(countryName)) {
         // Retain original color for the selected country and countries that can be attacked
-        const country = state.countryMappings.find((c) => c.name === countryName);
+        const country = globalState.countries.find((c) => c.name === countryName);
         const team = country
-          ? state.teams.find((t) => t.number === country.teamNo)
+          ? globalState.teams.find((t) => t.number === country.teamNo)
           : null;
         return team ? team.color : "#000000";
       } else if (form.your_zone) {
         return "#000000"; // All other zones turn black
       } else {
-        const country = state.countryMappings.find((c) => c.name === countryName);
+        const country = globalState.countries.find((c) => c.name === countryName);
         const team = country
-          ? state.teams.find((t) => t.number === country.teamNo)
+          ? globalState.teams.find((t) => t.number === country.teamNo)
           : null;
         return team ? team.color : "#000000";
       }
@@ -193,7 +176,7 @@ const Attack = () => {
     dispatch({ type: "SET_OTHER_ZONES", payload: country.adjacent_zones });
 
     // Trigger a re-render to apply the color changes
-    dispatch({ type: "SET_COUNTRY_MAPPINGS", payload: state.countryMappings });
+    dispatch({ type: "SET_COUNTRY_MAPPINGS", payload: globalState.countries });
   };
 
   const selectOtherZone = (zone) => {
@@ -224,26 +207,15 @@ const Attack = () => {
 
     try {
       const attacksResult = await get_all_attacks();
-      dispatch({ type: "SET_ATTACKS", payload: attacksResult });
+      globalDispatch({ type: "SET_ATTACKS", payload: attacksResult });
     } catch (err) {
       console.log(err);
       // setError("Failed to fetch attacks data");
     }
 
     try {
-      const settingsResult = await get_settings();
-      const attackCost = settingsResult.find(
-        (setting) => setting.name === "Attack Cost"
-      );
-      dispatch({ type: "SET_ATTACK_COST", payload: attackCost.value });
-    } catch (err) {
-      console.log(err);
-      // setError("Failed to fetch settings data");
-    }
-
-    try {
       const teamsResult = await get_all_teams();
-      dispatch({ type: "SET_TEAMS", payload: teamsResult });
+      globalDispatch({ type: "SET_TEAMS", payload: teamsResult });
 
       const team = teamsResult.find((t) => t.number === parseInt(globalState.teamNo));
       dispatch({ type: "SET_BALANCE", payload: team.balance })
@@ -257,36 +229,8 @@ const Attack = () => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchData(); // Fetch initial data
-
-      // Set up socket listeners for real-time updates
-      socket.on("update_country", (updatedCountryMapping) => {
-        dispatch({ type: "UPDATE_COUNTRY_MAPPING", payload: updatedCountryMapping });
-      });
-
-      socket.on("update_team", (updatedTeam) => {
-        dispatch({ type: "UPDATE_TEAM", payload: updatedTeam });
-      });
-
-      socket.on("new_attack", (newAttack) => {
-        if (newAttack.defending_team === globalState.teamNo.toString()) {
-          setCurrentDefence((prevDefences) => [...prevDefences, newAttack]);
-        }
-      });
-
-      socket.on("remove_attack", (attackId) => {
-        setCurrentDefence((prevDefences) =>
-          prevDefences.filter((attack) => attack._id !== attackId)
-        );
-      });
-
-      return () => {
-        socket.off("update_country");
-        socket.off("update_team");
-        socket.off("new_attack");
-        socket.off("remove_attack");
-      };
-    }, [globalState.teamNo, globalState.subteam])
+      fetchData();
+    }, [])
   );
 
   useEffect(() => {
@@ -306,7 +250,7 @@ const Attack = () => {
         return;
       }
 
-      team_2 = parseInt(state.countryMappings.find((c) => c.name === zone_2).teamNo);
+      team_2 = parseInt(globalState.countries.find((c) => c.name === zone_2).teamNo);
 
       console.log("Attacking", zone_1, team_1);
       console.log("Defending: ", zone_2, team_2);
@@ -340,11 +284,11 @@ const Attack = () => {
 
   const onMarkerPress = (zone) => {
     try {
-      const country = state.countryMappings.find((c) => c.name === zone.name);
+      const country = globalState.countries.find((c) => c.name === zone.name);
       const team = country
-        ? state.teams.find((t) => t.number === country.teamNo)
+        ? globalState.teams.find((t) => t.number === country.teamNo)
         : null;
-      const attack = state.attacks.find((a) => a.defending_zone === zone.name);
+      const attack = globalState.attacks.find((a) => a.defending_zone === zone.name);
 
       Alert.alert(
         zone.name,

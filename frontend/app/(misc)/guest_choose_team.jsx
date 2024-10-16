@@ -19,7 +19,6 @@ const GuestChooseTeam = () => {
   
   const { globalState, globalDispatch } = useContext(GlobalContext);
 
-  const [teams, setTeams] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -28,11 +27,12 @@ const GuestChooseTeam = () => {
 
     try {
       const result = await get_all_teams();
-      if (result.errorMsg) {
+
+      if (result.errorMsg) 
         console.log(result.errorMsg);
-      } else {
-        setTeams(result);
-      }
+      else 
+        globalDispatch({ type: "SET_TEAMS", payload: result });
+      
     } catch (err) {
       console.log(err);
     } finally {
@@ -77,8 +77,8 @@ const GuestChooseTeam = () => {
       <Text className="text-5xl mt-10 py-2 text-center font-montez text-black">
         Choose your team
       </Text>
-      {Array.isArray(teams) &&
-        teams.map((team) => (
+      {Array.isArray(globalState.teams) &&
+        globalState.teams.map((team) => (
           <CustomButton
             key={team.number}
             title={`${team.number} - ${team.name}`}

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Alert } from "react-native";
 import { router } from "expo-router";
 
-import { get_all_teams, get_subteam_letters } from "../../../api/team_functions";
+import { get_subteam_letters } from "../../../api/team_functions";
 import { get_country_mappings } from "../../../api/country_functions";
 import { attack_check } from "../../../api/attack_functions";
 
@@ -11,6 +11,8 @@ import Loader from "../../../components/Loader";
 import DropDownField from "../../../components/DropDownField";
 import CustomButton from "../../../components/CustomButton";
 import FormWrapper from "../../../components/FormWrapper";
+
+import { GlobalContext } from "../../../context/GlobalProvider";
 
 const validateAddAttack = (
   attackingTeam,
@@ -38,6 +40,9 @@ const validateAddAttack = (
 };
 
 const AddAttack = () => {
+
+  const { globalState } = useContext(GlobalContext);
+
   const [form, setForm] = useState({
     attackingTeam: "",
     attackingSubteam: "",
@@ -49,7 +54,6 @@ const AddAttack = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(true);
 
-  const [teams, setTeams] = useState([]);
   const [countries, setCountries] = useState([]);
   const [subteamLetters, setSubteamLetters] = useState([]);
   const [error, setError] = useState(null);
@@ -102,8 +106,6 @@ const AddAttack = () => {
     setError(null);
 
     try {
-      const teamsResult = await get_all_teams();
-      setTeams(teamsResult);
 
       const countriesResult = await get_country_mappings();
       setCountries(countriesResult);
@@ -151,7 +153,7 @@ const AddAttack = () => {
           title="Attacking Team"
           value={form.attackingTeam}
           placeholder="Select Team"
-          items={teams.map((team) => ({
+          items={globalState.teams.map((team) => ({
             label: `Team ${team.number} - ${team.name}`,
             value: team.number.toString(),
           }))}
@@ -203,7 +205,7 @@ const AddAttack = () => {
           title="Defending Team"
           value={form.defendingTeam}
           placeholder="Select Team"
-          items={teams.map((team) => ({
+          items={globalState.teams.map((team) => ({
             label: `Team ${team.number} - ${team.name}`,
             value: team.number.toString(),
           }))}

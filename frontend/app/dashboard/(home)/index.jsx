@@ -21,10 +21,9 @@ import { Logout } from "../../../helpers/AuthHelpers";
 const Dashboard = () => {
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
-  const [settings, setSettings] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { globalState, globalDispatch, socket } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const logoutFunc = () => {
     Alert.alert(
@@ -51,11 +50,11 @@ const Dashboard = () => {
 
     try {
       const result = await get_settings();
-      if (result.errorMsg) {
+      if (result.errorMsg) 
         setError(result.errorMsg);
-      } else {
-        setSettings(result);
-      }
+      else 
+        globalDispatch({ type: "SET_SETTINGS", payload: result });
+      
     } catch (err) {
       console.error(err);
     } finally {
@@ -85,8 +84,8 @@ const Dashboard = () => {
   const createNewGame = async () => {
     setIsSubmitting(true);
 
-    const filteredSettings = Array.isArray(settings)
-      ? settings.filter(
+    const filteredSettings = Array.isArray(globalState.settings)
+      ? globalState.settings.filter(
         (setting) =>
           setting.name === "No of Teams" || setting.name === "No of Subteams"
       )
@@ -133,13 +132,6 @@ const Dashboard = () => {
       }
       fetchData();
 
-      socket.on("update_setting", (updatedSetting) => {
-        setSettings((prevSettings) =>
-          prevSettings.map((setting) =>
-            setting.name === updatedSetting.name ? updatedSetting : setting
-          )
-        );
-      });
     }, [])
   );
 
@@ -151,7 +143,7 @@ const Dashboard = () => {
   ];
 
   const renderSettings = () => {
-    if (!Array.isArray(settings)) {
+    if (!Array.isArray(globalState.settings)) {
       return (
         <Text className="text-center">
           No settings available or unexpected data format.
@@ -159,7 +151,7 @@ const Dashboard = () => {
       );
     }
 
-    return settings.map((item, index) => {
+    return globalState.settings.map((item, index) => {
       // Determine which title to show based on index
       const showTitle = () => {
         if (index === 0) return titles[0];

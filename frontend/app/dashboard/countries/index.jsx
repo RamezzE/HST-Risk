@@ -12,16 +12,13 @@ import { router } from "expo-router";
 
 import Loader from "../../../components/Loader";
 import { get_country_mappings } from "../../../api/country_functions";
-
-
 import { GlobalContext } from "../../../context/GlobalProvider";
 
 const Countries = () => {
-  const [countries, setCountries] = useState([]);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(true);
 
-  const { socket } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
@@ -29,13 +26,13 @@ const Countries = () => {
     try {
       const result = await get_country_mappings();
 
-      if (result.success === false) {
+      if (result.success === false) 
         setError(result.errorMsg);
-      } else if (Array.isArray(result)) {
-        setCountries(result);
-      } else {
+      else if (Array.isArray(result)) 
+        globalDispatch({ type: "SET_COUNTRIES", payload: result });
+      else 
         setError("Unexpected response format");
-      }
+      
     } catch (err) {
       setError("Failed to fetch teams");
     } finally {
@@ -46,18 +43,6 @@ const Countries = () => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-
-      socket.on("update_country", (updatedCountry) => {
-        setCountries((prevCountries) =>
-          prevCountries.map((country) =>
-            country.name === updatedCountry.name ? updatedCountry : country
-          )
-        );
-      });
-
-      return () => {
-        socket.off("update_country");
-      };
     }, [])
   );
 
@@ -67,7 +52,7 @@ const Countries = () => {
   }, []);
 
   const renderCountries = () => {
-    if (!Array.isArray(countries)) {
+    if (!Array.isArray(globalState.countries)) {
       return (
         <Text className="text-center">
           No countries available or unexpected data format.
@@ -92,7 +77,7 @@ const Countries = () => {
       return null;
     };
 
-    return countries.map((item, index) => {
+    return globalState.countries.map((item, index) => {
       const title = showTitle(index);
 
       return (
