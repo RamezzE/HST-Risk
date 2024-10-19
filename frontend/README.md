@@ -58,9 +58,9 @@ Before you can build and run the frontend of the application, ensure that you ha
 ### Running Without Development Build
 If you do not want to use a development build, follow these additional steps:
 
-- Remove the KeyboardProvider: In [PageWrapper](.components/PageWrapper.jsx), remove the KeyboardProvider and its import.
+- Remove the KeyboardProvider: In [PageWrapper](components/PageWrapper.jsx), remove the KeyboardProvider and its import.
 
-- Replace KeyboardAwareScrollView with ScrollView: In [FormWrapper](.components/FormWrapper.jsx), replace KeyboardAwareScrollView and its import with ScrollView from react-native:
+- Replace KeyboardAwareScrollView with ScrollView: In [FormWrapper](components/FormWrapper.jsx), replace KeyboardAwareScrollView and its import with ScrollView from react-native:
 
   ```js
   import { ScrollView } from 'react-native';
