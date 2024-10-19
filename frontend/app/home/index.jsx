@@ -101,7 +101,7 @@ const Home = () => {
           text: "Logout",
           onPress: async () => {
             Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
-            router.replace("/");
+             router.replace("/");
           },
         },
       ]

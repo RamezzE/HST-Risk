@@ -1,38 +1,13 @@
-import React, { useContext, useEffect } from "react";
-import { Alert, Platform } from "react-native";
+import { useContext } from "react";
+import { Platform } from "react-native";
 import { Tabs } from "expo-router";
 import { GlobalContext } from "../../context/GlobalProvider"; 
-import { router } from "expo-router"; 
-
 import { icons } from "../../constants";
 import PageWrapper from "../../components/PageWrapper";
 import TabIcon from "../../components/TabIcon";
 
-import { Logout } from "../../helpers/AuthHelpers"
-
 const TabsLayout = () => {
-  const { globalState, globalDispatch, socket } = useContext(GlobalContext); 
-
-  useEffect(() => {
-    const handleNewGame = () => {
-      Alert.alert(
-        "New Game",
-        "A new game has started. You will be logged out automatically."
-      );
-
-      setTimeout(async () => {
-        Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
-        router.replace("/");
-      }, 3000);
-    };
-
-    socket.on("new_game", handleNewGame);
-
-    // Cleanup listener on component unmount
-    return () => {
-      socket.off("new_game", handleNewGame);
-    };
-  }, [socket, globalState.expoPushToken, globalState.teamNo]);
+  const { globalState } = useContext(GlobalContext); 
 
   return (
     <PageWrapper>
