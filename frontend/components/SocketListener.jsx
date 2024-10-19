@@ -1,8 +1,11 @@
 import { useEffect, useContext } from "react";
+import { Alert } from "react-native";
+import { router } from "expo-router";
 import { GlobalContext } from "../context/GlobalProvider";
+import { Logout } from "../helpers/AuthHelpers";
 
 const SocketListener = () => {
-  const { globalDispatch, socket } = useContext(GlobalContext);
+  const { globalState, globalDispatch, socket } = useContext(GlobalContext);
 
   useEffect(() => {
     if (!socket) return;
@@ -55,8 +58,20 @@ const SocketListener = () => {
       globalDispatch({ type: "UPDATE_WARZONE", payload: updatedWarzone });
     });
 
+    socket.on("disconnect", () => {
+      Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
+      Alert.alert("Disconnected from server", "You will be logged out automatically.")
+      setTimeout(() => {
+        router.replace("/");
+      }, 2000);
+    })
+
     socket.on("new_game", () => {
-      // Handle new game
+      Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
+      Alert.alert("New Game Started", "You will be logged out automatically.")
+      setTimeout(() => {
+        router.replace("/");
+      }, 2000);
     });
 
     // Clean up socket listeners on unmount
@@ -74,6 +89,7 @@ const SocketListener = () => {
         socket.off("delete_warzone");
         socket.off("update_warzone");
         socket.off("new_game");
+        socket.off("disconnect");
     };
   }, [socket, globalDispatch]);
 
