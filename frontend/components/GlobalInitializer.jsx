@@ -13,9 +13,22 @@ const GlobalInitializer = () => {
     const { globalDispatch } = useContext(GlobalContext);
 
     useEffect(() => {
+
+        const retry = async (fn, interval = 1000, exponential = true) => {
+            while (true) {
+                try {
+                    return await fn();
+                } catch (error) {
+                    console.warn(`Retrying...`);
+                    await new Promise(res => setTimeout(res, interval));
+                    interval = exponential ? interval * 2 : interval; // Exponential backoff
+                }
+            }
+        };
+
         const fetchAttacks = async () => {
             try {
-                let response = await get_all_attacks();
+                let response = await retry(get_all_attacks);
                 globalDispatch({ type: "SET_ATTACKS", payload: response });
             } catch (error) {
                 console.error("Failed to fetch attacks:", error);
@@ -24,7 +37,7 @@ const GlobalInitializer = () => {
 
         const fetchTeams = async () => {
             try {
-                let response = await get_all_teams();
+                let response = await retry(get_all_teams);
                 globalDispatch({ type: "SET_TEAMS", payload: response });
             } catch (error) {
                 console.error("Failed to fetch teams:", error);
@@ -33,7 +46,7 @@ const GlobalInitializer = () => {
 
         const fetchCountries = async () => {
             try {
-                let response = await get_country_mappings();
+                let response = await retry(get_country_mappings);
                 globalDispatch({ type: "SET_COUNTRIES", payload: response });
             } catch (error) {
                 console.error("Failed to fetch countries:", error);
@@ -42,7 +55,7 @@ const GlobalInitializer = () => {
 
         const fetchAdmins = async () => {
             try {
-                let response = await get_admins();
+                let response = await retry(get_admins);
                 globalDispatch({ type: "SET_ADMINS", payload: response.admins });
             } catch (error) {
                 console.error("Failed to fetch admins:", error);
@@ -51,7 +64,7 @@ const GlobalInitializer = () => {
 
         const fetchSettings = async () => {
             try {
-                let response = await get_settings();
+                let response = await retry(get_settings);
                 globalDispatch({ type: "SET_SETTINGS", payload: response });
             } catch (error) {
                 console.error("Failed to fetch settings:", error);
@@ -60,7 +73,7 @@ const GlobalInitializer = () => {
 
         const fetchSubteams = async () => {
             try {
-                let response = await get_all_subteams();
+                let response = await retry(get_all_subteams);
                 globalDispatch({ type: "SET_SUBTEAMS", payload: response });
             } catch (error) {
                 console.error("Failed to fetch subteams:", error);
@@ -69,7 +82,7 @@ const GlobalInitializer = () => {
 
         const fetchWarzones = async () => {
             try {
-                let response = await get_warzones();
+                let response = await retry(get_warzones);
                 globalDispatch({ type: "SET_WARZONES", payload: response });
             } catch (error) {
                 console.error("Failed to fetch warzones:", error);
