@@ -42,10 +42,10 @@ https://github.com/user-attachments/assets/e4a0ce1a-243f-4af7-be84-92ac59f3a2e9
 
 ## Building
 #### Frontend ( React Native Expo )
-- Follow the instructions [here](.frontend/README.md)
+- Follow the instructions [here](frontend/README.md)
 
 #### Backend ( Node.js, Express.js, MongoDB )
-- Follow the instructions [here](.frontend/README.md)
+- Follow the instructions [here](frontend/README.md)
 
 ## Acknowledgements
 
