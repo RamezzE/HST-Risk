@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useCallback, useReducer } from "react";
+import React, { useContext, useReducer, useEffect } from "react";
 import {
   View,
   Text,
@@ -21,18 +21,14 @@ import MapZone from "../../components/MapZone";
 import { get_country_mappings } from "../../api/country_functions";
 import { get_all_teams } from "../../api/team_functions";
 import { get_all_attacks } from "../../api/attack_functions";
-import { deletePushToken } from "../../api/user_functions";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
-import { useFocusEffect } from "@react-navigation/native";
+import { Logout } from "../../helpers/AuthHelpers";
 
 const initialState = {
   zones: [],
-  countryMappings: [],
   error: null,
-  teams: [],
-  attacks: [],
   isRefreshing: false,
 }
 
@@ -40,33 +36,10 @@ const reducer = (state, action) => {
   switch (action.type) {
     case "SET_ZONES":
       return { ...state, zones: action.payload };
-    case "SET_COUNTRY_MAPPINGS":
-      return { ...state, countryMappings: action.payload };
-    case "SET_TEAMS":
-      return { ...state, teams: action.payload };
-    case "SET_ATTACKS":
-      return { ...state, attacks: action.payload };
     case "SET_ERROR":
       return { ...state, error: action.payload };
     case "SET_IS_REFRESHING":
       return { ...state, isRefreshing: action.payload };
-    case "UPDATE_COUNTRY_MAPPING":
-      const updatedCountryMappings = state.countryMappings.map((country) => {
-        if (country.name === action.payload.name)
-          return action.payload;
-        return country;
-      });
-
-      return { ...state, countryMappings: updatedCountryMappings };
-
-    case "UPDATE_TEAM":
-      const updatedTeams = state.teams.map((team) => {
-        if (team.number === action.payload.number)
-          return action.payload;
-        return team;
-      });
-
-      return { ...state, teams: updatedTeams };
     default:
       return state;
   }
@@ -76,11 +49,15 @@ const Home = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const { globalState, socket, Logout } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
+
+  useEffect(() => {
+    dispatch({ type: "SET_ZONES", payload: countries });
+  }, [])
+
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null });
-    dispatch({ type: "SET_ZONES", payload: countries });
 
     try {
       const result = await get_country_mappings();
@@ -92,7 +69,7 @@ const Home = () => {
 
     try {
       const attacksResult = await get_all_attacks();
-      dispatch({ type: "SET_ATTACKS", payload: attacksResult });
+      globalDispatch({ type: "SET_ATTACKS", payload: attacksResult });
     } catch (err) {
       console.log(err);
       dispatch({ type: "SET_ERROR", payload: "Failed to fetch attacks data" });
@@ -100,7 +77,7 @@ const Home = () => {
 
     try {
       const teamsResult = await get_all_teams();
-      dispatch({ type: "SET_TEAMS", payload: teamsResult });
+      globalDispatch({ type: "SET_TEAMS", payload: teamsResult });
     } catch (err) {
       console.log(err);
       dispatch({ type: "SET_ERROR", payload: "Failed to fetch teams data" });
@@ -108,49 +85,6 @@ const Home = () => {
       dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData(); // Fetch initial data
-
-      // Set up socket listeners for real-time updates
-      socket.on("update_country", (updatedCountryMapping) => {
-        dispatch({ type: "UPDATE_COUNTRY_MAPPING", payload: updatedCountryMapping })
-      });
-
-      socket.on("update_team", (updatedTeam) => {
-        dispatch({ type: "UPDATE_TEAM", payload: updatedTeam })
-      });
-
-      socket.on("new_attack", (newAttack) => {
-        dispatch({ type: "SET_ATTACKS", payload: [...state.attacks, newAttack] });
-      });
-
-      socket.on("remove_attack", (attackId) => {
-
-        dispatch({
-          type: "SET_ATTACKS",
-          payload: state.attacks.filter((attack) =>
-            attack._id !== attackId
-          )
-        });
-
-      });
-
-      return () => {
-        socket.off("update_country");
-        socket.off("update_team");
-        socket.off("new_attack");
-        socket.off("remove_attack");
-        socket.off("new_game");
-      };
-    }, [globalState.teamNo])
-  );
-
-  useEffect(() => {
-    dispatch({ type: "SET_IS_REFRESHING", payload: true })
-    fetchData();
-  }, []);
 
   const logoutFunc = () => {
     Alert.alert(
@@ -166,9 +100,8 @@ const Home = () => {
         {
           text: "Logout",
           onPress: async () => {
-            deletePushToken(globalState.expoPushToken, globalState.teamNo);
-            Logout();
-            router.replace("/");
+            Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
+             router.replace("/");
           },
         },
       ]
@@ -177,17 +110,17 @@ const Home = () => {
 
   const onMarkerPress = (zone) => {
     try {
-      const country = Array.isArray(state.countryMappings)
-        ? state.countryMappings.find((c) => c.name === zone.name)
+      const country = Array.isArray(globalState.countries)
+        ? globalState.countries.find((c) => c.name === zone.name)
         : null;
 
       const team =
-        country && Array.isArray(state.teams)
-          ? state.teams.find((t) => t.number === country.teamNo)
+        country && Array.isArray(globalState.teams)
+          ? globalState.teams.find((t) => t.number === country.teamNo)
           : null;
 
-      const attack = Array.isArray(state.attacks)
-        ? state.attacks.find((a) => a.defending_zone === zone.name)
+      const attack = Array.isArray(globalState.attacks)
+        ? globalState.attacks.find((a) => a.defending_zone === zone.name)
         : null;
 
       Alert.alert(
@@ -204,9 +137,9 @@ const Home = () => {
 
   const getTeamColor = (countryName) => {
     try {
-      const country = state.countryMappings.find((c) => c.name === countryName);
+      const country = globalState.countries.find((c) => c.name === countryName);
       const team = country
-        ? state.teams.find((t) => t.number === country.teamNo)
+        ? globalState.teams.find((t) => t.number === country.teamNo)
         : null;
       return team ? team.color : "#000000";
     } catch (error) {
@@ -226,8 +159,8 @@ const Home = () => {
           borderRadius: 5,
         }}
       >
-        {Array.isArray(state.teams) &&
-          state.teams.map((team, index) => (
+        {Array.isArray(globalState.teams) &&
+          globalState.teams.map((team, index) => (
             <View
               key={index}
               style={{
@@ -276,14 +209,25 @@ const Home = () => {
         }}
       />
 
-      <View className="flex flex-row pt-2 justify-center gap-0">
-        <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
-          {globalState.name}, Team {globalState.teamNo}
-        </Text>
-        <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">
-          {globalState.subteam}
-        </Text>
-      </View>
+      {
+        globalState.userMode !== "super_admin" ? (
+          <View className="flex flex-row pt-2 justify-center gap-0">
+            <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
+              {globalState.name}, Team {globalState.teamNo}
+            </Text>
+            <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">
+              {globalState.subteam}
+            </Text>
+          </View>
+        ) :
+        (
+          <Text className="text-center font-pmedium text-base m-4 mt-0 pt-2">
+            Ramez can be pretty cool right
+          </Text>
+        )
+      }
+
+
       <View
         style={{
           flex: 1,

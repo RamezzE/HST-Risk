@@ -55,7 +55,10 @@ class AdminController {
       await newAdmin.save();
 
       // Emit the event after successful save
-      io.emit("add_admin", newAdmin);
+      // if user session is required 
+      // io.to(socket.id).emit("add_admin", newAdmin);
+      if (req.session.user && req.session.user.mode == "super_admin") 
+        io.emit("add_admin", newAdmin);
 
       result.success = true;
       return res.json(result); // 201 Created status code for a successfully created resource
@@ -85,8 +88,9 @@ class AdminController {
         result.errorMsg = `Admin ${oldName} not found`;
         return res.json(result);
       }
-
-      io.emit("update_admin", admin);
+      
+      if (req.session.user && req.session.user.mode == "super_admin")
+        io.emit("update_admin", admin);
 
       result.success = true;
       return res.json(result);
@@ -115,7 +119,8 @@ class AdminController {
       }
 
       // Emit event after successful deletion
-      io.emit("delete_admin", name);
+      if (req.session.user && req.session.user.mode == "super_admin") 
+        io.emit("delete_admin", name);
 
       result.success = true;
       return res.json(result); // 200 OK status code for successful deletion

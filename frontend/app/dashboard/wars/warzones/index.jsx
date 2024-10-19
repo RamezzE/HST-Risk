@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   ScrollView,
@@ -6,35 +6,31 @@ import {
   RefreshControl,
 } from "react-native";
 import CustomButton from "../../../../components/CustomButton";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import Loader from "../../../../components/Loader";
 import BackButton from "../../../../components/BackButton";
 
 import { get_warzones } from "../../../../api/warzone_functions";
 
-import { useFocusEffect } from "@react-navigation/native";
-
 import { GlobalContext } from "../../../../context/GlobalProvider";
 
 const Warzones = () => {
-  const [warzones, setWarzones] = useState([]);
   const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
-  const router = useRouter();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { socket } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
     try {
       const result = await get_warzones();
-      if (result.success === false) {
+      if (result.success === false)
         setError(result.errorMsg);
-      } else if (Array.isArray(result)) {
-        setWarzones(result);
-      } else {
+      else if (Array.isArray(result))
+        globalDispatch({ type: "SET_WARZONES", payload: result });
+      else
         setError("Unexpected response format");
-      }
+
     } catch (err) {
       setError("Failed to fetch warzones");
     } finally {
@@ -42,44 +38,8 @@ const Warzones = () => {
     }
   };
 
-  useEffect(() => {
-    setIsRefreshing(true);
-    fetchData();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData(); // Fetch initial data
-
-      // Set up socket listeners for real-time updates
-      socket.on("new_warzone", (newWarzone) => {
-        setWarzones((prevWarzones) => [newWarzone, ...prevWarzones]);
-      });
-
-      socket.on("update_warzone", (updatedWarzone) => {
-        setWarzones((prevWarzones) =>
-          prevWarzones.map((warzone) =>
-            warzone._id === updatedWarzone._id ? updatedWarzone : warzone
-          )
-        );
-      });
-
-      socket.on("delete_warzone", (deletedWarzoneId) => {
-        setWarzones((prevWarzones) =>
-          prevWarzones.filter((warzone) => warzone._id !== deletedWarzoneId)
-        );
-      });
-
-      return () => {
-        socket.off("new_warzone");
-        socket.off("update_warzone");
-        socket.off("delete_warzone");
-      };
-    }, [])
-  );
-
   const renderWarzones = () => {
-    if (!Array.isArray(warzones)) {
+    if (!Array.isArray(globalState.warzones)) {
       return (
         <Text className="text-center">
           No warzones available or unexpected data format.
@@ -98,7 +58,7 @@ const Warzones = () => {
       ));
     };
 
-    return warzones.map((item, index) => (
+    return globalState.warzones.map((item, index) => (
       <View
         key={index}
         className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
@@ -150,7 +110,7 @@ const Warzones = () => {
         <BackButton
           style="w-[20vw]"
           size={32}
-          onPress={() => router.navigate("/(wars)")}
+          onPress={() => router.navigate("/dashboard/wars")}
         />
         <Text className="text-6xl text-center font-montez py-2 mt-7">
           Warzones

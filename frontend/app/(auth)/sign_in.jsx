@@ -1,14 +1,16 @@
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { View, Text, Alert } from "react-native";
 
 import { router } from "expo-router";
-import { addPushToken, login } from "../../api/user_functions";
 
 import { GlobalContext } from "../../context/GlobalProvider";
 
 import BackButton from "../../components/BackButton";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
+
+import { Login } from "../../helpers/AuthHelpers";
+
 const validateSignIn = (username, password) => {
   var result = {
     success: false,
@@ -34,68 +36,6 @@ const SignIn = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      if (!isSubmitting) return;
-
-      try {
-        const response = await login(
-          form.username.trim(),
-          form.password.trim()
-        );
-
-        if (!response.success) {
-          Alert.alert("Error", response.errorMsg);
-          return;
-        }
-
-        if (response.subteam != "") {
-
-          globalDispatch({ type: "SET_TEAM_NO", payload: response.subteam.number });
-          globalDispatch({ type: "SET_SUBTEAM", payload: response.subteam.letter });
-          globalDispatch({ type: "SET_NAME", payload: response.subteam.name });
-          globalDispatch({ type: "SET_USER_MODE", payload: "subteam" });
-
-          await addPushToken(globalState.expoPushToken, response.subteam.number);
-          globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
-          router.replace("/home");
-          return;
-        }
-
-        if (response.admin != "") {
-          globalDispatch({ type: "SET_NAME", payload: form.username });
-          globalDispatch({ type: "SET_USER_MODE", payload: "admin" });
-          globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
-
-          if (response.admin.type == "Wars") {
-            router.replace("/admin_home");
-            return;
-          }
-
-          router.replace("/dashboard/teams");
-          return;
-        }
-
-        if (response.superAdmin != "") {
-          globalDispatch({ type: "SET_USER_MODE", payload: "super_admin" });
-          globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
-
-          router.replace("/dashboard");
-          return;
-        }
-
-        Alert.alert("Error", response.errorMsg);
-      } catch (error) {
-        Alert.alert("Error", "Cannot sign in");
-        console.log(error);
-      } finally {
-        setIsSubmitting(false);
-      }
-    };
-
-    checkLoginStatus();
-  }, [isSubmitting]);
-
   const submit = async () => {
     var result = validateSignIn(form.username, form.password);
 
@@ -105,6 +45,27 @@ const SignIn = () => {
     }
 
     setIsSubmitting(true);
+
+    try {
+      
+      const response = await Login(form.username.trim(), form.password.trim(), globalState, globalDispatch);
+      
+      if (response.path) {
+        router.replace(response.path);
+        return;
+      }
+      
+      if (!response.success) {
+        Alert.alert("Error", response.errorMsg);
+        return;
+      }
+
+    } catch (error) {
+      Alert.alert("Error", "Cannot sign in");
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

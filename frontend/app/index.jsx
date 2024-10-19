@@ -3,75 +3,23 @@ import { Text, View, Image } from "react-native";
 import { router } from "expo-router";
 import CustomButton from "../components/CustomButton";
 import { GlobalContext } from "../context/GlobalProvider";
-import { is_logged_in } from "../api/user_functions";
 import { images } from "../constants";
 import PageWrapper from "../components/PageWrapper";
+import { isLoggedIn } from '../helpers/AuthHelpers';
 
 const App = () => {
   const { globalState, globalDispatch } = useContext(GlobalContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const checkLoginStatus = async () => {
+  const AutoLogin = async () => {
+    setIsSubmitting(true);
 
     try {
-      if (globalState.isLoggedIn) {
-        if (globalState.userMode === "subteam") {
-          router.navigate("/home");
-          return;
-        }
-        if (globalState.userMode === "admin") {
-          if (globalState.adminType === "Wars") {
-            router.navigate("/admin_home");
-            return;
-          }
-          router.navigate("/dashboard/teams");
-          return;
-        }
-        if (globalState.userMode === "super_admin") {
-          router.navigate("/dashboard");
-          return;
-        }
-      }
+      const response = await isLoggedIn(globalState, globalDispatch);
 
-      const response = await is_logged_in();
+      if (response.path)
+        router.navigate(response.path)
 
-      if (!response.success) {
-        router.navigate("/sign_in");
-        return;
-      }
-
-      if (response.subteam !== "") {
-        globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
-        globalDispatch({ type: "SET_NAME", payload: response.subteam.name });
-        globalDispatch({ type: "SET_USER_MODE", payload: "subteam" });
-        globalDispatch({ type: "SET_TEAM_NO", payload: response.subteam.number });
-        globalDispatch({ type: "SET_SUBTEAM", payload: response.subteam.letter });
-
-        router.navigate("/home");
-        return;
-      }
-
-      if (response.admin !== "") {
-        globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
-        globalDispatch({ type: "SET_NAME", payload: response.admin.name });
-        globalDispatch({ type: "SET_USER_MODE", payload: "admin" });
-
-        if (response.admin.type === "Wars") {
-          router.navigate("/admin_home");
-          return;
-        }
-        router.navigate("/dashboard/teams");
-        return;
-      }
-
-      if (response.superAdmin !== "") {
-        globalDispatch({ type: "SET_IS_LOGGED_IN", payload: true });
-        globalDispatch({ type: "SET_NAME", payload: response.superAdmin.name });
-        globalDispatch({ type: "SET_USER_MODE", payload: "super_admin" });
-
-        router.navigate("/dashboard");
-        return;
-      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -106,10 +54,7 @@ const App = () => {
 
               <CustomButton
                 title="Sign in"
-                handlePress={() => {
-                  setIsSubmitting(true);
-                  checkLoginStatus();
-                }}
+                handlePress={AutoLogin}
                 isLoading={isSubmitting}
                 textStyles={"font-montez text-3xl"}
                 containerStyles={"p-4"}

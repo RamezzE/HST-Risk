@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useContext } from "react";
+import React, { useEffect, useReducer, useContext } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../../components/CustomButton";
 import { router } from "expo-router";
 
@@ -19,59 +18,65 @@ import Timer from "../../../components/Timer";
 
 import { GlobalContext } from "../../../context/GlobalProvider";
 
-const DashboardAttacks = () => {
-  const [attacks, setAttacks] = useState([]);
-  const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const initialState = {
+  error: null,
+  isRefreshing: false,
+  isSubmitting: false,
+};
 
-  const { socket } = useContext(GlobalContext);
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "SET_IS_REFRESHING":
+      return { ...state, isRefreshing: action.payload };
+    case "SET_IS_SUBMITTING":
+      return { ...state, isSubmitting: action.payload };
+    default:
+      return state;
+  }
+};
+
+const DashboardAttacks = () => {
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const { globalState, globalDispatch } = useContext(GlobalContext);
+
+  useEffect(() => {
+    if (!Array.isArray(globalState.attacks))
+      fetchData();
+
+    return () => {
+      dispatch({ type: "SET_IS_REFRESHING", payload: false });
+    };
+    
+  }, [globalState.attacks]);
 
   const fetchData = async () => {
-    setError(null);
+    dispatch({ type: "SET_IS_REFRESHING", payload: true });
+
     try {
       const result = await get_all_attacks();
-      if (result.success === false) {
-        setError(result.errorMsg);
-      } else if (Array.isArray(result)) {
-        setAttacks(result);
-      } else {
-        setError("Unexpected response format");
-      }
+
+      if (result.success === false)
+        dispatch({ type: "SET_ERROR", payload: result.errorMsg });
+
+      else if (Array.isArray(result)) 
+        globalDispatch({ type: "SET_ATTACKS", payload: result });
+
+      else 
+        dispatch({ type: "SET_ERROR", payload: "Unexpected Response Format" });
+      
     } catch (err) {
-      setError("Failed to fetch attacks");
+      dispatch({ type: "SET_ERROR", payload: "Error fetching attacks" });
       console.log(err);
     } finally {
-      setIsRefreshing(false);
+      dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchData(); // Fetch initial data
-
-      // Set up socket listeners for real-time updates
-      socket.on("new_attack", (newAttack) => {
-        setAttacks((prevAttacks) => [newAttack, ...prevAttacks]);
-      });
-
-      socket.on("remove_attack", (attackId) => {
-        setAttacks((prevAttacks) =>
-          prevAttacks.filter((attack) => attack._id !== attackId)
-        );
-      });
-
-      return () => {
-        socket.off("new_attack");
-        socket.off("remove_attack");
-      };
-    }, [])
-  );
-
-  useEffect(() => {
-    setIsRefreshing(true);
-    fetchData();
-  }, []);
+  
 
   const setAttackResultAlert = (
     attackWon,
@@ -108,7 +113,7 @@ const DashboardAttacks = () => {
     attacking_team,
     defending_team
   ) => {
-    setIsSubmitting(true);
+    dispatch({ type: "SET_IS_SUBMITTING", payload: true });
 
     try {
       let team;
@@ -116,18 +121,16 @@ const DashboardAttacks = () => {
       else if (attackWon === "false") team = defending_team;
 
       const response = await set_attack_result(id, team);
-      if (response.success) {
+      if (response.success)
         Alert.alert("Success", "Attack result set successfully");
-        fetchData();
-      } else {
+      else 
         Alert.alert("Error", response.errorMsg);
-        fetchData();
-      }
+      
     } catch (error) {
       console.log(error);
       Alert.alert("Error", "Failed to set attack result");
     } finally {
-      setIsSubmitting(false);
+      dispatch({ type: "SET_IS_SUBMITTING", payload: false });
     }
   };
 
@@ -135,7 +138,6 @@ const DashboardAttacks = () => {
     const result = await delete_attack(id);
     if (result.success) {
       Alert.alert("Success", "Attack deleted successfully");
-      fetchData();
     } else {
       Alert.alert("Error", result.errorMsg);
     }
@@ -168,7 +170,7 @@ const DashboardAttacks = () => {
   };
 
   const renderAttacks = () => {
-    if (!Array.isArray(attacks)) {
+    if (!Array.isArray(globalState.attacks)) {
       return (
         <Text className="text-center">
           No attacks available or unexpected data format.
@@ -176,7 +178,7 @@ const DashboardAttacks = () => {
       );
     }
 
-    return attacks.map((item) => {
+    return globalState.attacks.map((item) => {
       return (
         <View
           key={item._id}
@@ -216,7 +218,7 @@ const DashboardAttacks = () => {
               }
               containerStyles="p-1 mt-2 bg-green-800"
               textStyles="text-xl font-pregular"
-              isLoading={isSubmitting}
+              isLoading={state.isSubmitting}
             />
             <CustomButton
               title={`${item.defending_team}`}
@@ -231,7 +233,7 @@ const DashboardAttacks = () => {
               }
               containerStyles="p-2 px-4 mt-2 bg-red-800"
               textStyles="text-xl font-pregular"
-              isLoading={isSubmitting}
+              isLoading={state.isSubmitting}
             />
             <CustomButton
               title="Delete"
@@ -247,7 +249,7 @@ const DashboardAttacks = () => {
               }}
               containerStyles="p-2  mt-2"
               textStyles="text-xl font-pregular"
-              isLoading={isSubmitting}
+              isLoading={state.isSubmitting}
             />
           </View>
         </View>
@@ -255,7 +257,7 @@ const DashboardAttacks = () => {
     });
   };
 
-  if (isRefreshing) {
+  if (state.isRefreshing) {
     return (
       <Loader />
     );
@@ -266,9 +268,9 @@ const DashboardAttacks = () => {
       contentContainerStyle={{ paddingBottom: 20 }}
       refreshControl={
         <RefreshControl
-          refreshing={isRefreshing}
+          refreshing={state.isRefreshing}
           onRefresh={() => {
-            setIsRefreshing(true);
+            dispatch({ type: "SET_IS_REFRESHING", payload: true });
             fetchData();
           }}
           tintColor="#000"
@@ -295,9 +297,9 @@ const DashboardAttacks = () => {
             textStyles={"text-2xl"}
           />
         </View>
-        {error ? (
+        {state.error ? (
           <Text style={{ color: "white", textAlign: "center" }}>
-            {error}
+            {state.error}
           </Text>
         ) : (
           renderAttacks()

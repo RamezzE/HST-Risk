@@ -1,11 +1,10 @@
-import React, { useReducer, useCallback, useContext, useEffect } from "react";
+import React, { useReducer, useContext } from "react";
 import {
   View,
   Text,
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../../components/CustomButton";
 import { router } from "expo-router";
 import { get_admins } from "../../../api/admin_functions";
@@ -14,31 +13,16 @@ import Loader from "../../../components/Loader";
 import { GlobalContext } from "../../../context/GlobalProvider";
 
 const initialState = {
-  admins: [],
   error: null,
-  isRefreshing: true,
+  isRefreshing: false,
 }
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "SET_ADMINS":
-      return { ...state, admins: action.payload };
     case "SET_ERROR":
       return { ...state, error: action.payload };
     case "SET_IS_REFRESHING":
       return { ...state, isRefreshing: action.payload };
-    case "UPDATE_ADMIN":
-      return {
-        ...state,
-        admins: state.admins.map((admin) =>
-          admin._id === action.payload._id ? action.payload : admin
-        ),
-      };
-    case "DELETE_ADMIN":
-      return {
-        ...state,
-        admins: state.admins.filter((admin) => admin.name !== action.payload),
-      };
     default:
       return state;
   }
@@ -46,16 +30,17 @@ const reducer = (state, action) => {
 
 const Admins = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { socket } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null });
     try {
       const result = await get_admins();
+
       if (result.success === false)
         dispatch({ type: "SET_ERROR", payload: result.errorMsg });
       else if (Array.isArray(result.admins))
-        dispatch({ type: "SET_ADMINS", payload: result.admins });
+        globalDispatch({ type: "SET_ADMINS", payload: result.admins });
       else
         dispatch({ type: "SET_ERROR", payload: "Unexpected response format" });
 
@@ -66,32 +51,8 @@ const Admins = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch({ type: "SET_IS_REFRESHING", payload: true });
-    fetchData();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-
-      socket.on("update_admin", (editedAdmin) => {
-        dispatch({ type: "UPDATE_ADMIN", payload: editedAdmin });
-      });
-
-      socket.on("delete_admin", (deletedAdmin) => {
-        dispatch({ type: "DELETE_ADMIN", payload: deletedAdmin });
-      });
-
-      return () => {
-        socket.off("new_admin");
-        socket.off("delete_admin");
-      };
-    }, [])
-  );
-
   const renderAdmins = () => {
-    if (!Array.isArray(state.admins)) {
+    if (!Array.isArray(globalState.admins)) {
       return (
         <Text className="text-center">
           No admins available or unexpected data format.
@@ -99,7 +60,7 @@ const Admins = () => {
       );
     }
 
-    return state.admins.map((item, index) => (
+    return globalState.admins.map((item, index) => (
       <View
         key={index}
         className="p-4 my-2 rounded-md flex flex-row justify-between items-center"

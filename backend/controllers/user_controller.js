@@ -297,21 +297,25 @@ class UserController {
       return;
     }
 
-    // Prepare a single array of messages to be sent in one request
     const notifications = tokensArray.flatMap((tokens, index) => {
       const messageBody = messagesArray[index];
       const notificationTitle = titlesArray[index];
 
-      return tokens.map((token) => ({
-        to: token,
-        sound: "default",
-        title: notificationTitle, // Customized title for each notification
-        body: messageBody,
-        // data: { someData: "goes here" }, // You can customize this
-      }));
+      return tokens
+        .filter((token) => !!token) // Ensure token is not null/undefined/empty
+        .map((token) => ({
+          to: token,
+          sound: "default",
+          title: notificationTitle,
+          body: messageBody,
+        }));
     });
 
-    // Send all notifications in a single request
+    if (notifications.length === 0) {
+      console.error("No valid tokens found to send push notifications.");
+      return;
+    }
+
     try {
       const response = await this.retryFetchRequest(
         () =>
@@ -324,16 +328,29 @@ class UserController {
             },
             body: JSON.stringify(notifications),
           }),
-        3, // Number of retries
-        2000 // Backoff time in milliseconds
+        3,
+        2000
       );
 
-      console.log(
-        "Push notifications sent successfully:",
-        await response.json()
-      );
+      const result = await response.json();
+      console.log("Full response from Expo Push API:", result); // Log the full response
+
+      if (result.data && result.data.length > 0) {
+        result.data.forEach((notification, index) => {
+          if (notification.status === "ok") {
+            console.log(
+              `Notification ${index} sent successfully:`,
+              notification
+            );
+          } else {
+            console.error(`Notification ${index} failed:`, notification);
+          }
+        });
+      } else {
+        console.error("No notifications were sent. Response data is empty.");
+      }
     } catch (error) {
-      console.error("Error sending push notifications:", error.message);
+      console.error("Error sending push notifications:", error);
     }
   }
 }

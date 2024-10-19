@@ -1,11 +1,10 @@
-import React, { useEffect, useReducer, useCallback, useContext } from "react";
+import React, { useReducer, useContext } from "react";
 import {
   View,
   Text,
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import { get_all_teams } from "../../api/team_functions";
 import { get_country_mappings } from "../../api/country_functions";
 import Loader from "../../components/Loader";
@@ -14,41 +13,19 @@ import CustomButton from "../../components/CustomButton";
 import { GlobalContext } from "../../context/GlobalProvider";
 
 const initialState = {
-  teams: [],
   error: null,
-  isRefreshing: true,
-  countries: [],
+  isRefreshing: false,
   expandedTeam: null,
 }
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "SET_TEAMS":
-      return { ...state, teams: action.payload };
     case "SET_ERROR":
       return { ...state, error: action.payload };
     case "SET_IS_REFRESHING":
       return { ...state, isRefreshing: action.payload };
-    case "SET_COUNTRIES":
-      return { ...state, countries: action.payload };
     case "SET_EXPANDED_TEAM":
       return { ...state, expandedTeam: action.payload(state.expandedTeam) };
-    case "UPDATE_TEAM":
-      const updatedTeams = state.teams.map((team) => {
-        if (team.number === action.payload.number)
-          return action.payload;
-        return team;
-      });
-
-      return { ...state, teams: updatedTeams };
-    case "UPDATE_COUNTRY":
-      const updatedCountries = state.countries.map((country) => {
-        if (country._id === action.payload._id)
-          return action.payload;
-        return country;
-      });
-
-      return { ...state, countries: updatedCountries };
 
     default:
       return state;
@@ -59,7 +36,7 @@ const Teams = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const { socket } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null })
@@ -71,7 +48,7 @@ const Teams = () => {
       if (result.success === false)
         dispatch({ type: "SET_ERROR", payload: result.errorMsg })
       else if (Array.isArray(result))
-        dispatch({ type: "SET_TEAMS", payload: result })
+        globalDispatch({ type: "SET_TEAMS", payload: result })
       else
         dispatch({ type: "SET_ERROR", payload: "Unexpected Response Format" })
     } catch (err) {
@@ -81,29 +58,6 @@ const Teams = () => {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-      socket.on("update_team", (updatedTeam) => {
-        dispatch({ type: "UPDATE_TEAM", payload: updatedTeam });
-      });
-
-      socket.on("update_country", (updatedCountry) => {
-        dispatch({ type: "UPDATE_COUNTRY", payload: updatedCountry });
-      });
-
-      return () => {
-        socket.off("update_team"); // Cleanup socket listener on component unmount
-        socket.off("update_country"); // Cleanup socket listener on component unmount
-      };
-    }, [])
-  );
-
-  useEffect(() => {
-    dispatch({ type: "SET_IS_REFRESHING", payload: true })
-    fetchData();
-  }, []);
-
   const toggleExpandTeam = (teamNumber) => {
     dispatch({
       type: "SET_EXPANDED_TEAM",
@@ -112,7 +66,7 @@ const Teams = () => {
   };
 
   const renderTeams = () => {
-    if (!Array.isArray(state.teams)) {
+    if (!Array.isArray(globalState.teams)) {
       return (
         <Text className="text-center">
           No teams available or unexpected data format.
@@ -120,8 +74,8 @@ const Teams = () => {
       );
     }
 
-    return state.teams.map((item, index) => {
-      const ownedCountries = state.countries.filter(
+    return globalState.teams.map((item, index) => {
+      const ownedCountries = globalState.countries.filter(
         (country) => country.teamNo === item.number
       );
 

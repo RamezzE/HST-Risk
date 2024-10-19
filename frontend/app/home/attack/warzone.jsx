@@ -5,7 +5,7 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useContext } from "react";
 import CustomButton from "../../../components/CustomButton";
 import { router, useLocalSearchParams } from "expo-router";
 import { get_warzones } from "../../../api/warzone_functions";
@@ -15,65 +15,28 @@ import Loader from "../../../components/Loader";
 
 import { GlobalContext } from "../../../context/GlobalProvider";
 
-import { useFocusEffect } from "@react-navigation/native";
-
 const Warzone = () => {
   const local = useLocalSearchParams();
-  const [warzones, setWarzones] = useState([]);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { globalState, socket } = useContext(GlobalContext);
+  const { globalState } = useContext(GlobalContext);
 
   const fetchData = async () => {
     try {
       const data = await get_warzones();
-      if (data.errorMsg) {
+
+      if (data.errorMsg)
         console.log(data.errorMsg);
-      } else {
-        setWarzones(data);
-      }
+      else
+        globalDispatch({ type: "SET_WARZONES", payload: data });
+
     } catch (error) {
       console.log(error);
     } finally {
       setIsRefreshing(false);
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData(); // Fetch initial data
-
-      // Set up socket listeners for real-time updates
-      socket.on("new_warzone", (newWarzone) => {
-        setWarzones((prevWarzones) => [newWarzone, ...prevWarzones]);
-      });
-
-      socket.on("update_warzone", (updatedWarzone) => {
-        setWarzones((prevWarzones) =>
-          prevWarzones.map((warzone) =>
-            warzone._id === updatedWarzone._id ? updatedWarzone : warzone
-          )
-        );
-      });
-
-      socket.on("delete_warzone", (deletedWarzoneId) => {
-        setWarzones((prevWarzones) =>
-          prevWarzones.filter((warzone) => warzone._id !== deletedWarzoneId)
-        );
-      });
-
-      return () => {
-        socket.off("new_warzone");
-        socket.off("update_warzone");
-        socket.off("delete_warzone");
-      };
-    }, [])
-  );
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const handlePress = async (warzone) => {
     const availableWars = Array.isArray(warzone.wars)
@@ -163,8 +126,8 @@ const Warzone = () => {
           Be careful, once you choose, you cannot change this attack.
         </Text>
         <View className="flex flex-row justify-between flex-wrap p-5">
-          {Array.isArray(warzones) &&
-            warzones.map((warzone) => {
+          {Array.isArray(globalState.warzones) &&
+            globalState.warzones.map((warzone) => {
               const availableWars = Array.isArray(warzone.wars)
                 ? warzone.wars.filter((war) => war.available)
                 : [];

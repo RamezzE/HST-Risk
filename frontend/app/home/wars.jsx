@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useContext, useCallback } from "react";
+import React, { useEffect, useReducer, useContext } from "react";
 import {
   View,
   Text,
@@ -7,17 +7,16 @@ import {
 } from "react-native";
 
 import { GlobalContext } from "../../context/GlobalProvider";
-import { get_all_attacks } from "../../api/attack_functions";
 import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 
-import { useFocusEffect } from "@react-navigation/native";
+import { get_all_attacks } from "../../api/attack_functions";
 
 const initialState = {
   error: null,
   attackingAttacks: [],
   defendingAttacks: [],
-  isRefreshing: true
+  isRefreshing: false,
 }
 
 const reducer = (state, action) => {
@@ -39,24 +38,35 @@ const TeamAttacks = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const { globalState, socket } = useContext(GlobalContext);
+  const { globalState } = useContext(GlobalContext);
+
+  useEffect(() => {
+
+    const filteredAttackingAttacks = Array.isArray(globalState.attacks)
+      ? globalState.attacks.filter((attack) => attack.attacking_team.toString() === globalState.teamNo.toString())
+      : [];
+
+    const filteredDefendingAttacks = Array.isArray(globalState.attacks)
+      ? globalState.attacks.filter((attack) => attack.defending_team.toString() === globalState.teamNo.toString())
+      : [];
+
+    dispatch({ type: "SET_ATTACKING_ATTACKS", payload: filteredAttackingAttacks })
+    dispatch({ type: "SET_DEFENDING_ATTACKS", payload: filteredDefendingAttacks })
+
+  }, [globalState.attacks, globalState.teamNo])
+
 
   const fetchData = async () => {
 
     dispatch({ type: "SET_ERROR", payload: null })
+
     try {
-      const result = await get_all_attacks();
+      const response = await get_all_attacks();
 
-      const filteredAttackingAttacks = Array.isArray(result)
-        ? result.filter((attack) => attack.attacking_team === globalState.teamNo.toString())
-        : [];
-
-      const filteredDefendingAttacks = Array.isArray(result)
-        ? result.filter((attack) => attack.defending_team === globalState.teamNo.toString())
-        : [];
-
-      dispatch({ type: "SET_ATTACKING_ATTACKS", payload: filteredAttackingAttacks })
-      dispatch({ type: "SET_DEFENDING_ATTACKS", payload: filteredDefendingAttacks })
+      if (Array.isArray(response)) {
+        dispatch({ type: "SET_ATTACKING_ATTACKS", payload: filteredAttackingAttacks })
+        dispatch({ type: "SET_DEFENDING_ATTACKS", payload: filteredDefendingAttacks })
+      }
 
     } catch (err) {
       dispatch({ type: "SET_ERROR", payload: "Failed to fetch data" })
@@ -65,49 +75,6 @@ const TeamAttacks = () => {
       dispatch({ type: "SET_IS_REFRESHING", payload: false })
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      // Fetch initial data
-      fetchData();
-
-      // Set up socket listeners for real-time updates
-      socket.on("new_attack", (newAttack) => {
-
-        if (newAttack.attacking_team.toString() === globalState.teamNo.toString())
-          dispatch({ type: "SET_ATTACKING_ATTACKS", payload: [...state.attackingAttacks, newAttack] })
-
-        else if (newAttack.defending_team.toString() === globalState.teamNo.toString())
-          dispatch({ type: "SET_DEFENDING_ATTACKS", payload: [...state.defendingAttacks, newAttack] })
-
-      });
-
-      socket.on("remove_attack", (attackId) => {
-
-        dispatch({
-          type: "SET_ATTACKING_ATTACKS",
-          payload: state.attackingAttacks.filter((attack) => attack._id !== attackId)
-        });
-
-        dispatch({
-          type: "SET_DEFENDING_ATTACKS",
-          payload: state.defendingAttacks.filter((attack) => attack._id !== attackId)
-        });
-
-      });
-
-      // Clean up the socket listeners when the component loses focus or unmounts
-      return () => {
-        socket.off("new_attack");
-        socket.off("remove_attack");
-      };
-    }, [globalState.teamNo])
-  );
-
-  useEffect(() => {
-    dispatch({ type: "SET_IS_REFRESHING", payload: true })
-    fetchData();
-  }, []);
 
   if (state.isRefreshing) {
     return (

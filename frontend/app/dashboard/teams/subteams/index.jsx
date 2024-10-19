@@ -1,11 +1,10 @@
-import React, { useState, useCallback, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   ScrollView,
   RefreshControl,
   Text,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../../../components/CustomButton";
 import { router } from "expo-router";
 import { get_all_subteams } from "../../../../api/team_functions";
@@ -15,23 +14,22 @@ import BackButton from "../../../../components/BackButton";
 import { GlobalContext } from "../../../../context/GlobalProvider";
 
 const SubTeams = () => {
-  const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { socket } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
     try {
       const result = await get_all_subteams();
-      if (result.success === false) {
+      if (result.success === false) 
         setError(result.errorMsg);
-      } else if (Array.isArray(result)) {
-        setTeams(result);
-      } else {
+      else if (Array.isArray(result))
+        globalDispatch({ type: "SET_SUBTEAMS", payload: result });
+      else
         setError("Unexpected response format");
-      }
+      
     } catch (err) {
       setError("Failed to fetch subteams");
     } finally {
@@ -39,27 +37,8 @@ const SubTeams = () => {
     }
   };
 
-  useEffect(() => {
-    setIsRefreshing(true);
-    fetchData();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-
-      socket.on("update_subteam", (editedSubteam) => {
-        setTeams((prevTeams) =>
-          prevTeams.map((team) =>
-            team.username === editedSubteam.username ? editedSubteam : team
-          )
-        );
-      });
-    }, [])
-  );
-
   const renderSubTeams = () => {
-    if (!Array.isArray(teams)) {
+    if (!Array.isArray(globalState.subteams)) {
       return (
         <Text className="text-center">
           No teams available or unexpected data format.
@@ -67,7 +46,7 @@ const SubTeams = () => {
       );
     }
 
-    return teams.map((item, index) => (
+    return globalState.subteams.map((item, index) => (
       <View
         key={index}
         className="p-4 my-2 rounded-md flex flex-row justify-between items-center"

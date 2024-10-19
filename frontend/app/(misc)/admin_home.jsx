@@ -1,147 +1,77 @@
-import React, { useEffect, useState, useContext, useCallback } from "react";
+import React, { useEffect, useContext, useReducer } from "react";
 import {
   View,
   Text,
+  ScrollView,
+  RefreshControl,
   Alert,
 } from "react-native";
 import CustomButton from "../../components/CustomButton";
 import { GlobalContext } from "../../context/GlobalProvider";
-import { get_admin_by_name } from "../../api/admin_functions";
-import {
-  get_attacks_by_war,
-  set_attack_result,
-  delete_attack,
-} from "../../api/attack_functions";
 import { router } from "expo-router";
 import BackButton from "../../components/BackButton";
 import Loader from "../../components/Loader";
 import Timer from "../../components/Timer";
 
-import { useFocusEffect } from "@react-navigation/native";
+import { set_attack_result, delete_attack } from "../../api/attack_functions";
+import { Logout } from "../../helpers/AuthHelpers";
+import { GetAssignedWar } from "../../helpers/AdminHelper";
+
+const initialState = {
+  currentAttack: null,
+  war: null,
+  isSubmitting: false,
+  isRefreshing: false,
+}
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_CURRENT_ATTACK":
+      return { ...state, currentAttack: action.payload };
+    case "SET_WAR":
+      return { ...state, war: action.payload };
+    case "SET_IS_SUBMITTING":
+      return { ...state, isSubmitting: action.payload };
+    case "SET_IS_REFRESHING":
+      return { ...state, isRefreshing: action.payload };
+    default:
+      return state;
+  }
+}
 
 const AdminHome = () => {
-  const { globalState, socket, Logout } = useContext(GlobalContext);
-  const [war, setWar] = useState("");
-  const [response, setResponse] = useState({ attacks: [] });
-  const [currentAttack, setCurrentAttack] = useState({
-    _id: "",
-    attacking_team: "",
-    defending_team: "",
-    attacking_zone: "",
-    defending_zone: "",
-    createdAt: "",
-    expiryTime: "",
-  });
-  const [isRefreshing, setIsRefreshing] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+
+    const filteredAttacks = globalState.attacks.filter(attack => attack.war === state.war);
+
+    if (filteredAttacks.length > 0)
+      dispatch({ type: "SET_CURRENT_ATTACK", payload: filteredAttacks[0] });
+    else
+      dispatch({ type: "SET_CURRENT_ATTACK", payload: null });
+
+  }, [globalState.attacks, state.war])
 
   const fetchData = async () => {
-    console.log("Fetching data");
+
     try {
-      const admin = await get_admin_by_name(globalState.name);
-      setWar(admin.admin.war);
-      const response = await get_attacks_by_war(admin.admin.war);
+      const response = await GetAssignedWar(globalState.name);
 
-      if (response.attacks.length > 0) {
-        setResponse(response);
-        const attack = response.attacks[0];
-
-        setCurrentAttack({
-          _id: attack._id,
-          attacking_team: attack.attacking_team,
-          attacking_subteam: attack.attacking_subteam,
-          defending_team: attack.defending_team,
-          attacking_zone: attack.attacking_zone,
-          defending_zone: attack.defending_zone,
-          createdAt: attack.createdAt,
-          expiryTime: attack.expiryTime,
-        });
-      } else {
-        setResponse(response);
-        setCurrentAttack({
-          _id: "",
-          attacking_team: "",
-          attacking_subteam: "",
-          attacking_zone: "",
-          defending_team: "",
-          defending_zone: "",
-          createdAt: "",
-          expiryTime: "",
-        });
+      if (!response.success) {
+        Alert.alert("Error", response.errorMsg);
+        return;
       }
+
+      dispatch({ type: "SET_WAR", payload: response.war });
     } catch (error) {
       console.log(error);
     } finally {
-      setIsRefreshing(false);
+      dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchData(); // Fetch initial data
-
-      // Set up socket listeners for real-time updates
-      socket.on("new_attack", (newAttack) => {
-        setResponse((prevResponse) => ({
-          attacks: [newAttack, ...prevResponse.attacks],
-        }));
-        setCurrentAttack(newAttack);
-      });
-
-      socket.on("remove_attack", (attackId) => {
-        setResponse((prevResponse) => ({
-          attacks: prevResponse.attacks.filter(
-            (attack) => attack._id !== attackId
-          ),
-        }));
-        if (currentAttack._id === attackId) {
-          setCurrentAttack({
-            _id: "",
-            attacking_team: "",
-            defending_team: "",
-            attacking_zone: "",
-            defending_zone: "",
-            createdAt: "",
-            expiryTime: "",
-          });
-        }
-      });
-
-      socket.on("update_attack_result", (updatedAttack) => {
-        setResponse((prevResponse) => ({
-          attacks: prevResponse.attacks.map((attack) =>
-            attack._id === updatedAttack._id ? updatedAttack : attack
-          ),
-        }));
-        if (currentAttack._id === updatedAttack._id) {
-          setCurrentAttack(updatedAttack);
-        }
-      });
-
-      socket.on("new_game", () => {
-        Alert.alert(
-          "New Game",
-          "A new game has started. You will be logged out automatically."
-        );
-
-        setTimeout(async () => {
-          Logout();
-          router.replace("/");
-        }, 3000);
-      });
-
-      return () => {
-        socket.off("new_attack");
-        socket.off("remove_attack");
-        socket.off("update_attack_result");
-        socket.off("new_game");
-      };
-    }, [currentAttack._id])
-  );
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const logoutFunc = () => {
     Alert.alert(
@@ -155,7 +85,7 @@ const AdminHome = () => {
         {
           text: "Logout",
           onPress: () => {
-            Logout();
+            Logout(globalDispatch);
             router.replace("/");
           },
         },
@@ -164,22 +94,20 @@ const AdminHome = () => {
   };
 
   const deleteAttack = async (attack_id) => {
-    setIsSubmitting(true);
-
+    dispatch({ type: "SET_IS_SUBMITTING", payload: true });
     try {
       const response = await delete_attack(attack_id);
-      if (response.success) {
+
+      if (response.success)
         Alert.alert("Success", "Attack cancelled successfully");
-        fetchData();
-      } else {
+      else
         Alert.alert("Error", response.errorMsg);
-        fetchData();
-      }
+
     } catch (error) {
       console.log(error);
       Alert.alert("Error", "Failed to cancel attack");
     } finally {
-      setIsSubmitting(false);
+      dispatch({ type: "SET_IS_SUBMITTING", payload: false });
     }
   };
 
@@ -206,10 +134,10 @@ const AdminHome = () => {
   const setAttackResultAlert = (attackWon) => {
     const team =
       attackWon === "true"
-        ? currentAttack.attacking_team
-        : currentAttack.defending_team;
+        ? state.currentAttack.attacking_team
+        : state.currentAttack.defending_team;
 
-    const subteam = attackWon === "true" ? currentAttack.attacking_subteam : "";
+    const subteam = attackWon === "true" ? state.currentAttack.attacking_subteam : "";
     Alert.alert(
       "Confirm",
       `Are you SURE that team ${team}${subteam} won?`,
@@ -221,7 +149,7 @@ const AdminHome = () => {
         {
           text: "Confirm",
           onPress: async () => {
-            setAttackResult(attackWon);
+            setResult(attackWon);
           },
         },
       ],
@@ -229,131 +157,145 @@ const AdminHome = () => {
     );
   };
 
-  const setAttackResult = async (attackWon) => {
-    setIsSubmitting(true);
+  const setResult = async (attackWon) => {
+    dispatch({ type: "SET_IS_SUBMITTING", payload: true });
 
     try {
       let team;
-      if (attackWon === "true") team = currentAttack.attacking_team;
-      else if (attackWon === "false") team = currentAttack.defending_team;
+      if (attackWon === "true") team = state.currentAttack.attacking_team;
+      else if (attackWon === "false") team = state.currentAttack.defending_team;
 
-      const response = await set_attack_result(currentAttack._id, team);
-      if (response.success) {
+      const response = await set_attack_result(state.currentAttack._id, team);
+
+      if (response.success)
         Alert.alert("Success", "Attack result set successfully");
-        fetchData();
-      } else {
+      else
         Alert.alert("Error", response.errorMsg);
-        fetchData();
-      }
+
     } catch (error) {
       console.log(error);
       Alert.alert("Error", "Failed to set attack result");
     } finally {
-      setIsSubmitting(false);
+      dispatch({ type: "SET_IS_SUBMITTING", payload: false });
     }
   };
 
 
-  if (isRefreshing) {
+  if (state.isRefreshing) {
     return (
       <Loader />
     );
   }
 
   return (
-
-    <View className="w-full min-h-[100vh] px-4 py-5 flex flex-col justify-start">
-      <View>
-        <BackButton
-          style="w-[20vw] mb-6"
-          size={32}
-          onPress={() => logoutFunc()}
+    <ScrollView
+      contentContainerStyle={{ paddingBottom: 20 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={state.isRefreshing}
+          onRefresh={() => {
+            dispatch({ type: "SET_IS_REFRESHING", payload: true });
+            fetchData();
+          }}
+          tintColor="#000"
         />
-
-        <Text className="font-montez text-black text-5xl px-5 pt-1 text-center">
-          Welcome, {globalState.name}
-        </Text>
-
-        <Text className="font-montez text-black text-center mt-1 text-4xl ">
-          {war}
-        </Text>
-      </View>
-
-      <View
-        className="rounded-md mt-3 px-2 flex-1 flex-col justify-start"
-        style={{ backgroundColor: "rgba(32, 20, 2, 0.6)" }} // Transparent background
-      >
-        {currentAttack._id ? (
-          <View className="h-full flex flex-col justify-between py-4">
-            <View>
-              <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
-                Attacking Side:
-              </Text>
-              <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
-                Team {currentAttack.attacking_team}
-                {currentAttack.attacking_subteam},{" "}
-                {currentAttack.attacking_zone}
-              </Text>
-              <Text></Text>
-              <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
-                Defending Side:
-              </Text>
-              <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
-                Team {currentAttack.defending_team},{" "}
-                {currentAttack.defending_zone}
-              </Text>
-            </View>
-          </View>
-        ) : (
-          <Text className="font-montez text-white text-4xl p-5 text-center ">
-            No current attack
-          </Text>
-        )}
-      </View>
-
-      <View>
-        {currentAttack._id && (
-          <Timer
-            attack_id={currentAttack._id}
-            textStyles={
-              "text-3xl text-red-800 mt-4 mb-2 text-center font-psemibold"
-            }
-            expiryMessage="Timer expired"
+      }
+      bounces={false}
+      overScrollMode="never"
+    >
+      <View className="w-full min-h-[100vh] px-4 py-5 flex flex-col justify-start">
+        <View>
+          <BackButton
+            style="w-[20vw] mb-6"
+            size={32}
+            onPress={() => logoutFunc()}
           />
-        )}
-        <View className="flex flex-row justify-between mr-1 mt-3">
-          {response.attacks.length > 0 && (
-            <View className="w-full">
-              <View className="flex flex-row">
-                <CustomButton
-                  title={`${currentAttack.attacking_team}${currentAttack.attacking_subteam} Won`}
-                  textStyles={"text-xl font-pregular"}
-                  containerStyles="w-1/2 mr-1 bg-green-800 p-3"
-                  handlePress={() => setAttackResultAlert("true")}
-                  isLoading={isSubmitting}
-                />
-                <CustomButton
-                  title={`${currentAttack.defending_team} Won`}
-                  textStyles={"text-xl font-pregular"}
-                  containerStyles="w-1/2 ml-1 bg-red-800 p-3"
-                  handlePress={() => setAttackResultAlert("false")}
-                  isLoading={isSubmitting}
-                />
+
+          <Text className="font-montez text-black text-5xl px-5 pt-1 text-center">
+            Welcome, {globalState.name}
+          </Text>
+
+          <Text className="font-montez text-black text-center mt-1 text-4xl ">
+            {state.war}
+          </Text>
+        </View>
+
+        <View
+          className="rounded-md mt-3 px-2 flex-1 flex-col justify-start"
+          style={{ backgroundColor: "rgba(32, 20, 2, 0.6)" }}
+        >
+          {state.currentAttack != null ? (
+            <View className="h-full flex flex-col justify-between py-4">
+              <View>
+                <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
+                  Attacking Side:
+                </Text>
+                <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
+                  Team {state.currentAttack.attacking_team}
+                  {state.currentAttack.attacking_subteam},{" "}
+                  {state.currentAttack.attacking_zone}
+                </Text>
+                <Text></Text>
+                <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
+                  Defending Side:
+                </Text>
+                <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
+                  Team {state.currentAttack.defending_team},{" "}
+                  {state.currentAttack.defending_zone}
+                </Text>
               </View>
-              <CustomButton
-                title="Cancel Attack"
-                containerStyles="mt-5 p-3 mb-10"
-                textStyles={"text-xl font-pregular"}
-                handlePress={() => {
-                  cancelAttackAlert(currentAttack._id);
-                }}
-                isLoading={isSubmitting}
-              />
             </View>
+          ) : (
+            <Text className="font-montez text-white text-4xl p-5 text-center ">
+              No current attack
+            </Text>
           )}
         </View>
+
+        <View>
+          {state.currentAttack != null && (
+            <Timer
+              attack_id={state.currentAttack._id}
+              textStyles={
+                "text-3xl text-red-800 mt-4 mb-2 text-center font-psemibold"
+              }
+              expiryMessage="Timer expired"
+            />
+          )}
+          <View className="flex flex-row justify-between mr-1 mt-3">
+            {state.currentAttack != null && (
+              <View className="w-full">
+                <View className="flex flex-row">
+                  <CustomButton
+                    title={`${state.currentAttack.attacking_team}${state.currentAttack.attacking_subteam} Won`}
+                    textStyles={"text-xl font-pregular"}
+                    containerStyles="w-1/2 mr-1 bg-green-800 p-3"
+                    handlePress={() => setAttackResultAlert("true")}
+                    isLoading={state.isSubmitting}
+                  />
+                  <CustomButton
+                    title={`${state.currentAttack.defending_team} Won`}
+                    textStyles={"text-xl font-pregular"}
+                    containerStyles="w-1/2 ml-1 bg-red-800 p-3"
+                    handlePress={() => setAttackResultAlert("false")}
+                    isLoading={state.isSubmitting}
+                  />
+                </View>
+                <CustomButton
+                  title="Cancel Attack"
+                  containerStyles="mt-5 p-3 mb-10"
+                  textStyles={"text-xl font-pregular"}
+                  handlePress={() => {
+                    cancelAttackAlert(state.currentAttack._id);
+                  }}
+                  isLoading={state.isSubmitting}
+                />
+              </View>
+            )}
+          </View>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useContext } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import { get_all_teams } from "../../../api/team_functions";
 import { get_country_mappings } from "../../../api/country_functions";
@@ -17,26 +16,27 @@ import BackButton from "../../../components/BackButton";
 import Loader from "../../../components/Loader";
 import CustomButton from "../../../components/CustomButton";
 
+import { Logout } from "../../../helpers/AuthHelpers";
+
 const Teams = () => {
-  const [teams, setTeams] = useState([]);
   const [error, setError] = useState(null);
-  const [isRefreshing, setIsRefreshing] = useState(true);
-  const [countries, setCountries] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [expandedTeam, setExpandedTeam] = useState(null); // State to track the expanded team
 
-  const { globalState, socket, Logout } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const fetchData = async () => {
     setError(null);
     try {
       const result = await get_all_teams();
       const countriesR = await get_country_mappings();
-      setCountries(countriesR);
+
+      globalDispatch({ type: "SET_COUNTRIES", payload: countriesR });
 
       if (result.success === false) {
         setError(result.errorMsg);
       } else if (Array.isArray(result)) {
-        setTeams(result);
+        globalDispatch({ type: "SET_TEAMS", payload: result });
       } else {
         setError("Unexpected response format");
       }
@@ -47,44 +47,12 @@ const Teams = () => {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-
-      socket.on("update_team", (updatedTeam) => {
-        setTeams((prevTeams) =>
-          prevTeams.map((team) =>
-            team.number === updatedTeam.number ? updatedTeam : team
-          )
-        );
-      });
-
-      socket.on("update_country", (updatedCountry) => {
-        setCountries((prevCountries) =>
-          prevCountries.map((country) =>
-            country.name === updatedCountry.name ? updatedCountry : country
-          )
-        );
-      });
-
-      return () => {
-        socket.off("update_team");
-        socket.off("update_country");
-      };
-    }, [])
-  );
-
-  useEffect(() => {
-    setIsRefreshing(true);
-    fetchData();
-  }, []);
-
   const toggleExpandTeam = (teamNumber) => {
     setExpandedTeam((prev) => (prev === teamNumber ? null : teamNumber));
   };
 
   const renderTeams = () => {
-    if (!Array.isArray(teams)) {
+    if (!Array.isArray(globalState.teams)) {
       return (
         <Text className="text-center">
           No teams available or unexpected data format.
@@ -92,8 +60,8 @@ const Teams = () => {
       );
     }
 
-    return teams.map((item, index) => {
-      const ownedCountries = countries.filter(
+    return globalState.teams.map((item, index) => {
+      const ownedCountries = globalState.countries.filter(
         (country) => country.teamNo === item.number
       );
 
@@ -164,7 +132,7 @@ const Teams = () => {
         {
           text: "Logout",
           onPress: () => {
-            Logout();
+            Logout(globalDispatch);
             router.replace("/");
           },
         },

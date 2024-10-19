@@ -12,27 +12,16 @@ import { get_country_mappings } from "../../api/country_functions";
 import { GlobalContext } from "../../context/GlobalProvider";
 
 const initialState = {
-  countries: [],
   error: null,
-  isRefreshing: true,
+  isRefreshing: false,
 }
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "SET_COUNTRIES":
-      return { ...state, countries: action.payload };
     case "SET_ERROR":
       return { ...state, error: action.payload };
     case "SET_IS_REFRESHING":
       return { ...state, isRefreshing: action.payload };
-    case "UPDATE_COUNTRY":
-      const updatedCountries = state.countries.map((country) => {
-        if (country.name === action.payload.name)
-          return action.payload;
-        return country;
-      });
-
-      return { ...state, countries: updatedCountries };
     default:
       return state;
   }
@@ -42,7 +31,7 @@ const Countries = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const { socket } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const fetchData = async () => {
     dispatch({ type: "SET_ERROR", payload: null })
@@ -53,7 +42,7 @@ const Countries = () => {
       if (result.success === false)
         dispatch({ type: "SET_ERROR", payload: result.errorMsg })
       else if (Array.isArray(result))
-        dispatch({ type: "SET_COUNTRIES", payload: result })
+        globalDispatch({ type: "SET_COUNTRIES", payload: result })
       else
         dispatch({ type: "SET_ERROR", payload: "Unexpected response format" })
 
@@ -64,27 +53,8 @@ const Countries = () => {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-
-      socket.on("update_country", (updatedCountry) => {
-        dispatch({ type: "UPDATE_COUNTRY", payload: updatedCountry })
-      });
-
-      return () => {
-        socket.off("update_country");
-      };
-    }, [])
-  );
-
-  useEffect(() => {
-    dispatch({ type: "SET_IS_REFRESHING", payload: true })
-    fetchData();
-  }, []);
-
   const renderCountries = () => {
-    if (!Array.isArray(state.countries)) {
+    if (!Array.isArray(globalState.countries)) {
       return (
         <Text className="text-center">
           No countries available or unexpected data format.
@@ -109,7 +79,7 @@ const Countries = () => {
       return null;
     };
 
-    return state.countries.map((item, index) => {
+    return globalState.countries.map((item, index) => {
       const title = showTitle(index);
 
       return (

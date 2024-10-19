@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useContext } from "react";
 import { View, Text, Alert } from "react-native";
 
 import { router, useLocalSearchParams } from "expo-router";
-
-import { get_all_teams } from "../../../api/team_functions";
 
 import { update_country } from "../../../api/country_functions";
 
@@ -12,10 +10,12 @@ import FormField from "../../../components/FormField";
 import CustomButton from "../../../components/CustomButton";
 import DropDownField from "../../../components/DropDownField";
 import FormWrapper from "../../../components/FormWrapper";
+import { GlobalContext } from "../../../context/GlobalProvider";
 
 const EditCountry = () => {
   const local = useLocalSearchParams();
 
+  const { globalState } = useContext(GlobalContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [form, setForm] = useState({
@@ -44,23 +44,6 @@ const EditCountry = () => {
     }
   };
 
-  const [teams, setTeams] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await get_all_teams();
-        setTeams(response);
-      } catch (error) {
-        Alert.alert("Error", "Failed to fetch data");
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-
   return (
     <FormWrapper>
       <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
@@ -81,12 +64,12 @@ const EditCountry = () => {
           editable={false}
         />
 
-        {Array.isArray(teams) && (
+        {Array.isArray(globalState.teams) && (
           <DropDownField
             title="Owned by Team"
             value={form.teamNo}
             placeholder="Select Team"
-            items={teams.map((team) => ({
+            items={globalState.teams.map((team) => ({
               label: `Team ${team.number} - ${team.name}`,
               value: team.number.toString(),
             }))}
