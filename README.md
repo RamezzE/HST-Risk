@@ -41,10 +41,16 @@ https://github.com/user-attachments/assets/e4a0ce1a-243f-4af7-be84-92ac59f3a2e9
 
 
 ## Building
+#### Frontend ( React Native Expo )
+- Follow the instructions [here](.frontend/README.md)
 
+#### Backend ( Node.js, Express.js, MongoDB )
+- Follow the instructions [here](.frontend/README.md)
 
 ## Acknowledgements
 
 I've learned how to write this app because of this JavaScript Mastery [tutorial](https://youtu.be/ZBCUegTZF7M?si=7qf5D8FYXZh7pQ6H). This channel is too good. 
 
-## License 
+## License
+
+This project is licensed under the [GNU General Public License, Version 3 (GPL-3.0)](https://www.gnu.org/licenses/gpl-3.0.html) - check the [LICENSE](LICENSE) file for details.
