@@ -38,8 +38,8 @@ class SettingsController {
         result.errorMsg = "Setting not found";
         return res.json(result);
       }
-  
-      io.emit("update_setting", setting);
+      if (req.session.user && req.session.user.mode == "super_admin") 
+        io.emit("update_setting", setting);
   
       result.success = true;
       return res.json(result);
