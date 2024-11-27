@@ -199,7 +199,7 @@ const Home = () => {
         style="w-[20vw]"
         size={32}
         onPress={() => {
-          if (globalState.name === "Guest") {
+          if (globalState.name === "Guest" && globalState.userMode !== "super_admin") {
             router.navigate("/guest_choose_team");
           } else if (globalState.userMode === "super_admin") {
             router.navigate("/dashboard");

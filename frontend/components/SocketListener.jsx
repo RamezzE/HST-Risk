@@ -59,10 +59,10 @@ const SocketListener = () => {
     });
 
     socket.on("disconnect", () => {
-      Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
-      Alert.alert("Disconnected from server", "You will be logged out automatically.")
+      // Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
+      Alert.alert("Disconnected from server", "You are not connected to the server.\nPlease check your internet connection or restart the app.")
       setTimeout(() => {
-        router.replace("/");
+        // router.replace("/");
       }, 2000);
     })
 
