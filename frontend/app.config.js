@@ -18,7 +18,12 @@ export default {
 
     ios: {
       buildNumber: "3",
-      bundleIdentifier: "com.ramezze.hstrisk"
+      bundleIdentifier: "com.ramezze.hstrisk",
+      config: {
+        googleMaps: {
+          apiKey: process.env.GOOGLE_MAPS_API_KEY
+        }
+      },
     },
 
     android: {
@@ -33,7 +38,7 @@ export default {
         backgroundColor: "#ffffff"
       },
       softwareKeyboardLayoutMode: "pan",
-      versionCode: 4,
+      versionCode: 6,
       package: "com.ramezze.hstrisk"
     },
 
