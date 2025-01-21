@@ -23,6 +23,7 @@ app-example/
 hooks/
 scripts/
 android/
+ios/
 .idea/
 
 tsconfig.json
