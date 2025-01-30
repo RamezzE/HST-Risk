@@ -1,13 +1,16 @@
 import { useContext } from "react";
-import { Platform } from "react-native";
+import { Platform, Dimensions } from "react-native";
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { Tabs } from "expo-router";
-import { GlobalContext } from "../../context/GlobalProvider"; 
+import { GlobalContext } from "../../context/GlobalProvider";
 import { icons } from "../../constants";
 import PageWrapper from "../../components/PageWrapper";
 import TabIcon from "../../components/TabIcon";
 
 const TabsLayout = () => {
-  const { globalState } = useContext(GlobalContext); 
+  const { globalState } = useContext(GlobalContext);
+  const { height } = Dimensions.get("window");
+  const insets = initialWindowMetrics.insets;
 
   return (
     <PageWrapper>
@@ -24,10 +27,8 @@ const TabsLayout = () => {
             height:
               globalState.userMode === "admin"
                 ? null
-                : Platform.OS === "ios"
-                  ? 160
-                  : 120,
-
+                : Platform.OS === "ios" ? height * 0.17 : height * 0.14 < 100 ? height * 0.14 : 100,
+            marginBottom: Platform.OS === "ios" ? insets.bottom * 1.25 : insets.bottom * 1.25,
           },
         }}
       >
