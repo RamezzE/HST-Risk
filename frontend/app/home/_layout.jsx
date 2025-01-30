@@ -36,8 +36,8 @@ const TabsLayout = () => {
             backgroundColor: "#201402",
             borderTopWidth: 0,
             borderTopColor: "#000",
-            height: Platform.OS === "ios" ? height * 0.17 : height * 0.14 < 100? height * 0.14 : 100,
-            marginBottom: Platform.OS === "ios" ? insets.bottom * 1.25 : insets.bottom * 1.25,
+            height: height * 0.14 < 100? height * 0.14 : 100,
+            marginBottom: insets.bottom * 1.25,
           },
         }}
       >

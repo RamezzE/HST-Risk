@@ -27,7 +27,7 @@ const TabsLayout = () => {
             height:
               globalState.userMode === "admin"
                 ? null
-                : Platform.OS === "ios" ? height * 0.17 : height * 0.14 < 100 ? height * 0.14 : 100,
+                : height * 0.14 < 100 ? height * 0.14 : 100,
             marginBottom: Platform.OS === "ios" ? insets.bottom * 1.25 : insets.bottom * 1.25,
           },
         }}

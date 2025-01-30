@@ -112,7 +112,7 @@ const Teams = () => {
               }
               containerStyles="p-4 rounded-md mt-2"
               handlePress={() => toggleExpandTeam(item.number)}
-              textStyles={"text-[14px] font-pregular"}
+              textStyles={"text-[14px] font-pregular w-20 text-center"}
             />
           </View>
         </View>
