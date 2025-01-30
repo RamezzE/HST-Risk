@@ -2,7 +2,7 @@ import { View, Text, Image, Platform } from 'react-native'
 
 const TabIcon = ({ icon, color, name, focused }) => {
     return (
-        <View className="items-center justify-center gap-2">
+        <View className="top-4 absolute justify-center items-center gap-y-2">
             <Image
                 source={icon}
                 resizeMode="contain"

@@ -31,7 +31,7 @@ return (
           backgroundColor: "#201402",
           borderTopWidth: 1,
           borderTopColor: "#000",
-          height: Platform.OS === "ios" ? "12%" : "10%",
+          height: Platform.OS === "ios" ? 160 : 120,
         },
       }}
     >

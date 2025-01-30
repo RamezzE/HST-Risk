@@ -158,12 +158,12 @@ const Dashboard = () => {
       return (
         <React.Fragment key={index}>
           <View
-            className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+            className="flex flex-row justify-between items-center my-2 p-4 rounded-md"
             style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
           >
             <View className="flex flex-col w-[70%]">
-              <Text className="text-2xl font-pmedium">{item.name}</Text>
-              <Text className="text-xl font-pregular">Value: {item.value}</Text>
+              <Text className="font-pmedium text-2xl">{item.name}</Text>
+              <Text className="font-pregular text-xl">Value: {item.value}</Text>
             </View>
 
             <CustomButton
@@ -180,7 +180,7 @@ const Dashboard = () => {
           </View>
 
           {showTitle() && (
-            <Text className="text-3xl text-center text-black font-montez p-5">
+            <Text className="p-5 font-montez text-3xl text-black text-center">
               {showTitle()}
             </Text>
           )}
@@ -208,10 +208,10 @@ const Dashboard = () => {
           tintColor="#000"
         />
       }
-      bounces={false}
+      bounces={true}
       overScrollMode="never"
     >
-      <View className="w-full justify-start p-4 mb-24">
+      <View className="justify-start mb-24 p-4 w-full">
         <BackButton
           style="w-[20vw]"
           size={32}
@@ -220,10 +220,10 @@ const Dashboard = () => {
           }}
         />
 
-        <Text className="text-6xl text-center font-montez py-2">
+        <Text className="py-2 font-montez text-6xl text-center">
           Dashboard
         </Text>
-        <View className="flex flex-row w-full justify-between items-center">
+        <View className="flex flex-row justify-between items-center w-full">
           <CustomButton
             title="View Map"
             handlePress={() => {
@@ -245,7 +245,7 @@ const Dashboard = () => {
         </View>
 
 
-        <Text className="font-montez text-4xl text-left mb-3">
+        <Text className="mb-3 font-montez text-4xl text-left">
           Settings
         </Text>
         {error ? (

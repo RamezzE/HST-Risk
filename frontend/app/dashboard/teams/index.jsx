@@ -68,16 +68,16 @@ const Teams = () => {
       return (
         <View
           key={index}
-          className="p-4 my-2 rounded-md flex flex-row"
+          className="flex flex-row my-2 p-4 rounded-md"
           style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
         >
           <View className="flex flex-col justify-start w-[70%]">
-            <Text className="text-4xl font-montez">{item.name}</Text>
-            <Text className="text-xl font-pregular">Team {item.number}</Text>
-            <Text className="text-[16px] font-pregular">
+            <Text className="font-montez text-4xl">{item.name}</Text>
+            <Text className="font-pregular text-xl">Team {item.number}</Text>
+            <Text className="font-pregular text-[16px]">
               Running Money: {item.balance}
             </Text>
-            <Text className="text-[16px] font-pregular">
+            <Text className="font-pregular text-[16px]">
               Countries Owned: {ownedCountries.length}
             </Text>
 
@@ -85,7 +85,7 @@ const Teams = () => {
             {expandedTeam === item.number && (
               <View className="mt-2">
                 {ownedCountries.map((country, index) => (
-                  <Text key={index} className="text-l font-pmedium">
+                  <Text key={index} className="font-pmedium text-l">
                     {country.name}
                   </Text>
                 ))}
@@ -158,11 +158,11 @@ const Teams = () => {
           tintColor="#000"
         />
       }
-      bounces={false}
+      bounces={true}
       overScrollMode="never"
       contentContainerStyle={{ paddingBottom: 20 }}
     >
-      <View className="w-full justify-start p-4 mb-24">
+      <View className="justify-start mb-24 p-4 w-full">
         {
           globalState.userMode === "admin" && (
             <BackButton
@@ -175,7 +175,7 @@ const Teams = () => {
           )
         }
 
-        <Text className="text-6xl text-center font-montez py-2 mt-7">
+        <Text className="mt-7 py-2 font-montez text-6xl text-center">
           Teams
         </Text>
 

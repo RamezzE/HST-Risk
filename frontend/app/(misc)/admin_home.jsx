@@ -200,10 +200,10 @@ const AdminHome = () => {
           tintColor="#000"
         />
       }
-      bounces={false}
+      bounces={true}
       overScrollMode="never"
     >
-      <View className="w-full min-h-[100vh] px-4 py-5 flex flex-col justify-start">
+      <View className="flex flex-col justify-start px-4 py-5 w-full min-h-[100vh]">
         <View>
           <BackButton
             style="w-[20vw] mb-6"
@@ -211,42 +211,42 @@ const AdminHome = () => {
             onPress={() => logoutFunc()}
           />
 
-          <Text className="font-montez text-black text-5xl px-5 pt-1 text-center">
+          <Text className="px-5 pt-1 font-montez text-5xl text-black text-center">
             Welcome, {globalState.name}
           </Text>
 
-          <Text className="font-montez text-black text-center mt-1 text-4xl ">
+          <Text className="mt-1 font-montez text-4xl text-black text-center">
             {state.war}
           </Text>
         </View>
 
         <View
-          className="rounded-md mt-3 px-2 flex-1 flex-col justify-start"
+          className="flex-col flex-1 justify-start mt-3 px-2 rounded-md"
           style={{ backgroundColor: "rgba(32, 20, 2, 0.6)" }}
         >
           {state.currentAttack != null ? (
-            <View className="h-full flex flex-col justify-between py-4">
+            <View className="flex flex-col justify-between py-4 h-full">
               <View>
-                <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
+                <Text className="px-5 py-2 font-pregular text-2xl text-left text-white">
                   Attacking Side:
                 </Text>
-                <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
+                <Text className="px-5 py-2 font-pbold text-left text-white text-xl">
                   Team {state.currentAttack.attacking_team}
                   {state.currentAttack.attacking_subteam},{" "}
                   {state.currentAttack.attacking_zone}
                 </Text>
                 <Text></Text>
-                <Text className="font-pregular text-white text-2xl px-5 py-2 text-left">
+                <Text className="px-5 py-2 font-pregular text-2xl text-left text-white">
                   Defending Side:
                 </Text>
-                <Text className="font-pbold text-white text-xl px-5 py-2 text-left">
+                <Text className="px-5 py-2 font-pbold text-left text-white text-xl">
                   Team {state.currentAttack.defending_team},{" "}
                   {state.currentAttack.defending_zone}
                 </Text>
               </View>
             </View>
           ) : (
-            <Text className="font-montez text-white text-4xl p-5 text-center ">
+            <Text className="p-5 font-montez text-4xl text-center text-white">
               No current attack
             </Text>
           )}
@@ -262,7 +262,7 @@ const AdminHome = () => {
               expiryMessage="Timer expired"
             />
           )}
-          <View className="flex flex-row justify-between mr-1 mt-3">
+          <View className="flex flex-row justify-between mt-3 mr-1">
             {state.currentAttack != null && (
               <View className="w-full">
                 <View className="flex flex-row">

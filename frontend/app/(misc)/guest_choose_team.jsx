@@ -77,16 +77,16 @@ const GuestChooseTeam = () => {
           tintColor="#000"
         />
       }
-      bounces={false}
+      bounces={true}
       overScrollMode="never"
     >
-      <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-start">
+      <View className="flex flex-col justify-start my-6 px-4 w-full min-h-[82.5vh]">
         <BackButton
           style="w-[20vw] mb-4"
           size={32}
           onPress={() => router.navigate("/")}
         />
-        <Text className="text-5xl mt-10 py-2 text-center font-montez text-black">
+        <Text className="mt-10 py-2 font-montez text-5xl text-black text-center">
           Choose your team
         </Text>
         {Array.isArray(globalState.teams) &&

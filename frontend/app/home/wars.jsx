@@ -94,21 +94,21 @@ const TeamAttacks = () => {
           tintColor="#000"
         />
       }
-      bounces={false}
+      bounces={true}
       overScrollMode="never"
     >
-      <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-start">
-        <Text className="font-montez text-center text-5xl py-5">
+      <View className="flex flex-col justify-start px-4 py-4 w-full min-h-[82.5vh]">
+        <Text className="py-5 font-montez text-5xl text-center">
           Team {globalState.teamNo} Wars
         </Text>
 
         {state.error ? (
-          <Text className="text-red-500 text-center p-2 text-xl">
+          <Text className="p-2 text-center text-red-500 text-xl">
             {state.error}
           </Text>
         ) : (
           <View style={{ backgroundColor: "rgb(75,50,12,1)" }}>
-            <Text className="text-red-800 font-montez text-4xl p-2 mb-2">
+            <Text className="mb-2 p-2 font-montez text-4xl text-red-800">
               Ongoing Attacks
             </Text>
             <View className="mb-4">
@@ -117,21 +117,21 @@ const TeamAttacks = () => {
                 state.attackingAttacks.map((attack, index) => (
                   <View
                     key={index}
-                    className="px-2 rounded-md mb-3"
+                    className="mb-3 px-2 rounded-md"
                     style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
                   >
                     <View className="p-2">
-                      <Text className="text-black text-xl font-psemibold">
+                      <Text className="font-psemibold text-black text-xl">
                         {attack.attacking_zone} ({attack.attacking_team}
                         {attack.attacking_subteam}) →{" "}
                         {attack.defending_zone} ({attack.defending_team}
                         {attack.defending_subteam})
                       </Text>
-                      <Text className="text-black text-xl font-pregular mr-2">
+                      <Text className="mr-2 font-pregular text-black text-xl">
                         {attack.war}
                       </Text>
                       {attack.location != "" && (
-                        <Text className="text-black text-xl font-pregular">
+                        <Text className="font-pregular text-black text-xl">
                           Location: {attack.location}
                         </Text>
                       )}
@@ -144,13 +144,13 @@ const TeamAttacks = () => {
                   </View>
                 ))
               ) : (
-                <Text className="text-black text-3xl font-montez px-4">
+                <Text className="px-4 font-montez text-3xl text-black">
                   You are not attacking now
                 </Text>
               )}
             </View>
 
-            <Text className="text-green-800 text-4xl font-montez p-2 mb-2">
+            <Text className="mb-2 p-2 font-montez text-4xl text-green-800">
               Ongoing Defense
             </Text>
             <View className="mb-4">
@@ -159,21 +159,21 @@ const TeamAttacks = () => {
                 state.defendingAttacks.map((attack, index) => (
                   <View
                     key={index}
-                    className="px-2 rounded-md mb-3"
+                    className="mb-3 px-2 rounded-md"
                     style={{ backgroundColor: "rgba(75,50,12,0.35)" }}
                   >
                     <View className="p-2">
-                      <Text className="text-black text-xl font-psemibold">
+                      <Text className="font-psemibold text-black text-xl">
                         {attack.attacking_zone} ({attack.attacking_team}
                         {attack.attacking_subteam}) →{" "}
                         {attack.defending_zone} ({attack.defending_team}
                         {attack.defending_subteam})
                       </Text>
-                      <Text className="text-black text-xl font-pregular mr-2">
+                      <Text className="mr-2 font-pregular text-black text-xl">
                         {attack.war}
                       </Text>
                       {attack.location != "" && (
-                        <Text className="text-black text-xl font-pregular">
+                        <Text className="font-pregular text-black text-xl">
                           Location: {attack.location}
                         </Text>
                       )}
@@ -185,7 +185,7 @@ const TeamAttacks = () => {
                   </View>
                 ))
               ) : (
-                <Text className="text-black text-3xl font-montez px-4">
+                <Text className="px-4 font-montez text-3xl text-black">
                   There are no attacks on you
                 </Text>
               )}

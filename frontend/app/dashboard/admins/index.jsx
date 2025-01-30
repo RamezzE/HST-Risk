@@ -63,14 +63,14 @@ const Admins = () => {
     return globalState.admins.map((item, index) => (
       <View
         key={index}
-        className="p-4 my-2 rounded-md flex flex-row justify-between items-center"
+        className="flex flex-row justify-between items-center my-2 p-4 rounded-md"
         style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
       >
         <View className="flex flex-col">
-          <Text className="text-2xl font-pmedium">{item.name}</Text>
-          <Text className="text-xl font-pregular">Type: {item.type}</Text>
+          <Text className="font-pmedium text-2xl">{item.name}</Text>
+          <Text className="font-pregular text-xl">Type: {item.type}</Text>
           {item.type == "Wars" && (
-            <Text className="text-xl font-pregular">War: {item.war}</Text>
+            <Text className="font-pregular text-xl">War: {item.war}</Text>
           )}
         </View>
 
@@ -107,11 +107,11 @@ const Admins = () => {
         />
       }
       contentContainerStyle={{ paddingBottom: 20 }}
-      bounces={false}
+      bounces={true}
       overScrollMode="never"
     >
-      <View className="w-full justify-start p-4 mb-24">
-        <Text className="text-6xl text-center font-montez py-2 mt-7">
+      <View className="justify-start mb-24 p-4 w-full">
+        <Text className="mt-7 py-2 font-montez text-6xl text-center">
           Admins
         </Text>
 

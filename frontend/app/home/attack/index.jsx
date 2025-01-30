@@ -263,10 +263,10 @@ const Attack = () => {
           tintColor="#000"
         />
       }
-      bounces={false}
+      bounces={true}
       overScrollMode="never"
     >
-      <View className="w-full min-h-[82.5vh] px-4 pt-4 mt-2 mb-8 flex flex-col justify-start">
+      <View className="flex flex-col justify-start mt-2 mb-8 px-4 pt-4 w-full min-h-[82.5vh]">
         <View className="flex flex-col mb-6">
           <View className="flex flex-row justify-between pb-4">
             <Text className="font-pmedium text-[16px]">Team money: {state.balance}</Text>

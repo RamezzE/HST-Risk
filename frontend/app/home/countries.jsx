@@ -85,15 +85,15 @@ const Countries = () => {
       return (
         <React.Fragment key={item.name}>
           {title && (
-            <Text className="text-3xl font-montez text-left my-4">{title}</Text>
+            <Text className="my-4 font-montez text-3xl text-left">{title}</Text>
           )}
           <View
-            className="p-4 my-2 rounded-md flex flex-row justify-between items-center flex-wrap"
+            className="flex flex-row flex-wrap justify-between items-center my-2 p-4 rounded-md"
             style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
           >
             <View className="flex flex-row justify-between items-center w-full">
-              <Text className="text-xl font-pmedium">{item.name}</Text>
-              <Text className="text-[16px] font-pregular">
+              <Text className="font-pmedium text-xl">{item.name}</Text>
+              <Text className="font-pregular text-[16px]">
                 Team {item.teamNo}
               </Text>
             </View>
@@ -122,12 +122,12 @@ const Countries = () => {
           tintColor="#000"
         />
       }
-      bounces={false}
+      bounces={true}
       overScrollMode="never"
       contentContainerStyle={{ paddingBottom: 20 }}
     >
-      <View className="w-full justify-center min-h-[82.5vh] p-4 mb-24">
-        <Text className="text-6xl text-center font-montez py-2 mt-7">
+      <View className="justify-center mb-24 p-4 w-full min-h-[82.5vh]">
+        <Text className="mt-7 py-2 font-montez text-6xl text-center">
           Countries
         </Text>
 

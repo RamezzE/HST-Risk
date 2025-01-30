@@ -7,7 +7,7 @@ const FormWrapper = ({ children }) => {
             bottomOffset={175}
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled"
-            bounces={false}
+            bounces={true}
             contentContainerStyle={{ flexGrow: 1 }}
             overScrollMode="never"
         >

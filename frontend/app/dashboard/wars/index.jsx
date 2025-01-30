@@ -182,20 +182,20 @@ const DashboardAttacks = () => {
       return (
         <View
           key={item._id}
-          className="p-3 my-2 rounded-md flex flex-row justify-between items-center"
+          className="flex flex-row justify-between items-center my-2 p-3 rounded-md"
           style={{ backgroundColor: "rgba(75,50,12,0.25)" }}
         >
           <View className="flex flex-col w-[72.5%]">
-            <Text className="text-[24px] font-pmedium">
+            <Text className="font-pmedium text-[24px]">
               {item.attacking_team}
               {item.attacking_subteam} VS {item.defending_team}
               {item.defending_subteam}
             </Text>
-            <Text className="text-xl font-pregular">
+            <Text className="font-pregular text-xl">
               {item.attacking_zone} VS {item.defending_zone}
             </Text>
-            <Text className="text-xl font-pregular">War: {item.war} </Text>
-            <Text className="text-xl font-pregular">
+            <Text className="font-pregular text-xl">War: {item.war} </Text>
+            <Text className="font-pregular text-xl">
               Location: {item.location}{" "}
             </Text>
             <Timer
@@ -204,7 +204,7 @@ const DashboardAttacks = () => {
               expiryMessage="Timer expired"
             />
           </View>
-          <View className="flex flex-col ">
+          <View className="flex flex-col">
             <CustomButton
               title={`${item.attacking_team}${item.attacking_subteam}`}
               handlePress={() =>
@@ -276,11 +276,11 @@ const DashboardAttacks = () => {
           tintColor="#000"
         />
       }
-      bounces={false}
+      bounces={true}
       overScrollMode="never"
     >
-      <View className="w-full justify-center p-4 mb-24">
-        <Text className="text-6xl text-center font-montez py-2 mt-7">
+      <View className="justify-center mb-24 p-4 w-full">
+        <Text className="mt-7 py-2 font-montez text-6xl text-center">
           Wars
         </Text>
         <View className="flex flex-row justify-between">

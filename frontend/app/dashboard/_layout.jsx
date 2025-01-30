@@ -25,8 +25,8 @@ const TabsLayout = () => {
               globalState.userMode === "admin"
                 ? null
                 : Platform.OS === "ios"
-                  ? "12%"
-                  : "10%",
+                  ? 160
+                  : 120,
 
           },
         }}

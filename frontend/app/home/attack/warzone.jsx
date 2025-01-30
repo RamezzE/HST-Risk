@@ -103,11 +103,11 @@ const Warzone = () => {
           tintColor="#000"
         />
       }
-      bounces={false}
+      bounces={true}
       overScrollMode="never"
       contentContainerStyle={{ paddingBottom: 20 }}
     >
-      <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-between">
+      <View className="flex flex-col justify-between my-6 px-4 w-full min-h-[82.5vh]">
         <BackButton
           style="w-[20vw]"
           size={32}
@@ -119,13 +119,13 @@ const Warzone = () => {
             router.replace("/home/attack");
           }}
         />
-        <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+        <Text className="mt-10 py-1 pt-2 font-montez text-5xl text-black text-center">
           Choose your warzone
         </Text>
-        <Text className="text-3xl mt-2 py-1 text-center font-montez text-black ">
+        <Text className="mt-2 py-1 font-montez text-3xl text-black text-center">
           Be careful, once you choose, you cannot change this attack.
         </Text>
-        <View className="flex flex-row justify-between flex-wrap p-5">
+        <View className="flex flex-row flex-wrap justify-between p-5">
           {Array.isArray(globalState.warzones) &&
             globalState.warzones.map((warzone) => {
               const availableWars = Array.isArray(warzone.wars)
@@ -135,7 +135,7 @@ const Warzone = () => {
 
               return (
                 <View
-                  className="p-3 my-2 w-full rounded-md"
+                  className="my-2 p-3 rounded-md w-full"
                   style={{
                     backgroundColor: isUnavailable
                       ? "rgba(255, 255, 255, 0.3)"
@@ -144,20 +144,20 @@ const Warzone = () => {
                   }}
                   key={warzone._id}
                 >
-                  <Text className="text-black font-montez text-4xl mb-2">
+                  <Text className="mb-2 font-montez text-4xl text-black">
                     {warzone.name}
                   </Text>
 
                   {Array.isArray(warzone.wars) &&
                     warzone.wars.map((war) => (
                       <View
-                        className="p-1 w-full flex flex-wrap flex-row justify-between items-center"
+                        className="flex flex-row flex-wrap justify-between items-center p-1 w-full"
                         key={war.name}
                       >
-                        <Text className="text-black font-plight text-xl">
+                        <Text className="font-plight text-black text-xl">
                           {war.name}
                         </Text>
-                        <Text className="text-black font-plight text-l">
+                        <Text className="font-plight text-black text-l">
                           {war.location}
                         </Text>
                       </View>
