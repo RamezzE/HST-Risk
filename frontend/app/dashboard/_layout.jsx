@@ -11,6 +11,7 @@ const TabsLayout = () => {
   const { globalState } = useContext(GlobalContext);
   const { height } = Dimensions.get("window");
   const insets = initialWindowMetrics.insets;
+  const isIpad = Platform.OS === "ios" && height > 1000;
 
   return (
     <PageWrapper>
@@ -28,7 +29,7 @@ const TabsLayout = () => {
               globalState.userMode === "admin"
                 ? null
                 : height * 0.14 < 100 ? height * 0.14 : 100,
-            marginBottom: Platform.OS === "ios" ? insets.bottom * 1.25 : insets.bottom * 1.25,
+            marginBottom: isIpad ? insets.bottom * 0.9 : insets.bottom * 1.25,
           },
         }}
       >

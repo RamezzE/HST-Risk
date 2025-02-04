@@ -5,7 +5,7 @@ export default {
   expo: {
     name: "HST Risk",
     slug: "HST-Risk",
-    version: "1.1.2",
+    version: "1.2.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "hst-risk",
@@ -17,8 +17,9 @@ export default {
     },
 
     ios: {
-      buildNumber: "3",
+      buildNumber: "2",
       bundleIdentifier: "com.ramezze.hstrisk",
+      supportsTablet: true,
       config: {
         googleMaps: {
           apiKey: process.env.GOOGLE_MAPS_API_KEY
@@ -38,7 +39,7 @@ export default {
         backgroundColor: "#ffffff"
       },
       softwareKeyboardLayoutMode: "pan",
-      versionCode: 6,
+      versionCode: 1,
       package: "com.ramezze.hstrisk"
     },
 

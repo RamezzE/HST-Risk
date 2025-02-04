@@ -19,6 +19,7 @@ const TabsLayout = () => {
   const { globalState, globalDispatch } = useContext(GlobalContext);
   const { height } = Dimensions.get("window");
   const insets = initialWindowMetrics.insets;
+  const isIpad = Platform.OS === "ios" && height > 1000;
 
   useEffect(() => {
     globalDispatch({ type: "UPDATE_POPUP_ATTACKS" });
@@ -37,7 +38,7 @@ const TabsLayout = () => {
             borderTopWidth: 0,
             borderTopColor: "#000",
             height: height * 0.14 < 100? height * 0.14 : 100,
-            marginBottom: insets.bottom * 1.25,
+            marginBottom: isIpad? insets.bottom* 0.9 :insets.bottom * 1.25,
           },
         }}
       >
