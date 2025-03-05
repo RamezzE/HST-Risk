@@ -12,12 +12,16 @@ const TabsLayout = () => {
   const { height } = Dimensions.get("window");
   const insets = initialWindowMetrics.insets;
   const isIpad = Platform.OS === "ios" && height > 1000;
-
+  
   return (
     <PageWrapper>
       <Tabs
         sceneContainerStyle={{ backgroundColor: "transparent" }}
         screenOptions={{
+          tabBarIconStyle: {
+            height: "100%",
+            width: "100%",
+          },
           tabBarShowLabel: false,
           tabBarActiveTintColor: "#FFF",
           tabBarInactiveTintColor: "#BBB",
@@ -25,11 +29,7 @@ const TabsLayout = () => {
             backgroundColor: "#201402",
             borderTopWidth: 1,
             borderTopColor: "#000",
-            height:
-              globalState.userMode === "admin"
-                ? null
-                : height * 0.14 < 100 ? height * 0.14 : 100,
-            marginBottom: isIpad ? insets.bottom * 0.9 : insets.bottom * 1.25,
+            height: 70,
           },
         }}
       >

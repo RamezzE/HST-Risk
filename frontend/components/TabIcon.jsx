@@ -1,8 +1,8 @@
-import { View, Text, Image, Platform } from 'react-native';
+import { View, Text, Image } from 'react-native';
 
 const TabIcon = ({ icon, color, name, focused }) => {
     return (
-        <View className={`flex flex-col justify-center items-center gap-y-2 ${Platform.OS === "android" && "pb-2"}`}>
+        <View className={`flex flex-col justify-center items-center gap-y-2`}>
             <Image
                 source={icon}
                 resizeMode="contain"

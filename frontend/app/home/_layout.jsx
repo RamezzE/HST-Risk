@@ -2,11 +2,9 @@ import { useContext, useEffect } from "react";
 import {
   Platform,
   Dimensions,
-  StatusBar,
 } from "react-native";
 import { Tabs } from "expo-router";
 import { initialWindowMetrics } from 'react-native-safe-area-context';
-
 import { icons } from "../../constants";
 import { GlobalContext } from "../../context/GlobalProvider";
 import _ from "lodash";
@@ -37,8 +35,7 @@ const TabsLayout = () => {
             backgroundColor: "#201402",
             borderTopWidth: 0,
             borderTopColor: "#000",
-            height: height * 0.14 < 100? height * 0.14 : 100,
-            marginBottom: isIpad? insets.bottom* 0.9 :insets.bottom * 1.25,
+            height: 70,
           },
         }}
       >

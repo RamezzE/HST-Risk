@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { View, ImageBackground } from 'react-native';
-import { KeyboardProvider, KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { images } from '../constants';
 
@@ -20,7 +20,7 @@ const PageWrapper = ({ children }) => {
                 <ImageBackground
                     source={images.background}
                     style={{ resizeMode: "cover" }}
-                    className="min-h-[100vh]"
+                    className="h-full"
                 >
                     {children}
                 </ImageBackground>
