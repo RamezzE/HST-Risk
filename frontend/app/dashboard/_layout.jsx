@@ -1,6 +1,5 @@
 import { useContext } from "react";
-import { Platform, Dimensions } from "react-native";
-import { initialWindowMetrics } from 'react-native-safe-area-context';
+import { Platform } from "react-native";
 import { Tabs } from "expo-router";
 import { GlobalContext } from "../../context/GlobalProvider";
 import { icons } from "../../constants";
@@ -9,9 +8,6 @@ import TabIcon from "../../components/TabIcon";
 
 const TabsLayout = () => {
   const { globalState } = useContext(GlobalContext);
-  const { height } = Dimensions.get("window");
-  const insets = initialWindowMetrics.insets;
-  const isIpad = Platform.OS === "ios" && height > 1000;
   
   return (
     <PageWrapper>
@@ -29,7 +25,7 @@ const TabsLayout = () => {
             backgroundColor: "#201402",
             borderTopWidth: 1,
             borderTopColor: "#000",
-            height: 70,
+            height: Platform.OS == "ios" ? 100 : 70,
           },
         }}
       >

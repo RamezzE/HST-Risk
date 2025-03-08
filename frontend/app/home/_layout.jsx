@@ -1,10 +1,6 @@
 import { useContext, useEffect } from "react";
-import {
-  Platform,
-  Dimensions,
-} from "react-native";
+import { Platform } from "react-native";
 import { Tabs } from "expo-router";
-import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { icons } from "../../constants";
 import { GlobalContext } from "../../context/GlobalProvider";
 import _ from "lodash";
@@ -15,9 +11,6 @@ import TabIcon from "../../components/TabIcon";
 
 const TabsLayout = () => {
   const { globalState, globalDispatch } = useContext(GlobalContext);
-  const { height } = Dimensions.get("window");
-  const insets = initialWindowMetrics.insets;
-  const isIpad = Platform.OS === "ios" && height > 1000;
 
   useEffect(() => {
     globalDispatch({ type: "UPDATE_POPUP_ATTACKS" });
@@ -35,7 +28,7 @@ const TabsLayout = () => {
             backgroundColor: "#201402",
             borderTopWidth: 0,
             borderTopColor: "#000",
-            height: 70,
+            height: Platform.OS == "ios" ? 100 : 70,
           },
         }}
       >
