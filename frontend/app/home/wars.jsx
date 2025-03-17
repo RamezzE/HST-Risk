@@ -46,6 +46,8 @@ const TeamAttacks = () => {
       ? globalState.attacks.filter((attack) => attack.attacking_team.toString() === globalState.teamNo.toString())
       : [];
 
+    console.log("filteredAttackingAttacks", filteredAttackingAttacks)
+
     const filteredDefendingAttacks = Array.isArray(globalState.attacks)
       ? globalState.attacks.filter((attack) => attack.defending_team.toString() === globalState.teamNo.toString())
       : [];
@@ -62,6 +64,14 @@ const TeamAttacks = () => {
 
     try {
       const response = await get_all_attacks();
+
+      const filteredAttackingAttacks = Array.isArray(globalState.attacks)
+        ? globalState.attacks.filter((attack) => attack.attacking_team.toString() === globalState.teamNo.toString())
+        : [];
+
+      const filteredDefendingAttacks = Array.isArray(globalState.attacks)
+        ? globalState.attacks.filter((attack) => attack.defending_team.toString() === globalState.teamNo.toString())
+        : [];
 
       if (Array.isArray(response)) {
         dispatch({ type: "SET_ATTACKING_ATTACKS", payload: filteredAttackingAttacks })
@@ -103,12 +113,12 @@ const TeamAttacks = () => {
         </Text>
 
         {state.error ? (
-          <Text className="p-2 text-center text-red-500 text-xl">
+          <Text className="p-2 text-red-500 text-xl text-center">
             {state.error}
           </Text>
         ) : (
           <View style={{ backgroundColor: "rgb(75,50,12,1)" }}>
-            <Text className="mb-2 p-2 font-montez text-4xl text-red-800">
+            <Text className="mb-2 p-2 font-montez text-red-800 text-4xl">
               Ongoing Attacks
             </Text>
             <View className="mb-4">
@@ -144,13 +154,13 @@ const TeamAttacks = () => {
                   </View>
                 ))
               ) : (
-                <Text className="px-4 font-montez text-3xl text-black">
+                <Text className="px-4 font-montez text-black text-3xl">
                   You are not attacking now
                 </Text>
               )}
             </View>
 
-            <Text className="mb-2 p-2 font-montez text-4xl text-green-800">
+            <Text className="mb-2 p-2 font-montez text-green-800 text-4xl">
               Ongoing Defense
             </Text>
             <View className="mb-4">
@@ -185,7 +195,7 @@ const TeamAttacks = () => {
                   </View>
                 ))
               ) : (
-                <Text className="px-4 font-montez text-3xl text-black">
+                <Text className="px-4 font-montez text-black text-3xl">
                   There are no attacks on you
                 </Text>
               )}
