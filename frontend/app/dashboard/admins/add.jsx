@@ -71,7 +71,7 @@ const AddAdmin = () => {
       }
 
       Alert.alert("Success", "Admin added successfully");
-      router.replace("/dashboard/admins");
+      router.back();
     } catch (error) {
       Alert.alert("Error", "Error adding admin");
       console.log(error);
@@ -125,9 +125,9 @@ const AddAdmin = () => {
           <BackButton
             style="w-[20vw]"
             size={32}
-            onPress={() => router.navigate("/dashboard/admins")}
+            onPress={() => router.back()}
           />
-          <Text className="mt-10 py-1 pt-2 font-montez text-5xl text-black text-center">
+          <Text className="mt-10 py-1 pt-2 font-montez text-black text-5xl text-center">
             Add Admin
           </Text>
 

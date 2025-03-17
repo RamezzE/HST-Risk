@@ -23,13 +23,13 @@ const SubTeams = () => {
     setError(null);
     try {
       const result = await get_all_subteams();
-      if (result.success === false) 
+      if (result.success === false)
         setError(result.errorMsg);
       else if (Array.isArray(result))
         globalDispatch({ type: "SET_SUBTEAMS", payload: result });
       else
         setError("Unexpected response format");
-      
+
     } catch (err) {
       setError("Failed to fetch subteams");
     } finally {
@@ -97,7 +97,7 @@ const SubTeams = () => {
         <BackButton
           style="w-[20vw]"
           size={32}
-          onPress={() => router.navigate("/dashboard/teams")}
+          onPress={() => router.back()}
         />
         <Text className="mt-7 py-2 font-montez text-6xl text-center">
           Subteams

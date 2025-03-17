@@ -70,13 +70,13 @@ const SignIn = () => {
 
   return (
 
-    <View className="w-full min-h-[82.5vh] px-4 my-6 flex flex-col justify-center">
+    <View className="flex flex-col justify-center my-6 px-4 w-full min-h-[82.5vh]">
       <BackButton
         style="w-[20vw] mb-4"
         size={32}
-        onPress={() => router.dismiss(1)}
+        onPress={() => router.back()}
       />
-      <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+      <Text className="mt-10 py-1 pt-2 font-montez text-black text-5xl text-center">
         Sign In
       </Text>
 

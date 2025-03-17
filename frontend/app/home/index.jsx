@@ -101,7 +101,7 @@ const Home = () => {
           text: "Logout",
           onPress: async () => {
             Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
-             router.replace("/");
+             router.back();
           },
         },
       ]
@@ -194,15 +194,17 @@ const Home = () => {
   }
 
   return (
-    <View className="w-full min-h-[82.5vh] px-4 py-4 flex flex-col justify-between">
+    <View className="flex flex-col justify-between px-4 py-4 w-full min-h-[82.5vh]">
       <BackButton
         style="w-[20vw]"
         size={32}
         onPress={() => {
           if (globalState.name === "Guest" && globalState.userMode !== "super_admin") {
-            router.navigate("/guest_choose_team");
+            // router.navigate("/guest_choose_team");
+            router.back();
           } else if (globalState.userMode === "super_admin") {
-            router.navigate("/dashboard");
+            // router.navigate("/dashboard");
+            router.back();
           } else {
             logoutFunc()
           }
@@ -211,17 +213,17 @@ const Home = () => {
 
       {
         globalState.userMode !== "super_admin" ? (
-          <View className="flex flex-row pt-2 justify-center gap-0">
-            <Text className="font-montez text-center text-5xl my-4 mt-0 pt-2">
+          <View className="flex flex-row justify-center gap-0 pt-2">
+            <Text className="my-4 mt-0 pt-2 font-montez text-5xl text-center">
               {globalState.name}, Team {globalState.teamNo}
             </Text>
-            <Text className="text-center text-5xl m-4 mt-0 pt-2 font-pextralight">
+            <Text className="m-4 mt-0 pt-2 font-pextralight text-5xl text-center">
               {globalState.subteam}
             </Text>
           </View>
         ) :
         (
-          <Text className="text-center font-pmedium text-base m-4 mt-0 pt-2">
+          <Text className="m-4 mt-0 pt-2 font-pmedium text-base text-center">
             Ramez can be pretty cool right
           </Text>
         )
@@ -279,7 +281,7 @@ const Home = () => {
       {renderColorLegend()}
 
       {state.error && (
-        <Text className="text-white text-center p-2 text-xl">
+        <Text className="p-2 text-white text-xl text-center">
           {state.error}
         </Text>
       )}

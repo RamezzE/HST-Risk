@@ -68,7 +68,7 @@ const EditSetting = () => {
         Alert.alert("Error", result.errorMsg);
       } else {
         Alert.alert("Success", "Setting updated successfully");
-        router.navigate("/dashboard");
+        router.back();
       }
     } catch (error) {
       console.error(error);
@@ -80,15 +80,15 @@ const EditSetting = () => {
 
   return (
     <FormWrapper>
-      <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+      <View className="justify-center my-6 px-4 w-full min-h-[82.5vh]">
         <BackButton
           style="w-[20vw] mb-4"
           size={32}
           onPress={() => {
-            router.navigate("/dashboard");
+            router.back();
           }}
         />
-        <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+        <Text className="mt-10 py-1 pt-2 font-montez text-black text-5xl text-center">
           Edit Setting
         </Text>
 

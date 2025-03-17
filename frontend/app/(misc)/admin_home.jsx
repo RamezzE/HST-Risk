@@ -86,7 +86,7 @@ const AdminHome = () => {
           text: "Logout",
           onPress: () => {
             Logout(globalDispatch);
-            router.replace("/");
+            router.back("/");
           },
         },
       ]
@@ -211,11 +211,11 @@ const AdminHome = () => {
             onPress={() => logoutFunc()}
           />
 
-          <Text className="px-5 pt-1 font-montez text-5xl text-black text-center">
+          <Text className="px-5 pt-1 font-montez text-black text-5xl text-center">
             Welcome, {globalState.name}
           </Text>
 
-          <Text className="mt-1 font-montez text-4xl text-black text-center">
+          <Text className="mt-1 font-montez text-black text-4xl text-center">
             {state.war}
           </Text>
         </View>
@@ -227,26 +227,26 @@ const AdminHome = () => {
           {state.currentAttack != null ? (
             <View className="flex flex-col justify-between py-4 h-full">
               <View>
-                <Text className="px-5 py-2 font-pregular text-2xl text-left text-white">
+                <Text className="px-5 py-2 font-pregular text-white text-2xl text-left">
                   Attacking Side:
                 </Text>
-                <Text className="px-5 py-2 font-pbold text-left text-white text-xl">
+                <Text className="px-5 py-2 font-pbold text-white text-xl text-left">
                   Team {state.currentAttack.attacking_team}
                   {state.currentAttack.attacking_subteam},{" "}
                   {state.currentAttack.attacking_zone}
                 </Text>
                 <Text></Text>
-                <Text className="px-5 py-2 font-pregular text-2xl text-left text-white">
+                <Text className="px-5 py-2 font-pregular text-white text-2xl text-left">
                   Defending Side:
                 </Text>
-                <Text className="px-5 py-2 font-pbold text-left text-white text-xl">
+                <Text className="px-5 py-2 font-pbold text-white text-xl text-left">
                   Team {state.currentAttack.defending_team},{" "}
                   {state.currentAttack.defending_zone}
                 </Text>
               </View>
             </View>
           ) : (
-            <Text className="p-5 font-montez text-4xl text-center text-white">
+            <Text className="p-5 font-montez text-white text-4xl text-center">
               No current attack
             </Text>
           )}

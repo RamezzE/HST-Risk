@@ -38,7 +38,7 @@ const Dashboard = () => {
           text: "Logout",
           onPress: () => {
             Logout(globalDispatch);
-            router.replace("/");
+            router.back();
           },
         },
       ]
@@ -122,7 +122,7 @@ const Dashboard = () => {
   useFocusEffect(
     useCallback(() => {
       if (globalState.userMode != "super_admin") {
-        router.replace("/");
+        router.back();
         return;
       }
 
@@ -180,7 +180,7 @@ const Dashboard = () => {
           </View>
 
           {showTitle() && (
-            <Text className="p-5 font-montez text-3xl text-black text-center">
+            <Text className="p-5 font-montez text-black text-3xl text-center">
               {showTitle()}
             </Text>
           )}

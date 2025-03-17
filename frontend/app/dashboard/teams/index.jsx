@@ -133,7 +133,7 @@ const Teams = () => {
           text: "Logout",
           onPress: () => {
             Logout(globalDispatch);
-            router.replace("/");
+            router.back();
           },
         },
       ]

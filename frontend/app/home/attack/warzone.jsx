@@ -119,10 +119,10 @@ const Warzone = () => {
             router.replace("/home/attack");
           }}
         />
-        <Text className="mt-10 py-1 pt-2 font-montez text-5xl text-black text-center">
+        <Text className="mt-10 py-1 pt-2 font-montez text-black text-5xl text-center">
           Choose your warzone
         </Text>
-        <Text className="mt-2 py-1 font-montez text-3xl text-black text-center">
+        <Text className="mt-2 py-1 font-montez text-black text-3xl text-center">
           Be careful, once you choose, you cannot change this attack.
         </Text>
         <View className="flex flex-row flex-wrap justify-between p-5">
@@ -144,7 +144,7 @@ const Warzone = () => {
                   }}
                   key={warzone._id}
                 >
-                  <Text className="mb-2 font-montez text-4xl text-black">
+                  <Text className="mb-2 font-montez text-black text-4xl">
                     {warzone.name}
                   </Text>
 

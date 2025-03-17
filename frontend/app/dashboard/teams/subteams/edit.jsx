@@ -58,7 +58,7 @@ const EditTeam = () => {
 
       Alert.alert("Success", "Subteam updated successfully");
 
-      router.navigate("/dashboard/teams/subteams");
+      router.back();
     } catch (error) {
       Alert.alert("Error", "Error updating team");
       console.log(error);
@@ -70,13 +70,13 @@ const EditTeam = () => {
 
   return (
     <FormWrapper>
-      <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+      <View className="justify-center my-6 px-4 w-full min-h-[82.5vh]">
         <BackButton
           style="w-[20vw]"
           size={32}
-          onPress={() => router.navigate("/dashboard/teams/subteams")}
+          onPress={() => router.back()}
         />
-        <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+        <Text className="mt-10 py-1 pt-2 font-montez text-black text-5xl text-center">
           Edit Subteam
         </Text>
 

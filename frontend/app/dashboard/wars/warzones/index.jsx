@@ -110,7 +110,7 @@ const Warzones = () => {
         <BackButton
           style="w-[20vw]"
           size={32}
-          onPress={() => router.navigate("/dashboard/wars")}
+          onPress={() => router.back()}
         />
         <Text className="mt-7 py-2 font-montez text-6xl text-center">
           Warzones

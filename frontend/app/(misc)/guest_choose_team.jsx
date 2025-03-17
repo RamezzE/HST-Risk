@@ -84,9 +84,9 @@ const GuestChooseTeam = () => {
         <BackButton
           style="w-[20vw] mb-4"
           size={32}
-          onPress={() => router.navigate("/")}
+          onPress={() => router.back()}
         />
-        <Text className="mt-10 py-2 font-montez text-5xl text-black text-center">
+        <Text className="mt-10 py-2 font-montez text-black text-5xl text-center">
           Choose your team
         </Text>
         {Array.isArray(globalState.teams) &&

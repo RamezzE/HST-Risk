@@ -118,7 +118,7 @@ const Admins = () => {
         <View className="flex flex-row justify-between">
           <CustomButton
             title="Add Admin"
-            handlePress={() => router.replace("/dashboard/admins/add")}
+            handlePress={() => router.navigate("/dashboard/admins/add")}
             containerStyles="w-[45%] my-2 p-3"
             textStyles={"text-2xl"}
           />

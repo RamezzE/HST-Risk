@@ -88,7 +88,7 @@ const AddWarzone = () => {
       }
 
       Alert.alert("Success", "Warzone created successfully");
-      router.navigate("/dashboard/wars/warzones");
+      router.back();
     } catch (error) {
       Alert.alert("Error", "Failed to create warzone");
       console.log(error);
@@ -116,13 +116,13 @@ const AddWarzone = () => {
   return (
 
     <FormWrapper>
-      <View className="w-full justify-center min-h-[82.5vh] px-4 my-6">
+      <View className="justify-center my-6 px-4 w-full min-h-[82.5vh]">
         <BackButton
           style="w-[20vw]"
           size={32}
-          onPress={() => router.navigate("/dashboard/wars/warzones")}
+          onPress={() => router.back()}
         />
-        <Text className="text-5xl mt-10 py-1 pt-2 text-center font-montez text-black">
+        <Text className="mt-10 py-1 pt-2 font-montez text-black text-5xl text-center">
           Add Warzone
         </Text>
         <FormField
@@ -133,7 +133,7 @@ const AddWarzone = () => {
         />
 
         {form.wars.map((war, index) => (
-          <View key={index} className="mt-4 flex flex-row">
+          <View key={index} className="flex flex-row mt-4">
             <FormField
               title={`War ${index + 1} Name`}
               value={war.name}
@@ -150,7 +150,7 @@ const AddWarzone = () => {
             />
             <TouchableOpacity
               onPress={() => removeWar(index)}
-              className="bg-red-700 p-2 rounded-md mt-2 self-end"
+              className="self-end bg-red-700 mt-2 p-2 rounded-md"
             >
               <Icon name="trash" size={24} color="white" />
             </TouchableOpacity>
