@@ -60,16 +60,17 @@ const SocketListener = () => {
 
     socket.on("disconnect", () => {
       // Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
-      Alert.alert("Disconnected from server", "You are not connected to the server.\nPlease check your internet connection or restart the app.")
-      setTimeout(() => {
-        // router.replace("/");
-      }, 2000);
+      // Alert.alert("Disconnected from server", "You are not connected to the server.\nPlease check your internet connection or restart the app.")
+      // setTimeout(() => {
+      //   // router.replace("/");
+      // }, 2000);
     })
 
     socket.on("new_game", () => {
       Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
-      Alert.alert("New Game Started", "You will be logged out automatically.")
+      Alert.alert("New Game Started", "You will be redirected automatically.")
       setTimeout(() => {
+        Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
         router.replace("/");
       }, 2000);
     });

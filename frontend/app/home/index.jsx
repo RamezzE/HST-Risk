@@ -1,6 +1,7 @@
 import React, { useContext, useReducer, useEffect } from "react";
 import {
   View,
+  TouchableOpacity,
   Text,
   Alert,
   Platform,
@@ -8,6 +9,7 @@ import {
 import MapView, { PROVIDER_DEFAULT, PROVIDER_GOOGLE } from "react-native-maps";
 import { router } from "expo-router";
 import _ from "lodash";
+import { FontAwesome } from "@expo/vector-icons";
 
 import countries from "../../constants/countries";
 
@@ -48,7 +50,6 @@ const reducer = (state, action) => {
 const Home = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
-
   const { globalState, globalDispatch } = useContext(GlobalContext);
 
   useEffect(() => {
@@ -57,31 +58,40 @@ const Home = () => {
 
 
   const fetchData = async () => {
+    dispatch({ type: "SET_IS_REFRESHING", payload: true });
     dispatch({ type: "SET_ERROR", payload: null });
-
     try {
-      const result = await get_country_mappings();
-      dispatch({ type: "SET_COUNTRY_MAPPINGS", payload: result });
-    } catch (err) {
-      console.log(err);
-      dispatch({ type: "SET_ERROR", payload: "Failed to fetch country mappings" });
+
+
+      try {
+        const result = await get_country_mappings();
+        dispatch({ type: "SET_COUNTRY_MAPPINGS", payload: result });
+      } catch (err) {
+        console.log(err);
+        dispatch({ type: "SET_ERROR", payload: "Failed to fetch country mappings" });
+      }
+
+      try {
+        const attacksResult = await get_all_attacks();
+        globalDispatch({ type: "SET_ATTACKS", payload: attacksResult });
+      } catch (err) {
+        console.log(err);
+        dispatch({ type: "SET_ERROR", payload: "Failed to fetch attacks data" });
+      }
+
+      try {
+        const teamsResult = await get_all_teams();
+        globalDispatch({ type: "SET_TEAMS", payload: teamsResult });
+      } catch (err) {
+        console.log(err);
+        dispatch({ type: "SET_ERROR", payload: "Failed to fetch teams data" });
+      }
     }
-
-    try {
-      const attacksResult = await get_all_attacks();
-      globalDispatch({ type: "SET_ATTACKS", payload: attacksResult });
-    } catch (err) {
-      console.log(err);
-      dispatch({ type: "SET_ERROR", payload: "Failed to fetch attacks data" });
+    catch (error) {
+      console.log(error);
+      dispatch({ type: "SET_ERROR", payload: "Failed to fetch data" });
     }
-
-    try {
-      const teamsResult = await get_all_teams();
-      globalDispatch({ type: "SET_TEAMS", payload: teamsResult });
-    } catch (err) {
-      console.log(err);
-      dispatch({ type: "SET_ERROR", payload: "Failed to fetch teams data" });
-    } finally {
+    finally {
       dispatch({ type: "SET_IS_REFRESHING", payload: false });
     }
   };
@@ -101,7 +111,7 @@ const Home = () => {
           text: "Logout",
           onPress: async () => {
             Logout(globalDispatch, globalState.expoPushToken, globalState.teamNo);
-             router.back();
+            router.back();
           },
         },
       ]
@@ -194,7 +204,7 @@ const Home = () => {
   }
 
   return (
-    <View className="flex flex-col justify-between px-4 py-4 w-full min-h-[82.5vh]">
+    <View className="flex flex-col justify-between px-4 py-4 w-full h-full">
       <BackButton
         style="w-[20vw]"
         size={32}
@@ -222,23 +232,27 @@ const Home = () => {
             </Text>
           </View>
         ) :
-        (
-          <Text className="m-4 mt-0 pt-2 font-pmedium text-base text-center">
-            Ramez can be pretty cool right
-          </Text>
-        )
+          (
+            <Text className="m-4 mt-0 pt-2 font-pmedium text-base text-center">
+              Ramez can be pretty cool right
+            </Text>
+          )
       }
 
 
       <View
         style={{
           flex: 1,
-          borderWidth: 5,
+          borderWidth: 2,
           borderColor: "black",
-          borderRadius: 2,
+          borderRadius: 10,
           overflow: "hidden",
         }}
       >
+        <TouchableOpacity onPress={fetchData} className="top-4 left-4 z-10 absolute bg-white shadow-lg p-2 rounded-full">
+          <FontAwesome name="refresh" size={24} color={'black'} />
+        </TouchableOpacity>
+
         <MapView
           className="flex-1"
           initialRegion={{

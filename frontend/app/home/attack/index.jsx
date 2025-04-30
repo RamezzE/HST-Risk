@@ -252,6 +252,7 @@ const Attack = () => {
 
   return (
     <ScrollView
+      className="flex-1"
       refreshControl={
         <RefreshControl
           refreshing={state.isRefreshing}

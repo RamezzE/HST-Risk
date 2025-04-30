@@ -20,9 +20,10 @@ const Warzone = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { globalState } = useContext(GlobalContext);
+  const { globalState, globalDispatch } = useContext(GlobalContext);
 
   const fetchData = async () => {
+    setIsRefreshing(true);
     try {
       const data = await get_warzones();
 

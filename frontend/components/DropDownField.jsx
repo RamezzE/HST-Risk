@@ -61,18 +61,14 @@ const DropdownField = ({
         <TouchableWithoutFeedback onPress={openPicker}>
           <View
             style={{ flex: 1 }}
-            className="w-full h-16 px-4 rounded-md flex flex-row items-center"
+            className="flex flex-row items-center px-4 rounded-md w-full h-16"
           >
-            <TextInput
-              className="text-white font-psemibold text-[16px]"
-              value={
-                selectedValue === "" ? placeholder : selectedValue // Display placeholder if empty
-              }
-              placeholder={placeholder}
-              placeholderTextColor="#F2E9D0"
-              editable={false} // Disable direct editing
+            <Text
+              className="font-psemibold text-[16px] text-white"
               {...props}
-            />
+            >
+              {selectedValue === "" ? placeholder : selectedValue}
+            </Text>
           </View>
         </TouchableWithoutFeedback>
       </View>
