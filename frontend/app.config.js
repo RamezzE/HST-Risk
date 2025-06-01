@@ -5,7 +5,7 @@ export default {
   expo: {
     name: "HST Risk",
     slug: "HST-Risk",
-    version: "1.2.1",
+    version: "1.2.2",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "hst-risk",
@@ -39,7 +39,7 @@ export default {
         backgroundColor: "#ffffff"
       },
       softwareKeyboardLayoutMode: "pan",
-      versionCode: 5,
+      versionCode: 6,
       package: "com.ramezze.hstrisk"
     },
 
