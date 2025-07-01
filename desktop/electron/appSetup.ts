@@ -20,6 +20,17 @@ socket.on("update_country", (updatedCountry) => {
     console.log("Country updated:", updatedCountry);
 });
 
+socket.on("new_attack", (newAttack) => {
+    WindowManager.broadcastToAllWindows("newAttack", newAttack);
+    console.log("New attack received:", newAttack);
+});
+
+socket.on("remove_attack", (attackId) => {
+    WindowManager.broadcastToAllWindows("removeAttack", attackId);  
+    console.log("Attack removed:", attackId);
+});
+
+
 // --- Main Window & Services Initialization ---
 const createMainWindowAndServices = async (): Promise<void> => {
 

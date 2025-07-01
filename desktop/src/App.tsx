@@ -3,8 +3,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { GoogleMap, LoadScript } from '@react-google-maps/api';
 import MapZone from './components/MapZone'; // Adjust the import path as necessary
 import countries from './constants/countries'; // You must adapt countries to use { lat, lng } points
-import { get_country_mappings, get_all_teams } from './api/apis'; // Adjust the import path as necessary
+import { get_country_mappings, get_all_teams, get_all_attacks } from './api/apis'; // Adjust the import path as necessary
 import { FaSyncAlt } from 'react-icons/fa'; // Import refresh icon
+import AttackOverlayCard from './components/AttackOverlayCard'; // Adjust the import path as necessary
 
 type Zone = {
   name: string;
@@ -45,8 +46,11 @@ const MapPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [countriesData, setCountriesData] = useState<any[]>([]);
   const [teamsData, setTeamsData] = useState<any[]>([]);
+  const [attacks, setAttacks] = useState<any[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
+
+
 
   const fetchData = useCallback(async () => {
     try {
@@ -67,6 +71,14 @@ const MapPage: React.FC = () => {
       setCountriesData(countriesResult);
       setTeamsData(teamsResult);
 
+      const attacksResult = await get_all_attacks();
+      window.electron.debug.log(attacksResult);
+      if (Array.isArray(attacksResult)) {
+        setAttacks(attacksResult);
+      } else {
+        setAttacks([]);
+      }
+
       setIsLoading(false);
     } catch (err) {
       console.error(err);
@@ -77,6 +89,10 @@ const MapPage: React.FC = () => {
 
   useEffect(() => {
     fetchData();
+
+    window.electron.on("updateCountry", handleUpdateCountry);
+    window.electron.on("newAttack", handleNewAttack);
+    window.electron.on("removeAttack", handleRemoveAttack);
   }, [fetchData]);
 
   const getTeamColor = (countryName: string): string => {
@@ -110,9 +126,16 @@ const MapPage: React.FC = () => {
     });
   };
 
-  window.electron.on("updateCountry", (country: any) => {
-    handleUpdateCountry(country);
-  });
+  const handleNewAttack = (newAttack: any) => {
+    setAttacks(prev => {
+      if (prev.find(a => a._id === newAttack._id)) return prev;
+      return [newAttack, ...prev];
+    });
+  };
+
+  const handleRemoveAttack = (attackId: string) => {
+    setAttacks(prev => prev.filter(a => a._id !== attackId));
+  };
 
   return (
     <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string}>
@@ -145,7 +168,7 @@ const MapPage: React.FC = () => {
           options={mapOptions}
         >
           {isLoading ? (
-            <div style={{ color: 'white', position: 'absolute', top: '50%', left: '50%' }}>
+            <div className="top-1/2 left-1/2 absolute text-white">
               Loading...
             </div>
           ) : (
@@ -159,8 +182,31 @@ const MapPage: React.FC = () => {
               />
             ))
           )}
-        </GoogleMap>
 
+        </GoogleMap>
+        {attacks.length > 0 && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              zIndex: 10,
+              width: '140px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              color: 'white',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              fontFamily: 'Arial, sans-serif',
+              fontSize: '14px',
+            }}
+          >
+            {attacks.map((attack, index) => (
+              <AttackOverlayCard key={index} item={attack} getTeamColor={getTeamColor} />
+            ))}
+          </div>
+        )}
         {error && <div style={{ color: 'red', position: 'absolute', top: 10, left: 60 }}>{error}</div>}
       </div>
     </LoadScript>

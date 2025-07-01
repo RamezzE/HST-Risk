@@ -32,3 +32,16 @@ export const get_all_teams = async () => {
     return { errorMsg: "Error fetching teams" };
   }
 };
+
+export const get_all_attacks = async () => {
+  try {
+    const response = await apiClient.get('/attacks');
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as import("axios").AxiosError;
+      return { errorMsg: axiosError.response?.data || "Error fetching attacks" };
+    }
+    return { errorMsg: "Error fetching attacks" };
+  }
+};
