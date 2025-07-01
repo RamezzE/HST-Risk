@@ -1,5 +1,8 @@
 # HST Risk
 
+[![Download on the App Store](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg)](https://apps.apple.com/us/app/hst-risk/id6636564359)
+[![Get it on Google Play](https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg)](https://play.google.com/store/apps/details?id=com.ramezze.hstrisk)
+
 ## Table of Contents
 - [Overview](#overview)
 - [App Preview](#app-preview)
@@ -27,8 +30,6 @@ Tech stack used:
 - MongoDB
 - Socket.io
 
-The app is currently deployed on the App Store, and it is still in process for Google Play Store deployment.
-
 ### App Preview
 
 - This is just a preview for the app, and it does not include all screens, validations, edge cases or functionalities of the whole application.
@@ -45,7 +46,7 @@ https://github.com/user-attachments/assets/e4a0ce1a-243f-4af7-be84-92ac59f3a2e9
 - Follow the instructions [here](frontend/README.md)
 
 #### Backend ( Node.js, Express.js, MongoDB )
-- Follow the instructions [here](frontend/README.md)
+- Follow the instructions [here](backend/README.md)
 
 ## Acknowledgements
 
