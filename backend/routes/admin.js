@@ -3,6 +3,9 @@ var router = Router();
 
 import AdminController from "./../controllers/admin_controller.js";
 
+router.get("/", AdminController.get_admins);
+router.get("/:name", AdminController.get_admin_by_name);
+
 router.use((req, res, next) => {
   if (!req.session.user) 
     res.json({ success: false, errorMsg: "Please log in" })
@@ -12,8 +15,6 @@ router.use((req, res, next) => {
     next();
 });
 
-router.get("/", AdminController.get_admins);
-router.get("/:name", AdminController.get_admin_by_name);
 
 router.put("/", AdminController.add_admin);
 
