@@ -167,7 +167,7 @@ const AddAdmin = () => {
           <CustomButton
             title="Add Admin"
             handlePress={() => submit()}
-            containerStyles="mt-7 p-3 bg-green-700"
+            containerStyles="mt-7 p-3 bg-green-800"
             textStyles={"text-3xl"}
             isLoading={isSubmitting}
           />

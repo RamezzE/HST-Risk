@@ -17,7 +17,7 @@ export default {
     },
 
     ios: {
-      buildNumber: "3",
+      buildNumber: "4",
       bundleIdentifier: "com.ramezze.hstrisk",
       supportsTablet: true,
       config: {

@@ -84,24 +84,8 @@ const Dashboard = () => {
   const createNewGame = async () => {
     setIsSubmitting(true);
 
-    const filteredSettings = Array.isArray(globalState.settings)
-      ? globalState.settings.filter(
-        (setting) =>
-          setting.name === "No of Teams" || setting.name === "No of Subteams"
-      )
-      : [];
-
-    // Find the values, ensuring the result is defined before accessing .value
-    const noOfTeams = filteredSettings.find(
-      (setting) => setting.name === "No of Teams"
-    )?.value;
-
-    const noOfSubteams = filteredSettings.find(
-      (setting) => setting.name === "No of Subteams"
-    )?.value;
-
     try {
-      const result = await create_teams(noOfTeams, noOfSubteams);
+      const result = await create_teams();
 
       if (result.success) {
         Alert.alert(

@@ -274,7 +274,7 @@ const AdminHome = () => {
                   <CustomButton
                     title={`${state.currentAttack.attacking_team}${state.currentAttack.attacking_subteam} Won`}
                     textStyles={"text-xl font-pregular"}
-                    containerStyles="w-1/2 mr-1 bg-green-700 p-3"
+                    containerStyles="w-1/2 mr-1 bg-green-800 p-3"
                     handlePress={() => setAttackResultAlert("true")}
                     isLoading={state.isSubmitting}
                   />

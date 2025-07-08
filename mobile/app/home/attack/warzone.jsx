@@ -77,6 +77,7 @@ const Warzone = () => {
           router.replace("/dashboard/wars");
           return;
         }
+        router.replace("/home/attack");
         router.replace("/home/wars");
       } else {
         Alert.alert("Attack Failed", response.errorMsg);

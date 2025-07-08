@@ -100,13 +100,9 @@ class TeamController {
       errorMsg: "",
     };
 
-    const { numTeams, numSubTeams } = req.body;
-
-    if (numTeams < 2 || numTeams > 10 || numSubTeams < 1 || numSubTeams > 10) {
-      result.errorMsg = "Invalid number of teams";
-      return res.json(result);
-    }
-
+    const numTeams = (await Settings.findOne({ name: "Number of Teams" })).value;
+    const numSubTeams = (await Settings.findOne({ name: "Number of Subteams" })).value;
+    
     let teams = [];
     let subTeams = [];
 
@@ -618,20 +614,20 @@ class TeamController {
   static async get_subteam_letters(req, res) {
     // Get the total number of subteams
     const totalSubteamCount = await SubTeam.countDocuments();
-  
+
     // Get the total number of teams (assuming each subteam has a `team` field)
     const totalTeamCount = await Team.countDocuments();
-  
+
     // Calculate the average number of subteams per team (rounded down)
     const averageSubteamsPerTeam = Math.floor(totalSubteamCount / totalTeamCount);
-  
+
     // Generate the letter array based on the average number of subteams per team
     const subteamLetters = Array.from({ length: averageSubteamsPerTeam }, (_, i) =>
       String.fromCharCode(65 + i)
     );
-  
+
     return res.json(subteamLetters);
-  }  
+  }
 }
 
 export default TeamController;

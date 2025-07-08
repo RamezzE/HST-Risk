@@ -209,14 +209,14 @@ const EditWarzone = () => {
         <CustomButton
           handlePress={addWar}
           title={"Add War"}
-          containerStyles={"mt-7 p-3 bg-blue-700"}
+          containerStyles={"mt-7 p-3 bg-blue-800"}
           textStyles={"text-xl font-pregular"}
         />
 
         <CustomButton
           title="Update Warzone"
           handlePress={() => submit()}
-          containerStyles="mt-7 p-3 bg-green-700"
+          containerStyles="mt-7 p-3 bg-green-800"
           textStyles={"text-3xl"}
           isLoading={isSubmitting}
         />

@@ -190,7 +190,7 @@ const EditTeam = () => {
           <CustomButton
             title="Add"
             handlePress={() => modifyBalance("add")}
-            containerStyles="w-[45%] p-3 bg-green-700"
+            containerStyles="w-[45%] p-3 bg-green-800"
             textStyles="text-2xl"
             isLoading={isModifyingBalance}
           />
@@ -207,7 +207,7 @@ const EditTeam = () => {
           <CustomButton
             title="Update Team"
             handlePress={() => submit()}
-            containerStyles="mt-7 p-3 bg-green-700"
+            containerStyles="mt-7 p-3 bg-blue-800"
             textStyles="text-3xl"
             isLoading={isSubmitting}
           />

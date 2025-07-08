@@ -217,7 +217,7 @@ const DashboardAttacks = () => {
                   item.defending_team
                 )
               }
-              containerStyles={`p-1 mt-2 bg-green-700`}
+              containerStyles={`p-1 mt-2 bg-green-800`}
               textStyles="text-xl font-pregular"
               isLoading={state.isSubmitting}
             />

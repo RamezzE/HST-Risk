@@ -63,12 +63,9 @@ export const get_team = async (teamNo) => {
   }
 };
 
-export const create_teams = async ( numTeams, numSubTeams ) => {
+export const create_teams = async () => {
   try {
-    const response = await apiClient.post('/create-teams', {
-      numTeams,
-      numSubTeams,
-    });
+    const response = await apiClient.post('/create-teams');
     return response.data;
   } catch (error) {
     return { errorMsg: error.response?.data || "Error creating teams" };

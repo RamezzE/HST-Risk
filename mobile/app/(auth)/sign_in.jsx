@@ -10,6 +10,7 @@ import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 
 import { Login } from "../../helpers/AuthHelpers";
+import FormWrapper from "../../components/FormWrapper";
 
 const validateSignIn = (username, password) => {
   var result = {
@@ -47,14 +48,14 @@ const SignIn = () => {
     setIsSubmitting(true);
 
     try {
-      
+
       const response = await Login(form.username.trim(), form.password.trim(), globalState, globalDispatch);
-      
+
       if (response.path) {
         router.replace(response.path);
         return;
       }
-      
+
       if (!response.success) {
         Alert.alert("Error", response.errorMsg);
         return;
@@ -69,42 +70,42 @@ const SignIn = () => {
   };
 
   return (
+    <FormWrapper>
+      <View className="flex flex-col justify-center my-6 px-4 w-full min-h-[82.5vh]">
+        <BackButton
+          style="w-[20vw] mb-4"
+          size={32}
+          onPress={() => router.back()}
+        />
+        <Text className="mt-10 py-1 pt-2 font-montez text-black text-5xl text-center">
+          Sign In
+        </Text>
 
-    <View className="flex flex-col justify-center my-6 px-4 w-full min-h-[82.5vh]">
-      <BackButton
-        style="w-[20vw] mb-4"
-        size={32}
-        onPress={() => router.back()}
-      />
-      <Text className="mt-10 py-1 pt-2 font-montez text-black text-5xl text-center">
-        Sign In
-      </Text>
+        <FormField
+          title="Username"
+          value={form.username}
+          handleChangeText={(e) => setForm({ ...form, username: e })}
+          otherStyles="mt-7"
+          placeholder={"Username"}
+        />
 
-      <FormField
-        title="Username"
-        value={form.username}
-        handleChangeText={(e) => setForm({ ...form, username: e })}
-        otherStyles="mt-7"
-        placeholder={"Username"}
-      />
+        <FormField
+          title="Password"
+          value={form.password}
+          handleChangeText={(e) => setForm({ ...form, password: e })}
+          otherStyles="mt-7"
+          placeholder={"Password"}
+        />
 
-      <FormField
-        title="Password"
-        value={form.password}
-        handleChangeText={(e) => setForm({ ...form, password: e })}
-        otherStyles="mt-7"
-        placeholder={"Password"}
-      />
-
-      <CustomButton
-        title="Sign In"
-        handlePress={submit}
-        containerStyles="mt-7 p-3"
-        textStyles={"text-3xl"}
-        isLoading={isSubmitting}
-      />
-    </View>
-
+        <CustomButton
+          title="Sign In"
+          handlePress={submit}
+          containerStyles="mt-7 p-3"
+          textStyles={"text-3xl"}
+          isLoading={isSubmitting}
+        />
+      </View>
+    </FormWrapper>
   );
 };
 
