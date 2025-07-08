@@ -12,6 +12,9 @@
         "simulator": true
       }
     },
-    "production": {}
+    "production": {
+      "distribution": "store",
+      "releaseChannel": "production"
+    }
   }
 }
