@@ -39,7 +39,7 @@ export default {
         backgroundColor: "#ffffff"
       },
       softwareKeyboardLayoutMode: "pan",
-      versionCode: 6,
+      versionCode: 7,
       package: "com.ramezze.hstrisk"
     },
 
